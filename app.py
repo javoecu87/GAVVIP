@@ -45,7 +45,7 @@ def reservar():
                f"Hora: {hora}\n"
                f"Personas: {personas}")
 
-    # Define una función para enviar el mensaje
+    # Define una función para enviar el mensaje de forma asíncrona
     async def enviar_mensaje():
         try:
             await bot.send_message(chat_id=CHAT_ID, text=mensaje)
@@ -53,12 +53,12 @@ def reservar():
         except Exception as e:
             app.logger.error(f"Error al enviar mensaje a Telegram: {e}")
 
-    # Ejecuta la función en un executor sin cerrar el bucle de eventos
+    # Ejecuta el envío del mensaje en un executor para no cerrar el loop
     loop = asyncio.get_event_loop()
     loop.run_in_executor(None, lambda: asyncio.run(enviar_mensaje()))
 
-    # Redirige al usuario a la página principal después de enviar la reserva
-    return redirect(url_for('home'))
+    # Redirige a la página de agradecimiento
+    return render_template('gracias.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
