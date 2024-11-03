@@ -3,14 +3,18 @@ import telegram
 import asyncio
 import logging
 
+# Configuración de logging para asegurar la salida en consola
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s %(levelname)s %(message)s',
+    handlers=[logging.StreamHandler()]
+)
+
 app = Flask(__name__)
 
 # Configura el bot de Telegram
 BOT_TOKEN = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
 CHAT_ID = '5828174289'
-
-# Configuración de logging para ver mensajes de depuración en la consola
-logging.basicConfig(level=logging.DEBUG)
 
 # Ruta para la ventana principal
 @app.route('/')
@@ -96,4 +100,7 @@ def reservar():
         return render_template('gracias.html', mensaje="¡Gracias! Su reservación está confirmada.")
     except Exception as e:
         app.logger.error(f"Error en /reservar: {e}")
-        re
+        return "Error al procesar la reserva.", 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
