@@ -5,7 +5,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Crear el botón de Web App para abrir la mini aplicación dentro de Telegram
     keyboard = [
-        [InlineKeyboardButton("Abrir Mini App en Telegram", web_app=WebAppInfo(url="http://127.0.0.1:5000/"))]
+        [InlineKeyboardButton("Abrir Mini App en Telegram", web_app=WebAppInfo(url="https://gavvip.onrender.com"))]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
