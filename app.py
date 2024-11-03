@@ -8,7 +8,6 @@ app = Flask(__name__)
 # Configura el bot de Telegram
 BOT_TOKEN = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
 CHAT_ID = '5828174289'
-bot = telegram.Bot(token=BOT_TOKEN)
 
 # Configuración de logging para ver mensajes de depuración en la consola
 logging.basicConfig(level=logging.DEBUG)
@@ -30,11 +29,16 @@ def reservar_formulario():
 
 # Función para enviar el mensaje
 def enviar_mensaje(mensaje):
+    # Crear una nueva instancia del bot en cada solicitud
+    bot = telegram.Bot(token=BOT_TOKEN)
     try:
         asyncio.run(bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode='Markdown'))
         app.logger.debug("Mensaje enviado a Telegram con éxito")
     except Exception as e:
         app.logger.error(f"Error al enviar mensaje a Telegram: {e}")
+    finally:
+        # Cierra la sesión del bot explícitamente para liberar conexiones
+        bot.request.session.close()
 
 # Ruta para procesar la solicitud de taxi
 @app.route('/solicitar-taxi', methods=['POST'])
