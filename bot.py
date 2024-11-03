@@ -16,7 +16,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     )
 
 # Token del bot
-TOKEN = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
+TOKEN = '7806539289:AAEAFDJXmZr8I7GynbICc9fgtQhtqfudSDY'
 
 def main():
     application = ApplicationBuilder().token(TOKEN).build()

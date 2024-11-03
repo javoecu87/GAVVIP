@@ -5,8 +5,8 @@ import asyncio
 app = Flask(__name__)
 
 # Configura el bot de Telegram
-BOT_TOKEN = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
-CHAT_ID = '5828174289'
+BOT_TOKEN = '7806539289:AAEAFDJXmZr8I7GynbICc9fgtQhtqfudSDY'
+CHAT_ID = '5828174289'  # Cambia este valor si deseas enviar a un chat diferente
 bot = telegram.Bot(token=BOT_TOKEN)
 
 @app.route('/')
@@ -42,6 +42,3 @@ def reservar():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
