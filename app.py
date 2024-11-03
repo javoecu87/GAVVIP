@@ -18,7 +18,12 @@ logging.basicConfig(level=logging.DEBUG)
 def principal():
     return render_template('principal.html')
 
-# Ruta para el formulario de reserva
+# Ruta para el servicio de Taxi
+@app.route('/taxi-service')
+def taxi_service():
+    return render_template('taxi.html')
+
+# Ruta para el formulario de Quito Tour VIP
 @app.route('/reservar-formulario')
 def reservar_formulario():
     return render_template('index.html')

@@ -45,12 +45,22 @@
         .button:hover {
             background-color: #555;
         }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>GAV VIP</h1>
-        <a href="{{ url_for('reservar_formulario') }}" class="button">Quito Tour Vip</a>
+        <div class="button-container">
+            <!-- Botón TAXI arriba de Quito Tour Vip -->
+            <a href="{{ url_for('taxi_service') }}" class="button">TAXI</a>
+            <a href="{{ url_for('reservar_formulario') }}" class="button">Quito Tour Vip</a>
+        </div>
     </div>
 </body>
 </html>
