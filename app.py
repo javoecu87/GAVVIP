@@ -1,7 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 import telegram
 import asyncio
 import logging
+
+app = Flask(__name__)
+
+# Configura el bot de Telegram
+BOT_TOKEN = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
+CHAT_ID = '5828174289'
 
 # Configuración de logging para asegurar la salida en consola
 logging.basicConfig(
@@ -10,11 +16,20 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()]
 )
 
-app = Flask(__name__)
+# Función asincrónica para enviar el mensaje
+async def enviar_mensaje_async(mensaje):
+    bot = telegram.Bot(token=BOT_TOKEN)
+    try:
+        await bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode='Markdown')
+        app.logger.debug("Mensaje enviado a Telegram con éxito")
+    except Exception as e:
+        app.logger.error(f"Error al enviar mensaje a Telegram: {e}")
+    finally:
+        await bot.request.session.close()
 
-# Configura el bot de Telegram
-BOT_TOKEN = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
-CHAT_ID = '5828174289'
+# Función que programa el envío de mensaje sin bloquear la aplicación
+def enviar_mensaje(mensaje):
+    asyncio.create_task(enviar_mensaje_async(mensaje))
 
 # Ruta para la ventana principal
 @app.route('/')
@@ -33,18 +48,6 @@ def taxi_service():
 def reservar_formulario():
     app.logger.debug("Cargando el formulario de Quito Tour VIP.")
     return render_template('index.html')
-
-# Función para enviar el mensaje
-def enviar_mensaje(mensaje):
-    bot = telegram.Bot(token=BOT_TOKEN)
-    try:
-        app.logger.debug(f"Enviando mensaje a Telegram: {mensaje}")
-        asyncio.run(bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode='Markdown'))
-        app.logger.debug("Mensaje enviado a Telegram con éxito")
-    except Exception as e:
-        app.logger.error(f"Error al enviar mensaje a Telegram: {e}")
-    finally:
-        bot.request.session.close()
 
 # Ruta para procesar la solicitud de taxi
 @app.route('/solicitar-taxi', methods=['POST'])
