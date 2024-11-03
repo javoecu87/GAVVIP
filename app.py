@@ -5,9 +5,9 @@ import logging
 
 app = Flask(__name__)
 
-# Configura el nuevo bot de Telegram con el token del otro bot
-BOT_TOKEN = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'  # Token actualizado del nuevo bot
-CHAT_ID = '5828174289'  # Cambia este valor si deseas enviar a un chat diferente
+# Configura el bot de Telegram
+BOT_TOKEN = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
+CHAT_ID = '5828174289'
 bot = telegram.Bot(token=BOT_TOKEN)
 
 # Configuración de logging para ver mensajes de depuración en la consola
@@ -19,7 +19,7 @@ def home():
 
 @app.route('/reservar', methods=['POST'])
 def reservar():
-    app.logger.debug("Formulario recibido en /reservar")  # Registro de depuración
+    app.logger.debug("Formulario recibido en /reservar")
 
     # Recoge los datos del formulario
     try:
@@ -45,7 +45,7 @@ def reservar():
                f"Hora: {hora}\n"
                f"Personas: {personas}")
 
-    # Define una función para enviar el mensaje de forma asíncrona
+    # Define una función para enviar el mensaje
     async def enviar_mensaje():
         try:
             await bot.send_message(chat_id=CHAT_ID, text=mensaje)
@@ -53,8 +53,9 @@ def reservar():
         except Exception as e:
             app.logger.error(f"Error al enviar mensaje a Telegram: {e}")
 
-    # Programa el envío del mensaje sin cerrar el event loop
-    asyncio.create_task(enviar_mensaje())
+    # Ejecuta la función en un executor sin cerrar el bucle de eventos
+    loop = asyncio.get_event_loop()
+    loop.run_in_executor(None, lambda: asyncio.run(enviar_mensaje()))
 
     # Redirige al usuario a la página principal después de enviar la reserva
     return redirect(url_for('home'))
