@@ -4,8 +4,8 @@ import asyncio
 
 app = Flask(__name__)
 
-# Configura el bot de Telegram
-BOT_TOKEN = '7806539289:AAEAFDJXmZr8I7GynbICc9fgtQhtqfudSDY'
+# Configura el nuevo bot de Telegram con el token del otro bot
+BOT_TOKEN = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'  # Token actualizado del nuevo bot
 CHAT_ID = '5828174289'  # Cambia este valor si deseas enviar a un chat diferente
 bot = telegram.Bot(token=BOT_TOKEN)
 
