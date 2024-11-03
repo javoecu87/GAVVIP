@@ -28,6 +28,14 @@ def taxi_service():
 def reservar_formulario():
     return render_template('index.html')
 
+# Función asincrónica para enviar el mensaje a Telegram
+async def enviar_mensaje(mensaje):
+    try:
+        await bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode='Markdown')
+        app.logger.debug("Mensaje enviado a Telegram con éxito")
+    except Exception as e:
+        app.logger.error(f"Error al enviar mensaje a Telegram: {e}")
+
 # Ruta para procesar la solicitud de taxi
 @app.route('/solicitar-taxi', methods=['POST'])
 def solicitar_taxi():
@@ -48,17 +56,8 @@ def solicitar_taxi():
         f"📝 *Observaciones:* {observaciones}"
     )
 
-    # Define una función para enviar el mensaje de forma asíncrona
-    async def enviar_mensaje():
-        try:
-            await bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode='Markdown')
-            app.logger.debug("Solicitud de taxi enviada a Telegram con éxito")
-        except Exception as e:
-            app.logger.error(f"Error al enviar solicitud a Telegram: {e}")
-
-    # Ejecuta el envío del mensaje en un executor para no cerrar el loop
-    loop = asyncio.get_event_loop()
-    loop.run_in_executor(None, lambda: asyncio.run(enviar_mensaje()))
+    # Usa ensure_future() para enviar el mensaje sin cerrar el event loop
+    asyncio.ensure_future(enviar_mensaje(mensaje))
 
     # Redirige a la página de confirmación
     return render_template('gracias.html', mensaje="¡Gracias! Su solicitud de taxi ha sido enviada.")
@@ -94,17 +93,8 @@ def reservar():
         f"👥 *Personas:* {personas}"
     )
 
-    # Define una función para enviar el mensaje de forma asíncrona
-    async def enviar_mensaje():
-        try:
-            await bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode='Markdown')
-            app.logger.debug("Mensaje enviado a Telegram con éxito")
-        except Exception as e:
-            app.logger.error(f"Error al enviar mensaje a Telegram: {e}")
-
-    # Ejecuta el envío del mensaje en un executor para no cerrar el loop
-    loop = asyncio.get_event_loop()
-    loop.run_in_executor(None, lambda: asyncio.run(enviar_mensaje()))
+    # Usa ensure_future() para enviar el mensaje sin cerrar el event loop
+    asyncio.ensure_future(enviar_mensaje(mensaje))
 
     # Redirige a la página de agradecimiento
     return render_template('gracias.html', mensaje="¡Gracias! Su reservación está confirmada.")
