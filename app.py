@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import telegram
+import asyncio
 import logging
 
 app = Flask(__name__)
@@ -15,14 +16,18 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()]
 )
 
-# Función para enviar el mensaje sin usar asyncio
-def enviar_mensaje(mensaje):
+# Función asincrónica para enviar el mensaje
+async def enviar_mensaje_async(mensaje):
     bot = telegram.Bot(token=BOT_TOKEN)
     try:
-        bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode='Markdown')
+        await bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode='Markdown')
         app.logger.debug("Mensaje enviado a Telegram con éxito")
     except Exception as e:
         app.logger.error(f"Error al enviar mensaje a Telegram: {e}")
+
+# Función para ejecutar el envío de manera asincrónica en cada solicitud
+def enviar_mensaje(mensaje):
+    asyncio.run(enviar_mensaje_async(mensaje))
 
 # Ruta para la ventana principal
 @app.route('/')
@@ -57,7 +62,7 @@ def solicitar_taxi():
             f"👤 *Nombre:* {nombre}\n"
             f"📞 *Teléfono:* {telefono}\n"
             f"📍 *Ubicación:* {ubicacion}\n"
-            f"➡️ *Destino:* {destino}\n"
+            f➡️ *Destino:* {destino}\n"
             f"📝 *Observaciones:* {observaciones}"
         )
 
