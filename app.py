@@ -58,12 +58,12 @@ def solicitar_taxi():
         observaciones = request.form.get('observaciones', 'No especificadas')
 
         mensaje = (
-            "🚖 *Solicitud de Taxi*\n\n"
-            f"👤 *Nombre:* {nombre}\n"
-            f"📞 *Teléfono:* {telefono}\n"
-            f"📍 *Ubicación:* {ubicacion}\n"
-            f➡️ *Destino:* {destino}\n"
-            f"📝 *Observaciones:* {observaciones}"
+            "*Solicitud de Taxi*\n\n"
+            f"Nombre: {nombre}\n"
+            f"Teléfono: {telefono}\n"
+            f"Ubicación: {ubicacion}\n"
+            f"Destino: {destino}\n"
+            f"Observaciones: {observaciones}"
         )
 
         enviar_mensaje(mensaje)
@@ -86,14 +86,14 @@ def reservar():
         personas = request.form['personas']
 
         mensaje = (
-            "🚌 *Reserva de Quito Tour VIP*\n\n"
-            f"👤 *Nombre:* {nombre}\n"
-            f"📞 *Teléfono:* {telefono}\n"
-            f"📍 *Origen:* {origen}\n"
-            f"➡️ *Destino:* {destino}\n"
-            f"📅 *Fecha:* {fecha}\n"
-            f"⏰ *Hora:* {hora}\n"
-            f"👥 *Personas:* {personas}"
+            "*Reserva de Quito Tour VIP*\n\n"
+            f"Nombre: {nombre}\n"
+            f"Teléfono: {telefono}\n"
+            f"Origen: {origen}\n"
+            f"Destino: {destino}\n"
+            f"Fecha: {fecha}\n"
+            f"Hora: {hora}\n"
+            f"Personas: {personas}"
         )
 
         enviar_mensaje(mensaje)
