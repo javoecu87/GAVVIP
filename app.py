@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request
 import telegram
-import asyncio
 import logging
 
 app = Flask(__name__)
@@ -16,20 +15,14 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()]
 )
 
-# Función asincrónica para enviar el mensaje
-async def enviar_mensaje_async(mensaje):
+# Función para enviar el mensaje sin usar asyncio
+def enviar_mensaje(mensaje):
     bot = telegram.Bot(token=BOT_TOKEN)
     try:
-        await bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode='Markdown')
+        bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode='Markdown')
         app.logger.debug("Mensaje enviado a Telegram con éxito")
     except Exception as e:
         app.logger.error(f"Error al enviar mensaje a Telegram: {e}")
-    finally:
-        await bot.request.session.close()
-
-# Función que programa el envío de mensaje sin bloquear la aplicación
-def enviar_mensaje(mensaje):
-    asyncio.create_task(enviar_mensaje_async(mensaje))
 
 # Ruta para la ventana principal
 @app.route('/')
