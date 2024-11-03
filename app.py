@@ -83,4 +83,13 @@ def reservar():
         f"📍 *Origen:* {origen}\n"
         f"➡️ *Destino:* {destino}\n"
         f"📅 *Fecha:* {fecha}\n"
-      
+        f"⏰ *Hora:* {hora}\n"
+        f"👥 *Personas:* {personas}"
+    )
+
+    enviar_mensaje(mensaje)
+
+    return render_template('gracias.html', mensaje="¡Gracias! Su reservación está confirmada.")
+
+if __name__ == '__main__':
+    app.run(debug=True)
