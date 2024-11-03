@@ -5,10 +5,10 @@ import logging
 
 app = Flask(__name__)
 
-# Configura el bot de Telegram
+# Configura el bot de Telegram con un tamaño de pool de conexiones más grande
 BOT_TOKEN = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
 CHAT_ID = '5828174289'
-bot = telegram.Bot(token=BOT_TOKEN)
+bot = telegram.Bot(token=BOT_TOKEN, request=telegram.utils.request.Request(con_pool_size=10))
 
 # Configuración de logging para ver mensajes de depuración en la consola
 logging.basicConfig(level=logging.DEBUG)
@@ -28,7 +28,7 @@ def taxi_service():
 def reservar_formulario():
     return render_template('index.html')
 
-# Función para enviar el mensaje de forma asíncrona
+# Función para enviar el mensaje y cerrar la conexión
 def enviar_mensaje(mensaje):
     try:
         # Ejecuta el envío del mensaje en el bucle de eventos principal
@@ -36,6 +36,9 @@ def enviar_mensaje(mensaje):
         app.logger.debug("Mensaje enviado a Telegram con éxito")
     except Exception as e:
         app.logger.error(f"Error al enviar mensaje a Telegram: {e}")
+    finally:
+        # Cierra la conexión del bot
+        bot.request.session.close()
 
 # Ruta para procesar la solicitud de taxi
 @app.route('/solicitar-taxi', methods=['POST'])
