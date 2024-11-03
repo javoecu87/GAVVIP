@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for
 import telegram
+import asyncio
 
 app = Flask(__name__)
 
-# Configura tu bot de Telegram
+# Configura el bot de Telegram
 BOT_TOKEN = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
-CHAT_ID = '5828174289'  # Chat ID proporcionado
+CHAT_ID = '5828174289'
 bot = telegram.Bot(token=BOT_TOKEN)
 
 @app.route('/')
@@ -13,7 +14,7 @@ def home():
     return render_template('index.html')
 
 @app.route('/reservar', methods=['POST'])
-def reservar():
+async def reservar():
     # Recoge los datos del formulario
     origen = request.form['origen']
     destino = request.form['destino']
@@ -28,9 +29,12 @@ def reservar():
                f"Fecha: {fecha}\n"
                f"Hora: {hora}\n"
                f"Personas: {personas}")
-    bot.send_message(chat_id=CHAT_ID, text=mensaje)
+    await bot.send_message(chat_id=CHAT_ID, text=mensaje)
 
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True)
+
+
+
