@@ -38,18 +38,20 @@ def solicitar_taxi():
     destino = request.form.get('destino', 'No especificado')
     observaciones = request.form.get('observaciones', 'No especificadas')
 
-    # Crea el mensaje de solicitud
-    mensaje = (f"Solicitud de Taxi:\n"
-               f"Nombre: {nombre}\n"
-               f"Teléfono: {telefono}\n"
-               f"Ubicación: {ubicacion}\n"
-               f"Destino: {destino}\n"
-               f"Observaciones: {observaciones}")
+    # Crea el mensaje de solicitud con formato
+    mensaje = (
+        "🚖 *Solicitud de Taxi*\n\n"
+        f"👤 *Nombre:* {nombre}\n"
+        f"📞 *Teléfono:* {telefono}\n"
+        f"📍 *Ubicación:* {ubicacion}\n"
+        f"➡️ *Destino:* {destino}\n"
+        f"📝 *Observaciones:* {observaciones}"
+    )
 
     # Define una función para enviar el mensaje de forma asíncrona
     async def enviar_mensaje():
         try:
-            await bot.send_message(chat_id=CHAT_ID, text=mensaje)
+            await bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode='Markdown')
             app.logger.debug("Solicitud de taxi enviada a Telegram con éxito")
         except Exception as e:
             app.logger.error(f"Error al enviar solicitud a Telegram: {e}")
@@ -81,19 +83,21 @@ def reservar():
         return "Error al procesar el formulario", 500
 
     # Crea el mensaje de reserva
-    mensaje = (f"Reserva recibida:\n"
-               f"Nombre: {nombre}\n"
-               f"Teléfono: {telefono}\n"
-               f"Origen: {origen}\n"
-               f"Destino: {destino}\n"
-               f"Fecha: {fecha}\n"
-               f"Hora: {hora}\n"
-               f"Personas: {personas}")
+    mensaje = (
+        "🚌 *Reserva de Quito Tour VIP*\n\n"
+        f"👤 *Nombre:* {nombre}\n"
+        f"📞 *Teléfono:* {telefono}\n"
+        f"📍 *Origen:* {origen}\n"
+        f"➡️ *Destino:* {destino}\n"
+        f"📅 *Fecha:* {fecha}\n"
+        f"⏰ *Hora:* {hora}\n"
+        f"👥 *Personas:* {personas}"
+    )
 
     # Define una función para enviar el mensaje de forma asíncrona
     async def enviar_mensaje():
         try:
-            await bot.send_message(chat_id=CHAT_ID, text=mensaje)
+            await bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode='Markdown')
             app.logger.debug("Mensaje enviado a Telegram con éxito")
         except Exception as e:
             app.logger.error(f"Error al enviar mensaje a Telegram: {e}")
