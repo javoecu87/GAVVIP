@@ -28,7 +28,40 @@ def taxi_service():
 def reservar_formulario():
     return render_template('index.html')
 
-# Ruta para procesar el formulario de reserva
+# Ruta para procesar la solicitud de taxi
+@app.route('/solicitar-taxi', methods=['POST'])
+def solicitar_taxi():
+    # Recoge los datos del formulario
+    nombre = request.form['nombre']
+    telefono = request.form['telefono']
+    ubicacion = request.form['ubicacion']
+    destino = request.form.get('destino', 'No especificado')
+    observaciones = request.form.get('observaciones', 'No especificadas')
+
+    # Crea el mensaje de solicitud
+    mensaje = (f"Solicitud de Taxi:\n"
+               f"Nombre: {nombre}\n"
+               f"Teléfono: {telefono}\n"
+               f"Ubicación: {ubicacion}\n"
+               f"Destino: {destino}\n"
+               f"Observaciones: {observaciones}")
+
+    # Define una función para enviar el mensaje de forma asíncrona
+    async def enviar_mensaje():
+        try:
+            await bot.send_message(chat_id=CHAT_ID, text=mensaje)
+            app.logger.debug("Solicitud de taxi enviada a Telegram con éxito")
+        except Exception as e:
+            app.logger.error(f"Error al enviar solicitud a Telegram: {e}")
+
+    # Ejecuta el envío del mensaje en un executor para no cerrar el loop
+    loop = asyncio.get_event_loop()
+    loop.run_in_executor(None, lambda: asyncio.run(enviar_mensaje()))
+
+    # Redirige a la página de confirmación
+    return render_template('gracias.html', mensaje="¡Gracias! Su solicitud de taxi ha sido enviada.")
+
+# Ruta para procesar el formulario de reserva de Quito Tour VIP
 @app.route('/reservar', methods=['POST'])
 def reservar():
     app.logger.debug("Formulario recibido en /reservar")
@@ -70,7 +103,7 @@ def reservar():
     loop.run_in_executor(None, lambda: asyncio.run(enviar_mensaje()))
 
     # Redirige a la página de agradecimiento
-    return render_template('gracias.html')
+    return render_template('gracias.html', mensaje="¡Gracias! Su reservación está confirmada.")
 
 if __name__ == '__main__':
     app.run(debug=True)

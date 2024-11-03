@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servicio de Taxi - GAV VIP</title>
+    <title>Solicitud de Taxi - GAV VIP</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -28,15 +28,53 @@
             color: #333;
             font-size: 2em;
         }
-        p {
-            font-size: 1.2em;
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        label {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        input, button {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+        button {
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Servicio de Taxi</h1>
-        <p>Bienvenido al servicio de Taxi de GAV VIP. Estamos aquí para ofrecerle el mejor servicio de transporte privado.</p>
+        <h1>Solicitud de Taxi</h1>
+        <form action="/solicitar-taxi" method="post">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
+
+            <label for="telefono">Teléfono:</label>
+            <input type="tel" id="telefono" name="telefono" required>
+
+            <label for="ubicacion">Ubicación:</label>
+            <input type="text" id="ubicacion" name="ubicacion" required>
+
+            <label for="destino">Destino:</label>
+            <input type="text" id="destino" name="destino">
+
+            <label for="observaciones">Observaciones:</label>
+            <input type="text" id="observaciones" name="observaciones">
+
+            <button type="submit">Solicitar Taxi</button>
+        </form>
     </div>
 </body>
 </html>
