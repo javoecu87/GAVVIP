@@ -14,7 +14,7 @@ def home():
     return render_template('index.html')
 
 @app.route('/reservar', methods=['POST'])
-async def reservar():
+def reservar():
     # Recoge los datos del formulario
     origen = request.form['origen']
     destino = request.form['destino']
@@ -22,15 +22,22 @@ async def reservar():
     hora = request.form['hora']
     personas = request.form['personas']
 
-    # Envía un mensaje de notificación a Telegram
+    # Crea el mensaje de reserva
     mensaje = (f"Reserva recibida:\n"
                f"Origen: {origen}\n"
                f"Destino: {destino}\n"
                f"Fecha: {fecha}\n"
                f"Hora: {hora}\n"
                f"Personas: {personas}")
-    await bot.send_message(chat_id=CHAT_ID, text=mensaje)
 
+    # Define una función para enviar el mensaje de forma asíncrona
+    async def enviar_mensaje():
+        await bot.send_message(chat_id=CHAT_ID, text=mensaje)
+
+    # Ejecuta la función asincrónica
+    asyncio.run(enviar_mensaje())
+
+    # Redirige al usuario a la página principal después de enviar la reserva
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
