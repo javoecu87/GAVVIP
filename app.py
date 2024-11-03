@@ -15,58 +15,62 @@ logging.basicConfig(level=logging.DEBUG)
 # Ruta para la ventana principal
 @app.route('/')
 def principal():
+    app.logger.debug("Cargando la ventana principal.")
     return render_template('principal.html')
 
 # Ruta para el servicio de Taxi
 @app.route('/taxi-service')
 def taxi_service():
+    app.logger.debug("Cargando la ventana de servicio de Taxi.")
     return render_template('taxi.html')
 
 # Ruta para el formulario de Quito Tour VIP
 @app.route('/reservar-formulario')
 def reservar_formulario():
+    app.logger.debug("Cargando el formulario de Quito Tour VIP.")
     return render_template('index.html')
 
 # Función para enviar el mensaje
 def enviar_mensaje(mensaje):
-    # Crear una nueva instancia del bot en cada solicitud
     bot = telegram.Bot(token=BOT_TOKEN)
     try:
+        app.logger.debug(f"Enviando mensaje a Telegram: {mensaje}")
         asyncio.run(bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode='Markdown'))
         app.logger.debug("Mensaje enviado a Telegram con éxito")
     except Exception as e:
         app.logger.error(f"Error al enviar mensaje a Telegram: {e}")
     finally:
-        # Cierra la sesión del bot explícitamente para liberar conexiones
         bot.request.session.close()
 
 # Ruta para procesar la solicitud de taxi
 @app.route('/solicitar-taxi', methods=['POST'])
 def solicitar_taxi():
-    nombre = request.form['nombre']
-    telefono = request.form['telefono']
-    ubicacion = request.form['ubicacion']
-    destino = request.form.get('destino', 'No especificado')
-    observaciones = request.form.get('observaciones', 'No especificadas')
+    try:
+        nombre = request.form['nombre']
+        telefono = request.form['telefono']
+        ubicacion = request.form['ubicacion']
+        destino = request.form.get('destino', 'No especificado')
+        observaciones = request.form.get('observaciones', 'No especificadas')
 
-    mensaje = (
-        "🚖 *Solicitud de Taxi*\n\n"
-        f"👤 *Nombre:* {nombre}\n"
-        f"📞 *Teléfono:* {telefono}\n"
-        f"📍 *Ubicación:* {ubicacion}\n"
-        f"➡️ *Destino:* {destino}\n"
-        f"📝 *Observaciones:* {observaciones}"
-    )
+        mensaje = (
+            "🚖 *Solicitud de Taxi*\n\n"
+            f"👤 *Nombre:* {nombre}\n"
+            f"📞 *Teléfono:* {telefono}\n"
+            f"📍 *Ubicación:* {ubicacion}\n"
+            f"➡️ *Destino:* {destino}\n"
+            f"📝 *Observaciones:* {observaciones}"
+        )
 
-    enviar_mensaje(mensaje)
-
-    return render_template('gracias.html', mensaje="¡Gracias! Su solicitud de taxi ha sido enviada.")
+        enviar_mensaje(mensaje)
+        app.logger.debug("Redirigiendo a página de agradecimiento.")
+        return render_template('gracias.html', mensaje="¡Gracias! Su solicitud de taxi ha sido enviada.")
+    except Exception as e:
+        app.logger.error(f"Error en /solicitar-taxi: {e}")
+        return "Error al procesar la solicitud de taxi.", 500
 
 # Ruta para procesar el formulario de reserva de Quito Tour VIP
 @app.route('/reservar', methods=['POST'])
 def reservar():
-    app.logger.debug("Formulario recibido en /reservar")
-
     try:
         nombre = request.form['nombre']
         telefono = request.form['telefono']
@@ -75,25 +79,21 @@ def reservar():
         fecha = request.form['fecha']
         hora = request.form['hora']
         personas = request.form['personas']
-        app.logger.debug(f"Datos recibidos: Nombre={nombre}, Teléfono={telefono}, Origen={origen}, Destino={destino}, Fecha={fecha}, Hora={hora}, Personas={personas}")
+
+        mensaje = (
+            "🚌 *Reserva de Quito Tour VIP*\n\n"
+            f"👤 *Nombre:* {nombre}\n"
+            f"📞 *Teléfono:* {telefono}\n"
+            f"📍 *Origen:* {origen}\n"
+            f"➡️ *Destino:* {destino}\n"
+            f"📅 *Fecha:* {fecha}\n"
+            f"⏰ *Hora:* {hora}\n"
+            f"👥 *Personas:* {personas}"
+        )
+
+        enviar_mensaje(mensaje)
+        app.logger.debug("Redirigiendo a página de agradecimiento.")
+        return render_template('gracias.html', mensaje="¡Gracias! Su reservación está confirmada.")
     except Exception as e:
-        app.logger.error(f"Error al recoger los datos del formulario: {e}")
-        return "Error al procesar el formulario", 500
-
-    mensaje = (
-        "🚌 *Reserva de Quito Tour VIP*\n\n"
-        f"👤 *Nombre:* {nombre}\n"
-        f"📞 *Teléfono:* {telefono}\n"
-        f"📍 *Origen:* {origen}\n"
-        f"➡️ *Destino:* {destino}\n"
-        f"📅 *Fecha:* {fecha}\n"
-        f"⏰ *Hora:* {hora}\n"
-        f"👥 *Personas:* {personas}"
-    )
-
-    enviar_mensaje(mensaje)
-
-    return render_template('gracias.html', mensaje="¡Gracias! Su reservación está confirmada.")
-
-if __name__ == '__main__':
-    app.run(debug=True)
+        app.logger.error(f"Error en /reservar: {e}")
+        re
