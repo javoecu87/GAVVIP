@@ -13,10 +13,17 @@ bot = telegram.Bot(token=BOT_TOKEN)
 # Configuración de logging para ver mensajes de depuración en la consola
 logging.basicConfig(level=logging.DEBUG)
 
+# Ruta para la ventana principal
 @app.route('/')
-def home():
+def principal():
+    return render_template('principal.html')
+
+# Ruta para el formulario de reserva
+@app.route('/reservar-formulario')
+def reservar_formulario():
     return render_template('index.html')
 
+# Ruta para procesar el formulario de reserva
 @app.route('/reservar', methods=['POST'])
 def reservar():
     app.logger.debug("Formulario recibido en /reservar")
