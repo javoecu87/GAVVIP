@@ -8,59 +8,40 @@
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: #2196F3;
+            background-color: rgba(0, 0, 0, 0.8); /* Fondo opaco */
             color: white;
-        }
-        .container {
-            width: 90%;
-            max-width: 600px;
             text-align: center;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            color: #333;
         }
         h1 {
-            font-size: 2.5em;
-            color: #333;
-            margin: 0;
+            font-size: 3em;
+            margin-bottom: 20px;
         }
         .button {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
             background-color: #333;
             color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.1em;
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 1.2em;
             text-decoration: none;
-            cursor: pointer;
+            border-radius: 5px;
+            display: inline-block;
+            transition: background-color 0.3s;
         }
         .button:hover {
             background-color: #555;
         }
-        .button-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>GAV VIP</h1>
-        <div class="button-container">
-            <!-- Botón TAXI arriba de Quito Tour Vip -->
-            <a href="{{ url_for('taxi_service') }}" class="button">TAXI</a>
-            <a href="{{ url_for('reservar_formulario') }}" class="button">Quito Tour Vip</a>
-        </div>
-    </div>
+    <h1>GAV VIP</h1>
+    <!-- Botón de Taxi VIP SUVS & VANS -->
+    <a href="/taxi-service" class="button">TAXI VIP SUVS & VANS</a>
+    <!-- Botón de Quito Tour VIP -->
+    <a href="/reservar-formulario" class="button">Quito Tour VIP</a>
 </body>
 </html>
