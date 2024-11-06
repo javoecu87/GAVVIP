@@ -70,7 +70,12 @@ def solicitar_taxi():
 def reservar_formulario():
     return render_template('index.html')
 
-# Ruta para procesar el formulario TAXI VIP SUVS & VANS y enviar el mensaje al bot
+# Ruta para mostrar el formulario TAXI VIP SUVS & VANS
+@app.route('/reservar-formulario')
+def reservar_formulario():
+    return render_template('index.html')
+
+# Ruta para procesar el formulario y enviar el mensaje
 @app.route('/reservar', methods=['POST'])
 def reservar():
     try:
@@ -101,3 +106,8 @@ def reservar():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
+
+
