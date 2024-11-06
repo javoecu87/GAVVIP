@@ -5,8 +5,8 @@ import logging
 
 app = Flask(__name__)
 
-# Token del bot específico para el formulario TAXI VIP SUVS & VANS
-BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
+# Token del bot específico para el formulario TAXI
+BOT_TOKEN_TAXI = '8146583492:AAFP-9CTNvmNR13aFxvJB6Q1WS0eBbZhAc0'
 CHAT_ID = '5828174289'  # Reemplaza con el chat ID correcto
 
 # Configuración de logging
@@ -34,12 +34,17 @@ def enviar_mensaje(mensaje, token):
 def principal():
     return render_template('principal.html')
 
+# Ruta para el formulario de Taxi
+@app.route('/taxi-service')
+def taxi_service():
+    return render_template('taxi.html')  # Asegúrate de tener un archivo llamado 'taxi.html' en la carpeta templates
+
 # Ruta para el formulario TAXI VIP SUVS & VANS
 @app.route('/reservar-formulario')
 def reservar_formulario():
     return render_template('index.html')
 
-# Ruta para procesar el formulario y enviar el mensaje al bot
+# Ruta para procesar el formulario TAXI VIP SUVS & VANS y enviar el mensaje al bot
 @app.route('/reservar', methods=['POST'])
 def reservar():
     try:
@@ -62,7 +67,7 @@ def reservar():
             f"Personas: {personas}"
         )
 
-        enviar_mensaje(mensaje, BOT_TOKEN_VIP)
+        enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
         return render_template('gracias.html', mensaje="¡Gracias! Su reservación está confirmada.")
     except Exception as e:
         app.logger.error(f"Error en /reservar: {e}")
