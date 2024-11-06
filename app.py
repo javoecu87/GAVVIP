@@ -5,7 +5,7 @@ import logging
 
 app = Flask(__name__)
 
-# Token específico para el formulario TAXI VIP SUVS & VANS
+# Token del bot específico para el formulario TAXI VIP SUVS & VANS
 BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
 CHAT_ID = '5828174289'  # Reemplaza con el chat ID correcto
 
@@ -28,6 +28,11 @@ async def enviar_mensaje_async(mensaje, token):
 # Función para ejecutar el envío de manera asincrónica en cada solicitud
 def enviar_mensaje(mensaje, token):
     asyncio.run(enviar_mensaje_async(mensaje, token))
+
+# Ruta para la ventana principal
+@app.route('/')
+def principal():
+    return render_template('principal.html')
 
 # Ruta para el formulario TAXI VIP SUVS & VANS
 @app.route('/reservar-formulario')
@@ -65,4 +70,3 @@ def reservar():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
