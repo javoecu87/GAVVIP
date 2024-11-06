@@ -66,16 +66,11 @@ def solicitar_taxi():
         return "Error al procesar la solicitud de taxi.", 500
 
 # Ruta para el formulario TAXI VIP SUVS & VANS
-@app.route('/reservar-formulario')
-def reservar_formulario():
+@app.route('/solicitud-vip')
+def solicitud_vip():
     return render_template('index.html')
 
-# Ruta para mostrar el formulario TAXI VIP SUVS & VANS
-@app.route('/reservar-formulario')
-def reservar_formulario():
-    return render_template('index.html')
-
-# Ruta para procesar el formulario y enviar el mensaje
+# Ruta para procesar el formulario TAXI VIP SUVS & VANS y enviar el mensaje al bot
 @app.route('/reservar', methods=['POST'])
 def reservar():
     try:
@@ -106,8 +101,3 @@ def reservar():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-
-
