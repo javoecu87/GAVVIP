@@ -5,9 +5,9 @@ import logging
 
 app = Flask(__name__)
 
-# Token del nuevo bot para el botón "Taxi"
+# Token del bot específico para el formulario de Taxi
 BOT_TOKEN_TAXI = '8146583492:AAFP-9CTNvmNR13aFxvJB6Q1WS0eBbZhAc0'
-CHAT_ID = '5828174289'  # Asegúrate de que sea el chat ID correcto o ajusta si es necesario
+CHAT_ID = '5828174289'
 
 # Configuración de logging para asegurar la salida en consola
 logging.basicConfig(
@@ -29,7 +29,17 @@ async def enviar_mensaje_async(mensaje, token):
 def enviar_mensaje(mensaje, token):
     asyncio.run(enviar_mensaje_async(mensaje, token))
 
-# Ruta para procesar la solicitud de taxi
+# Ruta para la ventana principal
+@app.route('/')
+def principal():
+    return render_template('principal.html')
+
+# Ruta para el formulario de Taxi
+@app.route('/taxi-service')
+def taxi_service():
+    return render_template('taxi.html')
+
+# Ruta para el formulario de Taxi
 @app.route('/solicitar-taxi', methods=['POST'])
 def solicitar_taxi():
     try:
@@ -48,12 +58,11 @@ def solicitar_taxi():
             f"Observaciones: {observaciones}"
         )
 
-        # Envía el mensaje usando el token del nuevo bot
         enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
-        app.logger.debug("Redirigiendo a página de agradecimiento.")
         return render_template('gracias.html', mensaje="¡Gracias! Su solicitud de taxi ha sido enviada.")
     except Exception as e:
         app.logger.error(f"Error en /solicitar-taxi: {e}")
         return "Error al procesar la solicitud de taxi.", 500
 
-# (Las demás rutas y configuraciones permanecen igual)
+if __name__ == '__main__':
+    app.run(debug=True)
