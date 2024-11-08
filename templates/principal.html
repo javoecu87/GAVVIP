@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GAV VIP</title>
     <style>
-        /* Ajustes para la interfaz en dispositivos móviles */
-        * {
-            box-sizing: border-box;
-        }
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -18,15 +14,13 @@
             height: 100vh;
             margin: 0;
             color: #fff;
-            text-align: center;
             background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
-                        url('/fondito2.jpg') no-repeat center center fixed;
+                        url('pic.jpg') no-repeat center center fixed;
             background-size: cover;
         }
         h1 {
             font-size: 2em;
-            padding: 10px;
-            color: #FFD700; /* Color dorado */
+            color: #FFD700;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
         }
         .button {
@@ -44,15 +38,9 @@
             background-color: #555;
             transform: scale(1.05);
         }
-        /* Media query para pantallas pequeñas */
         @media (max-width: 600px) {
-            h1 {
-                font-size: 1.6em;
-            }
-            .button {
-                padding: 10px 20px;
-                font-size: 1em;
-            }
+            h1 { font-size: 1.6em; }
+            .button { padding: 10px 20px; font-size: 1em; }
         }
     </style>
 </head>
