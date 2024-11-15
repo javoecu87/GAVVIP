@@ -11,15 +11,14 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
-            padding: 0;
+            padding: 0 20px 200px; /* Espaciado inferior */
             background: linear-gradient(to bottom, #4facfe, #00f2fe);
-            color: #333;
         }
         .container {
             background: #fff;
-            width: 90%;
+            width: 100%;
             max-width: 400px;
             padding: 20px;
             border-radius: 8px;
@@ -41,7 +40,7 @@
             font-weight: bold;
         }
         input, button {
-            padding: 15px;
+            padding: 12px;
             border-radius: 5px;
             border: 1px solid #ccc;
             font-size: 1em;
@@ -69,10 +68,27 @@
             }
             input, button {
                 font-size: 1em;
-                padding: 12px;
+                padding: 10px;
             }
         }
     </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const inputs = document.querySelectorAll("input");
+            inputs.forEach(input => {
+                input.addEventListener("focus", () => {
+                    window.scrollTo(0, input.getBoundingClientRect().top + window.scrollY - 50);
+                });
+            });
+        });
+
+        document.addEventListener("touchstart", function (event) {
+            const focusedElement = document.activeElement;
+            if (focusedElement && focusedElement.tagName === "INPUT") {
+                focusedElement.blur();
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="container">
