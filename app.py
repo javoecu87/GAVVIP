@@ -2,13 +2,21 @@ from flask import Flask, render_template, request
 import telegram
 import asyncio
 import logging
+from telegram.request import HTTPXRequest
 
 app = Flask(__name__)
 
 # Tokens de los bots y Chat ID
 BOT_TOKEN_TAXI = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
-BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'  # Si es otro bot, ajusta el token
+BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
 CHAT_ID = '5828174289'
+
+# Configura el tamaño del pool de conexiones
+request_taxi = HTTPXRequest(con_pool_size=20, timeout=10)  # Tamaño del pool y timeout
+request_vip = HTTPXRequest(con_pool_size=20, timeout=10)
+
+bot_taxi = telegram.Bot(token=BOT_TOKEN_TAXI, request=request_taxi)
+bot_vip = telegram.Bot(token=BOT_TOKEN_VIP, request=request_vip)
 
 # Configuración de logging
 logging.basicConfig(
@@ -17,14 +25,11 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()]
 )
 
-# Crear instancia de los bots
-bot_taxi = telegram.Bot(token=BOT_TOKEN_TAXI)
-bot_vip = telegram.Bot(token=BOT_TOKEN_VIP)
-
 # Función asincrónica para enviar el mensaje
 async def enviar_mensaje_async(mensaje, bot):
     try:
         await bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode='Markdown')
+        await asyncio.sleep(0.5)  # Retraso entre mensajes
         app.logger.debug("Mensaje enviado a Telegram con éxito.")
     except Exception as e:
         app.logger.error(f"Error al enviar mensaje a Telegram: {e}")
@@ -101,15 +106,6 @@ def reservar():
     except Exception as e:
         app.logger.error(f"Error en /reservar: {e}")
         return "Error al procesar la reserva.", 500
-
-# Ruta de prueba para verificar el envío de mensajes
-@app.route('/prueba-envio')
-def prueba_envio():
-    try:
-        bot_taxi.send_message(chat_id=CHAT_ID, text="Prueba de mensaje desde app.py")
-        return "Mensaje enviado con éxito desde app.py"
-    except Exception as e:
-        return f"Error al enviar mensaje: {e}"
 
 if __name__ == '__main__':
     app.run(debug=True)
