@@ -3,6 +3,7 @@ import telegram
 import asyncio
 import logging
 from waitress import serve
+import os  # Asegúrate de importar os para manejar variables de entorno
 
 app = Flask(__name__)
 
@@ -50,7 +51,7 @@ def solicitar_taxi():
     try:
         nombre = request.form['nombre']
         telefono = request.form['telefono']
-        lugar_recogida = request.form['lugar_recogida']  # Ahora incluye coordenadas
+        lugar_recogida = request.form['lugar_recogida']
         destino = request.form['destino']
         pasajeros = request.form['pasajeros']
 
@@ -58,7 +59,7 @@ def solicitar_taxi():
             "*Solicitud de Taxi*\n\n"
             f"Nombre: {nombre}\n"
             f"Teléfono: {telefono}\n"
-            f"Lugar de recogida: {lugar_recogida}\n"  # Puede ser una dirección o coordenadas
+            f"Lugar de recogida: {lugar_recogida}\n"
             f"Destino: {destino}\n"
             f"Número de pasajeros: {pasajeros}"
         )
@@ -113,4 +114,5 @@ def prueba_envio():
         return f"Error al enviar mensaje: {e}"
 
 if __name__ == '__main__':
-    serve(app, host='0.0.0.0', port=5000)  # Usar waitress para producción
+    # Usar waitress para producción
+    serve(app, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
