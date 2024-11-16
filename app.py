@@ -6,7 +6,7 @@ import logging
 app = Flask(__name__)
 
 # Tokens de los bots y Chat ID
-BOT_TOKEN_TAXI = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
+BOT_TOKEN_TAXI = '8146583492:AAFP-9CTNvmNR13aFxvJB6Q1WS0eBbZhAc0'
 BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'  # Si es otro bot, ajusta el token
 CHAT_ID = '5828174289'
 
