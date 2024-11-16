@@ -2,12 +2,13 @@ from flask import Flask, render_template, request
 import telegram
 import asyncio
 import logging
+from waitress import serve
 
 app = Flask(__name__)
 
 # Tokens de los bots y Chat ID
 BOT_TOKEN_TAXI = '8146583492:AAFP-9CTNvmNR13aFxvJB6Q1WS0eBbZhAc0'
-BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'  # Si es otro bot, ajusta el token
+BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
 CHAT_ID = '5828174289'
 
 # Configuración de logging
@@ -49,7 +50,7 @@ def solicitar_taxi():
     try:
         nombre = request.form['nombre']
         telefono = request.form['telefono']
-        lugar_recogida = request.form['lugar_recogida']
+        lugar_recogida = request.form['lugar_recogida']  # Ahora incluye coordenadas
         destino = request.form['destino']
         pasajeros = request.form['pasajeros']
 
@@ -57,7 +58,7 @@ def solicitar_taxi():
             "*Solicitud de Taxi*\n\n"
             f"Nombre: {nombre}\n"
             f"Teléfono: {telefono}\n"
-            f"Lugar de recogida: {lugar_recogida}\n"
+            f"Lugar de recogida: {lugar_recogida}\n"  # Puede ser una dirección o coordenadas
             f"Destino: {destino}\n"
             f"Número de pasajeros: {pasajeros}"
         )
@@ -112,4 +113,4 @@ def prueba_envio():
         return f"Error al enviar mensaje: {e}"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    serve(app, host='0.0.0.0', port=5000)  # Usar waitress para producción
