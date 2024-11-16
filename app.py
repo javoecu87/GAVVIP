@@ -2,15 +2,13 @@ from flask import Flask, render_template, request
 import telegram
 import asyncio
 import logging
-from waitress import serve
-import os  # Asegúrate de importar este módulo
 
 app = Flask(__name__)
 
-# Tokens de los bots para los formularios de Taxi y TAXI VIP SUVS & VANS
-BOT_TOKEN_TAXI = '8146583492:AAFP-9CTNvmNR13aFxvJB6Q1WS0eBbZhAc0'
-BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
-CHAT_ID = '5828174289'  # Reemplaza con el chat ID correcto para ambos bots si es necesario
+# Tokens de los bots y Chat ID
+BOT_TOKEN_TAXI = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
+BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'  # Si es otro bot, ajusta el token
+CHAT_ID = '5828174289'
 
 # Configuración de logging
 logging.basicConfig(
@@ -19,20 +17,23 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()]
 )
 
+# Crear instancia de los bots
+bot_taxi = telegram.Bot(token=BOT_TOKEN_TAXI)
+bot_vip = telegram.Bot(token=BOT_TOKEN_VIP)
+
 # Función asincrónica para enviar el mensaje
-async def enviar_mensaje_async(mensaje, token):
-    bot = telegram.Bot(token=token)
+async def enviar_mensaje_async(mensaje, bot):
     try:
         await bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode='Markdown')
-        app.logger.debug("Mensaje enviado a Telegram con éxito")
+        app.logger.debug("Mensaje enviado a Telegram con éxito.")
     except Exception as e:
         app.logger.error(f"Error al enviar mensaje a Telegram: {e}")
 
-# Función para ejecutar el envío de manera asincrónica en cada solicitud
-def enviar_mensaje(mensaje, token):
-    asyncio.run(enviar_mensaje_async(mensaje, token))
+# Función para manejar el envío asincrónico
+def enviar_mensaje(mensaje, bot):
+    asyncio.run(enviar_mensaje_async(mensaje, bot))
 
-# Ruta para la ventana principal
+# Ruta para la página principal
 @app.route('/')
 def principal():
     return render_template('principal.html')
@@ -42,7 +43,7 @@ def principal():
 def taxi_service():
     return render_template('taxi.html')
 
-# Ruta para procesar el formulario de Taxi y enviar el mensaje al bot de Taxi
+# Ruta para procesar el formulario de Taxi
 @app.route('/solicitar-taxi', methods=['POST'])
 def solicitar_taxi():
     try:
@@ -61,7 +62,7 @@ def solicitar_taxi():
             f"Número de pasajeros: {pasajeros}"
         )
 
-        enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
+        enviar_mensaje(mensaje, bot_taxi)
         return render_template('gracias.html', mensaje="¡Gracias! Su solicitud de taxi ha sido enviada.")
     except Exception as e:
         app.logger.error(f"Error en /solicitar-taxi: {e}")
@@ -72,7 +73,7 @@ def solicitar_taxi():
 def solicitud_vip():
     return render_template('index.html')
 
-# Ruta para procesar el formulario TAXI VIP SUVS & VANS y enviar el mensaje al bot
+# Ruta para procesar el formulario TAXI VIP SUVS & VANS
 @app.route('/reservar', methods=['POST'])
 def reservar():
     try:
@@ -95,12 +96,20 @@ def reservar():
             f"Personas: {personas}"
         )
 
-        enviar_mensaje(mensaje, BOT_TOKEN_VIP)
+        enviar_mensaje(mensaje, bot_vip)
         return render_template('gracias.html', mensaje="¡Gracias! Su reservación está confirmada.")
     except Exception as e:
         app.logger.error(f"Error en /reservar: {e}")
         return "Error al procesar la reserva.", 500
 
+# Ruta de prueba para verificar el envío de mensajes
+@app.route('/prueba-envio')
+def prueba_envio():
+    try:
+        bot_taxi.send_message(chat_id=CHAT_ID, text="Prueba de mensaje desde app.py")
+        return "Mensaje enviado con éxito desde app.py"
+    except Exception as e:
+        return f"Error al enviar mensaje: {e}"
+
 if __name__ == '__main__':
-    # Usamos waitress para producción, que escucha en el puerto $PORT asignado por Render
-    serve(app, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    app.run(debug=True)
