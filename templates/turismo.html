@@ -4,32 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario de Turismo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        label {
+            font-weight: bold;
+            text-align: left;
+        }
+        input, select, textarea, button {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+        textarea {
+            resize: none;
+        }
+        button {
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
 <body>
-    <h1>Turismo Local y Nacional</h1>
-    <form action="/solicitar-turismo" method="POST">
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" required><br>
+    <div class="container">
+        <h1>Turismo Local y Nacional</h1>
+        <form action="/solicitar-turismo" method="POST">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Ingresa tu nombre" required>
 
-        <label for="telefono">Teléfono:</label>
-        <input type="tel" id="telefono" name="telefono" required><br>
+            <label for="telefono">Teléfono:</label>
+            <input type="tel" id="telefono" name="telefono" placeholder="Ingresa tu teléfono" required>
 
-        <label for="tipo_tour">Tipo de Tour:</label>
-        <select id="tipo_tour" name="tipo_tour" required>
-            <option value="local">Tour Local</option>
-            <option value="nacional">Tour Nacional</option>
-        </select><br>
+            <label for="tipo_tour">Tipo de Tour:</label>
+            <select id="tipo_tour" name="tipo_tour" required>
+                <option value="local">Tour Local</option>
+                <option value="nacional">Tour Nacional</option>
+            </select>
 
-        <label for="fecha">Fecha del Viaje:</label>
-        <input type="date" id="fecha" name="fecha" required><br>
+            <label for="fecha">Fecha del Viaje:</label>
+            <input type="date" id="fecha" name="fecha" required>
 
-        <label for="participantes">Número de Participantes:</label>
-        <input type="number" id="participantes" name="participantes" min="1" required><br>
+            <label for="participantes">Número de Participantes:</label>
+            <input type="number" id="participantes" name="participantes" min="1" placeholder="Cantidad de personas" required>
 
-        <label for="detalles">Detalles Adicionales:</label>
-        <textarea id="detalles" name="detalles" rows="4"></textarea><br>
+            <label for="detalles">Detalles Adicionales:</label>
+            <textarea id="detalles" name="detalles" rows="4" placeholder="Indica cualquier detalle adicional"></textarea>
 
-        <button type="submit">Enviar Solicitud</button>
-    </form>
+            <button type="submit">Enviar Solicitud</button>
+        </form>
+    </div>
 </body>
 </html>
