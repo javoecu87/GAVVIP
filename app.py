@@ -2,14 +2,12 @@ from flask import Flask, render_template, request
 import telegram
 import asyncio
 import logging
-from waitress import serve
-import os  # Asegúrate de importar os para manejar variables de entorno
 
 app = Flask(__name__)
 
 # Tokens de los bots y Chat ID
 BOT_TOKEN_TAXI = '8146583492:AAFP-9CTNvmNR13aFxvJB6Q1WS0eBbZhAc0'
-BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
+BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'  # Si es otro bot, ajusta el token
 CHAT_ID = '5828174289'
 
 # Configuración de logging
@@ -114,5 +112,4 @@ def prueba_envio():
         return f"Error al enviar mensaje: {e}"
 
 if __name__ == '__main__':
-    # Usar waitress para producción
-    serve(app, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    app.run(debug=True)
