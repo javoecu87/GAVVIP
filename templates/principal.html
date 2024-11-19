@@ -7,49 +7,50 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
-            color: #fff;
-            background: linear-gradient(to bottom, #4facfe, #00f2fe);
+            background-color: #f7f7f7;
+            background-image: url('pic.jpg'); /* Cambia 'pic.jpg' por el nombre correcto de tu imagen */
+            background-size: cover;
+            background-position: center;
+        }
+        .container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         h1 {
-            font-size: 2.2em;
-            text-align: center;
+            color: #333;
+            font-size: 24px;
             margin-bottom: 20px;
         }
-        .button {
-            background-color: #333;
-            color: white;
-            padding: 15px 30px;
-            margin: 10px;
-            font-size: 1.2em;
+        a {
+            display: block;
             text-decoration: none;
+            margin: 10px 0;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
             border-radius: 5px;
-            text-align: center;
-            display: inline-block;
-            width: 80%;
+            font-size: 16px;
         }
-        .button:hover {
-            background-color: #555;
-        }
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 1.8em;
-            }
-            .button {
-                font-size: 1em;
-                padding: 12px 25px;
-            }
+        a:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <h1>GAV VIP</h1>
-    <a href="/taxi-service" class="button">TAXI</a>
-    <a href="/solicitud-vip" class="button">TAXI VIP SUVS & VANS</a>
+    <div class="container">
+        <h1>Bienvenido a GAV VIP</h1>
+        <a href="/taxi-service">Taxi</a>
+        <a href="/solicitud-vip">TAXI VIP SUVS & VANS</a>
+        <a href="/turismo-local-nacional">Turismo Local y Nacional</a>
+    </div>
 </body>
 </html>

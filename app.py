@@ -2,12 +2,14 @@ from flask import Flask, render_template, request
 import telegram
 import asyncio
 import logging
+from waitress import serve
+import os
 
 app = Flask(__name__)
 
 # Tokens de los bots y Chat ID
 BOT_TOKEN_TAXI = '8146583492:AAFP-9CTNvmNR13aFxvJB6Q1WS0eBbZhAc0'
-BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'  # Si es otro bot, ajusta el token
+BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
 CHAT_ID = '5828174289'
 
 # Configuración de logging
@@ -102,14 +104,38 @@ def reservar():
         app.logger.error(f"Error en /reservar: {e}")
         return "Error al procesar la reserva.", 500
 
-# Ruta de prueba para verificar el envío de mensajes
-@app.route('/prueba-envio')
-def prueba_envio():
+# Ruta para el formulario de Turismo Local y Nacional
+@app.route('/turismo-local-nacional')
+def turismo_local_nacional():
+    return render_template('turismo.html')
+
+# Ruta para procesar el formulario de Turismo
+@app.route('/solicitar-turismo', methods=['POST'])
+def solicitar_turismo():
     try:
-        bot_taxi.send_message(chat_id=CHAT_ID, text="Prueba de mensaje desde app.py")
-        return "Mensaje enviado con éxito desde app.py"
+        nombre = request.form['nombre']
+        telefono = request.form['telefono']
+        tipo_tour = request.form['tipo_tour']
+        fecha = request.form['fecha']
+        participantes = request.form['participantes']
+        detalles = request.form['detalles']
+
+        mensaje = (
+            "*Solicitud de Turismo Local y Nacional*\n\n"
+            f"Nombre: {nombre}\n"
+            f"Teléfono: {telefono}\n"
+            f"Tipo de Tour: {tipo_tour}\n"
+            f"Fecha: {fecha}\n"
+            f"Número de Participantes: {participantes}\n"
+            f"Detalles: {detalles}"
+        )
+
+        enviar_mensaje(mensaje, bot_vip)
+        return render_template('gracias.html', mensaje="¡Gracias! Su solicitud de turismo ha sido enviada.")
     except Exception as e:
-        return f"Error al enviar mensaje: {e}"
+        app.logger.error(f"Error en /solicitar-turismo: {e}")
+        return "Error al procesar la solicitud de turismo.", 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Usar waitress para producción
+    serve(app, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

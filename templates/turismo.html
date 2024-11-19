@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Turismo</title>
+</head>
+<body>
+    <h1>Turismo Local y Nacional</h1>
+    <form action="/solicitar-turismo" method="POST">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required><br>
+
+        <label for="telefono">Teléfono:</label>
+        <input type="tel" id="telefono" name="telefono" required><br>
+
+        <label for="tipo_tour">Tipo de Tour:</label>
+        <select id="tipo_tour" name="tipo_tour" required>
+            <option value="local">Tour Local</option>
+            <option value="nacional">Tour Nacional</option>
+        </select><br>
+
+        <label for="fecha">Fecha del Viaje:</label>
+        <input type="date" id="fecha" name="fecha" required><br>
+
+        <label for="participantes">Número de Participantes:</label>
+        <input type="number" id="participantes" name="participantes" min="1" required><br>
+
+        <label for="detalles">Detalles Adicionales:</label>
+        <textarea id="detalles" name="detalles" rows="4"></textarea><br>
+
+        <button type="submit">Enviar Solicitud</button>
+    </form>
+</body>
+</html>
