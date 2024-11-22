@@ -2,8 +2,6 @@ from flask import Flask, render_template, request
 import telegram
 import asyncio
 import logging
-from waitress import serve
-import os
 
 app = Flask(__name__)
 
@@ -45,7 +43,6 @@ def principal():
 def taxi_service():
     return render_template('taxi.html')
 
-# Ruta para procesar el formulario de Taxi
 @app.route('/solicitar-taxi', methods=['POST'])
 def solicitar_taxi():
     try:
@@ -63,19 +60,17 @@ def solicitar_taxi():
             f"Destino: {destino}\n"
             f"Número de pasajeros: {pasajeros}"
         )
-
         enviar_mensaje(mensaje, bot_taxi)
         return render_template('gracias.html', mensaje="¡Gracias! Su solicitud de taxi ha sido enviada.")
     except Exception as e:
         app.logger.error(f"Error en /solicitar-taxi: {e}")
         return "Error al procesar la solicitud de taxi.", 500
 
-# Ruta para el formulario TAXI VIP SUVS & VANS
+# Ruta para TAXI VIP SUVS & VANS
 @app.route('/solicitud-vip')
 def solicitud_vip():
     return render_template('index.html')
 
-# Ruta para procesar el formulario TAXI VIP SUVS & VANS
 @app.route('/reservar', methods=['POST'])
 def reservar():
     try:
@@ -97,45 +92,87 @@ def reservar():
             f"Hora: {hora}\n"
             f"Personas: {personas}"
         )
-
         enviar_mensaje(mensaje, bot_vip)
         return render_template('gracias.html', mensaje="¡Gracias! Su reservación está confirmada.")
     except Exception as e:
         app.logger.error(f"Error en /reservar: {e}")
         return "Error al procesar la reserva.", 500
 
-# Ruta para el formulario de Turismo Local y Nacional
-@app.route('/turismo-local-nacional')
-def turismo_local_nacional():
-    return render_template('turismo.html')
+# Ruta para Alta Gama
+@app.route('/alta-gama')
+def alta_gama():
+    return render_template('alta_gama.html')
 
-# Ruta para procesar el formulario de Turismo
-@app.route('/solicitar-turismo', methods=['POST'])
-def solicitar_turismo():
+@app.route('/solicitar-alta-gama', methods=['POST'])
+def solicitar_alta_gama():
     try:
         nombre = request.form['nombre']
         telefono = request.form['telefono']
-        tipo_tour = request.form['tipo_tour']
-        fecha = request.form['fecha']
-        participantes = request.form['participantes']
         detalles = request.form['detalles']
 
         mensaje = (
-            "*Solicitud de Turismo Local y Nacional*\n\n"
+            "*Solicitud de Alta Gama*\n\n"
             f"Nombre: {nombre}\n"
             f"Teléfono: {telefono}\n"
-            f"Tipo de Tour: {tipo_tour}\n"
-            f"Fecha: {fecha}\n"
-            f"Número de Participantes: {participantes}\n"
             f"Detalles: {detalles}"
         )
-
         enviar_mensaje(mensaje, bot_vip)
-        return render_template('gracias.html', mensaje="¡Gracias! Su solicitud de turismo ha sido enviada.")
+        return render_template('gracias.html', mensaje="¡Gracias! Su solicitud ha sido enviada.")
     except Exception as e:
-        app.logger.error(f"Error en /solicitar-turismo: {e}")
-        return "Error al procesar la solicitud de turismo.", 500
+        app.logger.error(f"Error en /solicitar-alta-gama: {e}")
+        return "Error al procesar la solicitud de alta gama.", 500
+
+# Ruta para Fletes y Mudanzas
+@app.route('/fletes-mudanzas')
+def fletes_mudanzas():
+    return render_template('fletes_mudanzas.html')
+
+@app.route('/solicitar-fletes', methods=['POST'])
+def solicitar_fletes():
+    try:
+        nombre = request.form['nombre']
+        telefono = request.form['telefono']
+        origen = request.form['origen']
+        destino = request.form['destino']
+        detalles = request.form['detalles']
+
+        mensaje = (
+            "*Solicitud de Fletes y Mudanzas*\n\n"
+            f"Nombre: {nombre}\n"
+            f"Teléfono: {telefono}\n"
+            f"Origen: {origen}\n"
+            f"Destino: {destino}\n"
+            f"Detalles: {detalles}"
+        )
+        enviar_mensaje(mensaje, bot_vip)
+        return render_template('gracias.html', mensaje="¡Gracias! Su solicitud ha sido enviada, En Breve nos contactamos contigo 😊 .")
+    except Exception as e:
+        app.logger.error(f"Error en /solicitar-fletes: {e}")
+        return "Error al procesar la solicitud de fletes y mudanzas.", 500
+
+# Ruta para Apoyo Hoteles
+@app.route('/apoyo-hoteles')
+def apoyo_hoteles():
+    return render_template('apoyo_hoteles.html')
+
+@app.route('/solicitar-hoteles', methods=['POST'])
+def solicitar_hoteles():
+    try:
+        nombre = request.form['nombre']
+        telefono = request.form['telefono']
+        detalles = request.form['detalles']
+
+        mensaje = (
+            "*Solicitud de Apoyo Hoteles*\n\n"
+            f"Nombre del Hotel: {nombre}\n"
+            f"Teléfono: {telefono}\n"
+            f"Detalles: {detalles}"
+        )
+        enviar_mensaje(mensaje, bot_vip)
+        return render_template('gracias.html', mensaje="¡Gracias! Su solicitud ha sido enviada.")
+    except Exception as e:
+        app.logger.error(f"Error en /solicitar-hoteles: {e}")
+        return "Error al procesar la solicitud de apoyo hoteles.", 500
 
 if __name__ == '__main__':
-    # Usar waitress para producción
-    serve(app, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    app.run(debug=True)
