@@ -3,46 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GAV VIP</title>
+    <title>Página Principal</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f7f7f7;
-            background-image: url('static/pic.jpg'); /* Ruta de la imagen */
+            text-align: center;
+            background-color: #f5f5f5;
+            background-image: url('pic.jpg');
             background-size: cover;
             background-position: center;
+            color: white;
+            margin: 0;
+            padding: 0;
         }
         .container {
-            text-align: center;
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 20px;
+            margin: 50px auto;
+            max-width: 600px;
+            background-color: rgba(0, 0, 0, 0.7);
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 90%;
-            max-width: 400px;
+            padding: 20px;
         }
         h1 {
-            color: #333;
             font-size: 24px;
             margin-bottom: 20px;
         }
-        a {
+        button {
             display: block;
-            text-decoration: none;
+            width: 100%;
             margin: 10px 0;
-            padding: 10px 20px;
+            padding: 15px;
+            font-size: 18px;
+            color: white;
             background-color: #007BFF;
-            color: #fff;
+            border: none;
             border-radius: 5px;
-            font-size: 16px;
+            cursor: pointer;
         }
-        a:hover {
+        button:hover {
             background-color: #0056b3;
         }
     </style>
@@ -50,12 +47,11 @@
 <body>
     <div class="container">
         <h1>Bienvenido a GAV VIP</h1>
-        <a href="/taxi-service">Taxi</a>
-        <a href="/solicitud-vip">TAXI VIP SUVS & VANS</a>
-        <a href="/turismo-local-nacional">Turismo Local y Nacional</a>
-        <a href="/alta-gama">Alta Gama</a>
-        <a href="/fletes-mudanzas">Fletes y Mudanzas</a>
-        <a href="/apoyo-hoteles">Apoyo Hoteles</a>
+        <a href="/taxi-service"><button>TAXI</button></a>
+        <a href="/turismo"><button>Turismo Local y Nacional</button></a>
+        <a href="/alta-gama"><button>Alta Gama</button></a>
+        <a href="/fletes-mudanzas"><button>Fletes y Mudanzas</button></a>
+        <a href="/apoyo-hoteles"><button>Apoyo Hoteles</button></a>
     </div>
 </body>
 </html>
