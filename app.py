@@ -28,36 +28,107 @@ def enviar_mensaje(mensaje, bot):
 def principal():
     return render_template('principal.html')
 
-@app.route('/alta-gama')
-def alta_gama():
-    return render_template('alta_gama.html')
+# Botón "Taxi"
+@app.route('/taxi-service')
+def taxi_service():
+    return render_template('taxi.html')
 
-@app.route('/formulario-alta-gama', methods=['POST'])
-def formulario_alta_gama():
-    vehiculo = request.form.get('vehiculo')
-    return render_template('formulario_alta_gama.html', vehiculo=vehiculo)
-
-@app.route('/procesar-alta-gama', methods=['POST'])
-def procesar_alta_gama():
+@app.route('/solicitar-taxi', methods=['POST'])
+def solicitar_taxi():
     try:
-        vehiculo = request.form.get('vehiculo')
-        nombre = request.form.get('nombre')
-        recogida = request.form.get('recogida')
-        tiempo = request.form.get('tiempo')
+        nombre = request.form['nombre']
+        telefono = request.form['telefono']
+        lugar_recogida = request.form['lugar_recogida']
+        destino = request.form['destino']
+        pasajeros = request.form['pasajeros']
 
         mensaje = (
-            f"*Solicitud de Alta Gama*\n\n"
-            f"Vehículo: {vehiculo}\n"
+            f"*Solicitud de Taxi*\n\n"
             f"Nombre: {nombre}\n"
-            f"Lugar de recogida: {recogida}\n"
-            f"Tiempo estimado: {tiempo}"
+            f"Teléfono: {telefono}\n"
+            f"Lugar de recogida: {lugar_recogida}\n"
+            f"Destino: {destino}\n"
+            f"Número de pasajeros: {pasajeros}"
         )
-
-        enviar_mensaje(mensaje, bot_vip)
-        return render_template('gracias.html', mensaje="¡Un placer servirte! Tu vehículo llegará a tiempo.")
+        enviar_mensaje(mensaje, bot_taxi)
+        return render_template('gracias.html', mensaje="¡Gracias! Su solicitud de taxi ha sido enviada.")
     except Exception as e:
-        logging.error(f"Error procesando Alta Gama: {e}")
-        return "Error al procesar la solicitud.", 500
+        logging.error(f"Error en /solicitar-taxi: {e}")
+        return "Error al procesar la solicitud de taxi.", 500
+
+# Botón "Turismo Local y Nacional"
+@app.route('/turismo')
+def turismo():
+    return render_template('turismo.html')
+
+@app.route('/solicitar-turismo', methods=['POST'])
+def solicitar_turismo():
+    try:
+        nombre = request.form['nombre']
+        telefono = request.form['telefono']
+        destino = request.form['destino']
+        fecha = request.form['fecha']
+        personas = request.form['personas']
+
+        mensaje = (
+            f"*Solicitud de Turismo*\n\n"
+            f"Nombre: {nombre}\n"
+            f"Teléfono: {telefono}\n"
+            f"Destino: {destino}\n"
+            f"Fecha: {fecha}\n"
+            f"Número de personas: {personas}"
+        )
+        enviar_mensaje(mensaje, bot_vip)
+        return render_template('gracias.html', mensaje="¡Gracias! Su solicitud de turismo ha sido enviada.")
+    except Exception as e:
+        logging.error(f"Error en /solicitar-turismo: {e}")
+        return "Error al procesar la solicitud de turismo.", 500
+
+# Botón "Fletes y Mudanzas"
+@app.route('/fletes-mudanzas')
+def fletes_mudanzas():
+    return render_template('fletes.html')
+
+@app.route('/solicitar-flete', methods=['POST'])
+def solicitar_flete():
+    try:
+        nombre = request.form['nombre']
+        telefono = request.form['telefono']
+        origen = request.form['origen']
+        destino = request.form['destino']
+        descripcion = request.form['descripcion']
+
+        mensaje = (
+            f"*Solicitud de Fletes y Mudanzas*\n\n"
+            f"Nombre: {nombre}\n"
+            f"Teléfono: {telefono}\n"
+            f"Origen: {origen}\n"
+            f"Destino: {destino}\n"
+            f"Descripción: {descripcion}"
+        )
+        enviar_mensaje(mensaje, bot_vip)
+        return render_template('gracias.html', mensaje="¡Gracias! Su solicitud de flete ha sido enviada.")
+    except Exception as e:
+        logging.error(f"Error en /solicitar-flete: {e}")
+        return "Error al procesar la solicitud de flete.", 500
+
+# Botón "Apoyo Hoteles"
+@app.route('/apoyo-hoteles')
+def apoyo_hoteles():
+    return render_template('apoyo_hoteles.html')
+
+@app.route('/verificar-codigo', methods=['POST'])
+def verificar_codigo():
+    try:
+        codigo = request.form['codigo']
+        codigos_validos = ['515', '122', '155']
+        if codigo in codigos_validos:
+            return render_template('opciones_hoteles.html')
+        else:
+            return render_template('error.html', mensaje="Código inválido. Por favor, intente de nuevo.")
+    except Exception as e:
+        logging.error(f"Error en /verificar-codigo: {e}")
+        return "Error al procesar el código.", 500
 
 if __name__ == '__main__':
     app.run(debug=True)
