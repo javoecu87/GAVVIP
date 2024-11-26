@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Alta Gama</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            background-color: #001f3f;
+            color: #FFD700;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            margin: 50px auto;
+            max-width: 600px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+        }
+        input, select, button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #FFD700;
+            border-radius: 5px;
+            color: #FFD700;
+            background-color: transparent;
+        }
+        button:hover {
+            background-color: #FFD700;
+            color: #001f3f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Solicitud para {{ vehiculo }}</h1>
+        <form action="/procesar-alta-gama" method="POST">
+            <input type="hidden" name="vehiculo" value="{{ vehiculo }}">
+            <input type="text" name="nombre" placeholder="Tu nombre" required>
+            <input type="text" name="recogida" placeholder="Lugar de recogida" required>
+            <input type="text" name="tiempo" placeholder="Tiempo estimado" required>
+            <button type="submit">Enviar Solicitud</button>
+        </form>
+    </div>
+</body>
+</html>
