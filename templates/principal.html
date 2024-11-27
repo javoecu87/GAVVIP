@@ -4,58 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página Principal</title>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            text-align: center;
-            background-color: #001f3f; /* Azul oscuro cielo */
-            color: #FFD700; /* Dorado */
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            margin: 50px auto;
-            max-width: 600px;
-            padding: 20px;
-            background-color: rgba(0, 0, 0, 0.8);
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-        }
-        h1 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            color: #FFD700;
-        }
-        a {
-            text-decoration: none;
-        }
-        button {
-            display: block;
-            width: 100%;
-            margin: 10px 0;
-            padding: 15px;
-            font-size: 18px;
-            color: #FFD700;
-            background-color: transparent;
-            border: 2px solid #FFD700;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        button:hover {
-            background-color: #FFD700;
-            color: #001f3f;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Bienvenido a GAV VIP</h1>
+        <!-- Logo en la parte superior -->
+        <img src="/static/images/logo.png" alt="Logo GAV VIP" class="logo">
+        <h1>¡Bienvenido a GAV VIP!</h1>
+        <p>Selecciona una opción para continuar:</p>
         <a href="/taxi-service"><button>TAXI</button></a>
         <a href="/turismo"><button>Turismo Local y Nacional</button></a>
         <a href="/alta-gama"><button>Alta Gama</button></a>
         <a href="/fletes-mudanzas"><button>Fletes y Mudanzas</button></a>
         <a href="/apoyo-hoteles"><button>Apoyo Hoteles</button></a>
     </div>
+    <footer>
+        &copy; 2024 GAV VIP - Todos los derechos reservados.
+    </footer>
 </body>
 </html>
