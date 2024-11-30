@@ -1,0 +1,66 @@
+/* Estilo general */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #001f3f; /* Azul oscuro cielo */
+    color: #FFD700; /* Dorado */
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+/* Contenedor */
+.container {
+    margin: 20px auto;
+    max-width: 90%;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Logo */
+.logo {
+    display: block;
+    margin: 0 auto 20px;
+    max-width: 150px; /* Tamaño ajustable del logo */
+    height: auto;
+}
+
+/* Títulos */
+h1, p {
+    margin: 10px 0;
+    color: #FFD700; /* Dorado */
+}
+
+/* Botones */
+button {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 10px auto;
+    padding: 15px;
+    font-size: 18px;
+    color: #FFD700; /* Dorado */
+    background-color: transparent;
+    border: 2px solid #FFD700; /* Borde dorado */
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+button:hover {
+    background-color: #FFD700;
+    color: #001f3f; /* Azul oscuro */
+}
+
+/* Enlaces */
+a {
+    text-decoration: none;
+}
+
+footer {
+    margin: 20px 0;
+    font-size: 14px;
+    color: #FFD700;
+}
