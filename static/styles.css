@@ -4,6 +4,7 @@ body {
     padding: 0;
     font-family: 'Arial', sans-serif;
     color: #FFD700; /* Dorado */
+    text-align: center; /* Asegura que todo esté centrado */
 }
 
 /* Fondo para la ventana emergente */
@@ -11,7 +12,7 @@ body {
     background: url('/static/images/emergente.png') no-repeat center center;
     background-size: cover; /* Cubre toda la pantalla */
     background-attachment: fixed;
-    background-color: #001f3f; /* Azul oscuro para las áreas vacías */
+    background-color: #001f3f; /* Azul oscuro */
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -26,8 +27,9 @@ body {
     background-color: #001f3f; /* Azul oscuro */
     min-height: 100vh;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column; /* Alinea elementos en columna */
+    justify-content: center; /* Centra elementos verticalmente */
+    align-items: center; /* Centra elementos horizontalmente */
 }
 
 /* Contenedor principal */
