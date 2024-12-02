@@ -6,19 +6,12 @@
     <title>Bienvenido</title>
     <link rel="stylesheet" href="/static/styles.css">
     <style>
-        .emergente-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        body {
+            margin: 0;
+            padding: 0;
             height: 100vh;
-            background-color: #001f3f; /* Fondo azul oscuro */
-        }
-
-        .emergente-container img {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            background: url('/static/images/emergente.png') no-repeat center center;
+            background-size: cover;
         }
     </style>
     <script>
@@ -29,8 +22,5 @@
     </script>
 </head>
 <body>
-    <div class="emergente-container">
-        <img src="/static/images/emergente.jpg" alt="Bienvenido">
-    </div>
 </body>
 </html>

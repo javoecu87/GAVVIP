@@ -1,66 +1,88 @@
 /* Estilo general */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #001f3f; /* Azul oscuro cielo */
+    font-family: 'Arial', sans-serif;
     color: #FFD700; /* Dorado */
     margin: 0;
     padding: 0;
-    text-align: center;
 }
 
-/* Contenedor */
+/* Fondo para todas las ventanas excepto la emergente */
+.background-ventas {
+    background: url('/static/images/fondoventas.png') no-repeat center center;
+    background-size: cover;
+}
+
+/* Contenedor principal */
 .container {
-    margin: 20px auto;
-    max-width: 90%;
-    background-color: rgba(0, 0, 0, 0.8);
+    text-align: center;
     padding: 20px;
+    background-color: rgba(0, 0, 0, 0.7); /* Fondo semitransparente */
     border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    margin: 50px auto;
+    max-width: 90%;
+    color: #FFF;
 }
 
 /* Logo */
 .logo {
-    display: block;
+    max-width: 120px;
     margin: 0 auto 20px;
-    max-width: 150px; /* Tamaño ajustable del logo */
-    height: auto;
-}
-
-/* Títulos */
-h1, p {
-    margin: 10px 0;
-    color: #FFD700; /* Dorado */
+    display: block;
 }
 
 /* Botones */
 button {
     display: block;
-    width: 100%;
+    width: 80%;
     max-width: 300px;
     margin: 10px auto;
     padding: 15px;
     font-size: 18px;
-    color: #FFD700; /* Dorado */
-    background-color: transparent;
-    border: 2px solid #FFD700; /* Borde dorado */
+    color: #001f3f; /* Azul oscuro */
+    background-color: #FFD700; /* Dorado */
+    border: none;
     border-radius: 10px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
+    transition: 0.3s ease;
 }
 
 button:hover {
-    background-color: #FFD700;
-    color: #001f3f; /* Azul oscuro */
+    background-color: #FFC300;
+    color: #000;
 }
 
-/* Enlaces */
-a {
-    text-decoration: none;
-}
-
+/* Pie de página */
 footer {
+    text-align: center;
     margin: 20px 0;
     font-size: 14px;
     color: #FFD700;
+}
+
+/* Eliminar subrayado de los enlaces */
+a {
+    text-decoration: none; /* Elimina el subrayado */
+    color: inherit; /* Usa el color de texto definido por el botón */
+}
+
+/* Botones */
+button {
+    display: block;
+    width: 80%;
+    max-width: 300px;
+    margin: 10px auto;
+    padding: 15px;
+    font-size: 18px;
+    color: #001f3f; /* Azul oscuro */
+    background-color: #FFD700; /* Dorado */
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    text-decoration: none; /* Asegura que el texto no tenga subrayado */
+}
+
+button:hover {
+    background-color: #FFC300;
+    color: #000;
 }
