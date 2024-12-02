@@ -86,3 +86,81 @@ button:hover {
     background-color: #FFC300;
     color: #000;
 }
+
+/* Fondo general */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    color: #FFD700; /* Dorado */
+}
+
+/* Fondo para la ventana emergente */
+.background-emergente {
+    background: url('/static/images/emergente.png') no-repeat center center;
+    background-size: contain; /* Ajusta el tamaño para que la imagen sea visible completa */
+    background-color: #001f3f; /* Color de fondo para áreas sin imagen */
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Fondo para las demás ventanas */
+.background-ventas {
+    background: url('/static/images/fondoventas.png') no-repeat center center;
+    background-size: contain; /* Ajusta para mostrar la imagen completa */
+    background-color: #001f3f; /* Color de fondo */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Contenedor principal */
+.container {
+    text-align: center;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.7); /* Fondo semitransparente */
+    border-radius: 15px;
+    max-width: 90%;
+    margin: 50px auto;
+    color: #FFF;
+}
+
+/* Logo */
+.logo {
+    max-width: 120px;
+    margin: 0 auto 20px;
+    display: block;
+}
+
+/* Botones */
+button {
+    display: block;
+    width: 80%;
+    max-width: 300px;
+    margin: 10px auto;
+    padding: 15px;
+    font-size: 18px;
+    color: #001f3f; /* Azul oscuro */
+    background-color: #FFD700; /* Dorado */
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    background-color: #FFC300;
+    color: #000;
+}
+
+/* Pie de página */
+footer {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 14px;
+    color: #FFD700;
+}
+
