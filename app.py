@@ -1,109 +1,93 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, request, redirect, url_for
 import requests
-import logging
-import asyncio
 
 app = Flask(__name__)
 
-# Configuración de tokens y chat IDs
+# Token para el bot de Telegram
 BOT_TOKEN_TAXI = '8146583492:AAFP-9CTNvmNR13aFxvJB6Q1WS0eBbZhAc0'
 BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
-CHAT_ID = '5828174289'
 
-# Configuración de logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(message)s')
-
-# Función asincrónica para enviar mensajes
-async def enviar_mensaje_async(bot_token, mensaje):
-    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-    data = {"chat_id": CHAT_ID, "text": mensaje, "parse_mode": "Markdown"}
-    try:
-        response = requests.post(url, json=data)
-        if response.status_code == 200:
-            logging.info("Mensaje enviado con éxito.")
-        else:
-            logging.error(f"Error al enviar mensaje: {response.status_code} - {response.text}")
-    except Exception as e:
-        logging.error(f"Error en la conexión: {e}")
-
-# Función para manejar el envío asincrónico
-def enviar_mensaje(bot_token, mensaje):
-    asyncio.run(enviar_mensaje_async(bot_token, mensaje))
-
-# Rutas principales
+# Ruta para la ventana emergente
 @app.route('/')
-def principal():
-    return render_template('principal.html')
-
-@app.route('/emergente')
 def emergente():
     return render_template('emergente.html')
 
-@app.route('/taxi-service')
+# Ruta para la página principal
+@app.route('/principal')
+def principal():
+    return render_template('principal.html')
+
+# Ruta para el servicio de Taxi
+@app.route('/taxi-service', methods=['GET', 'POST'])
 def taxi_service():
+    if request.method == 'POST':
+        data = {
+            'nombre': request.form['nombre'],
+            'origen': request.form['origen'],
+            'destino': request.form['destino']
+        }
+        send_message(data, BOT_TOKEN_TAXI)
+        return render_template('success.html', mensaje="¡Tu solicitud de taxi ha sido enviada!")
     return render_template('taxi.html')
 
-@app.route('/turismo')
+# Ruta para Turismo Local y Nacional
+@app.route('/turismo', methods=['GET', 'POST'])
 def turismo():
+    if request.method == 'POST':
+        data = {
+            'nombre': request.form['nombre'],
+            'destino': request.form['destino'],
+            'fecha': request.form['fecha']
+        }
+        send_message(data, BOT_TOKEN_VIP)
+        return render_template('success.html', mensaje="¡Tu solicitud de turismo ha sido enviada!")
     return render_template('turismo.html')
 
-@app.route('/alta-gama')
+# Ruta para Alta Gama
+@app.route('/alta-gama', methods=['GET', 'POST'])
 def alta_gama():
+    if request.method == 'POST':
+        data = {
+            'nombre': request.form['nombre'],
+            'vehiculo': request.form['vehiculo'],
+            'recogida': request.form['recogida'],
+            'tiempo': request.form['tiempo']
+        }
+        send_message(data, BOT_TOKEN_VIP)
+        return render_template('success.html', mensaje="¡Tu solicitud de vehículo de alta gama ha sido enviada!")
     return render_template('alta_gama.html')
 
-@app.route('/fletes')
-def fletes():
-    return render_template('fletes.html')
+# Ruta para Fletes y Mudanzas
+@app.route('/fletes-mudanzas', methods=['GET', 'POST'])
+def fletes_mudanzas():
+    if request.method == 'POST':
+        data = {
+            'nombre': request.form['nombre'],
+            'origen': request.form['origen'],
+            'destino': request.form['destino'],
+            'fecha': request.form['fecha']
+        }
+        send_message(data, BOT_TOKEN_VIP)
+        return render_template('success.html', mensaje="¡Tu solicitud de fletes y mudanzas ha sido enviada!")
+    return render_template('fletes_mudanzas.html')
 
-@app.route('/apoyo-hoteles')
+# Ruta para Apoyo Hoteles
+@app.route('/apoyo-hoteles', methods=['GET', 'POST'])
 def apoyo_hoteles():
+    if request.method == 'POST':
+        codigo = request.form['codigo']
+        if codigo in ['515', '122', '155']:
+            return render_template('apoyo_hoteles_form.html')
+        else:
+            return render_template('error.html', mensaje="Código incorrecto. Intenta de nuevo.")
     return render_template('apoyo_hoteles.html')
 
-# Manejo de formularios y redirecciones
-@app.route('/enviar-taxi', methods=['POST'])
-def enviar_taxi():
-    nombre = request.form.get('nombre')
-    telefono = request.form.get('telefono')
-    lugar_recogida = request.form.get('lugar_recogida')
-    destino = request.form.get('destino')
-    pasajeros = request.form.get('pasajeros')
-
-    mensaje = f"""
-    *Solicitud de Taxi*
-    Nombre: {nombre}
-    Teléfono: {telefono}
-    Lugar de recogida: {lugar_recogida}
-    Destino: {destino}
-    Pasajeros: {pasajeros}
-    """
-    enviar_mensaje(BOT_TOKEN_TAXI, mensaje)
-    return redirect(url_for('principal'))
-
-@app.route('/enviar-vip', methods=['POST'])
-def enviar_vip():
-    nombre = request.form.get('nombre')
-    telefono = request.form.get('telefono')
-    lugar_recogida = request.form.get('lugar_recogida')
-    tiempo = request.form.get('tiempo')
-
-    mensaje = f"""
-    *Solicitud de Alta Gama*
-    Nombre: {nombre}
-    Teléfono: {telefono}
-    Lugar de recogida: {lugar_recogida}
-    Tiempo requerido: {tiempo}
-    """
-    enviar_mensaje(BOT_TOKEN_VIP, mensaje)
-    return render_template('gracias.html', mensaje="Tu solicitud fue enviada con éxito.")
-
-@app.route('/error')
-def error():
-    return render_template('error.html')
-
-# Ruta de prueba
-@app.route('/test')
-def test():
-    return "Aplicación funcionando correctamente."
+# Función para enviar mensajes a Telegram
+def send_message(data, token):
+    chat_id = '@tu_canal'  # Cambia por el nombre de tu canal o chat_id
+    mensaje = "\n".join([f"{key}: {value}" for key, value in data.items()])
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    requests.post(url, data={'chat_id': chat_id, 'text': mensaje})
 
 if __name__ == '__main__':
     app.run(debug=True)
