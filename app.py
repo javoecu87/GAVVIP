@@ -3,7 +3,7 @@ import requests
 
 app = Flask(__name__)
 
-# Token para el bot de Telegram
+# Tokens para los bots de Telegram
 BOT_TOKEN_TAXI = '8146583492:AAFP-9CTNvmNR13aFxvJB6Q1WS0eBbZhAc0'
 BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
 
@@ -22,9 +22,9 @@ def principal():
 def taxi_service():
     if request.method == 'POST':
         data = {
-            'nombre': request.form['nombre'],
-            'origen': request.form['origen'],
-            'destino': request.form['destino']
+            'Nombre': request.form['nombre'],
+            'Origen': request.form['origen'],
+            'Destino': request.form['destino']
         }
         send_message(data, BOT_TOKEN_TAXI)
         return render_template('success.html', mensaje="¡Tu solicitud de taxi ha sido enviada!")
@@ -35,9 +35,9 @@ def taxi_service():
 def turismo():
     if request.method == 'POST':
         data = {
-            'nombre': request.form['nombre'],
-            'destino': request.form['destino'],
-            'fecha': request.form['fecha']
+            'Nombre': request.form['nombre'],
+            'Destino': request.form['destino'],
+            'Fecha': request.form['fecha']
         }
         send_message(data, BOT_TOKEN_VIP)
         return render_template('success.html', mensaje="¡Tu solicitud de turismo ha sido enviada!")
@@ -48,10 +48,10 @@ def turismo():
 def alta_gama():
     if request.method == 'POST':
         data = {
-            'nombre': request.form['nombre'],
-            'vehiculo': request.form['vehiculo'],
-            'recogida': request.form['recogida'],
-            'tiempo': request.form['tiempo']
+            'Nombre': request.form['nombre'],
+            'Vehículo': request.form['vehiculo'],
+            'Lugar de Recogida': request.form['recogida'],
+            'Tiempo': request.form['tiempo']
         }
         send_message(data, BOT_TOKEN_VIP)
         return render_template('success.html', mensaje="¡Tu solicitud de vehículo de alta gama ha sido enviada!")
@@ -62,10 +62,10 @@ def alta_gama():
 def fletes_mudanzas():
     if request.method == 'POST':
         data = {
-            'nombre': request.form['nombre'],
-            'origen': request.form['origen'],
-            'destino': request.form['destino'],
-            'fecha': request.form['fecha']
+            'Nombre': request.form['nombre'],
+            'Origen': request.form['origen'],
+            'Destino': request.form['destino'],
+            'Fecha': request.form['fecha']
         }
         send_message(data, BOT_TOKEN_VIP)
         return render_template('success.html', mensaje="¡Tu solicitud de fletes y mudanzas ha sido enviada!")
