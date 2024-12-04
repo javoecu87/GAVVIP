@@ -1,11 +1,15 @@
 from flask import Flask, render_template, request, redirect, url_for
 import requests
+import telegram
+import asyncio
+import logging
 
 app = Flask(__name__)
 
 # Tokens para los bots de Telegram
 BOT_TOKEN_TAXI = '8146583492:AAFP-9CTNvmNR13aFxvJB6Q1WS0eBbZhAc0'
 BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
+CHAT_ID = '5828174289'  # Reemplaza con el chat ID correcto para ambos bots si es necesario
 
 # Ruta para la ventana emergente
 @app.route('/')
