@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Tokens de los bots para los formularios
 BOT_TOKEN_TAXI = '8146583492:AAFP-9CTNvmNR13aFxvJB6Q1WS0eBbZhAc0'
 BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
-CHAT_ID = '5828174289'  # Reemplaza con el chat ID correcto para ambos bots si es necesario
+CHAT_ID = '5828174289'  # Reemplaza con el chat ID correcto
 
 # Configuración de logging
 logging.basicConfig(
@@ -35,25 +35,50 @@ def enviar_mensaje(mensaje, token):
 def principal():
     return render_template('principal.html')
 
-# Ruta para el formulario de Turismo Local y Nacional
+# Ruta para el formulario de Taxi
+@app.route('/taxi-service')
+def taxi_service():
+    return render_template('taxi.html')
+
+# Procesar formulario de Taxi
+@app.route('/solicitar-taxi', methods=['POST'])
+def solicitar_taxi():
+    try:
+        nombre = request.form.get('nombre')
+        telefono = request.form.get('telefono')
+        lugar_recogida = request.form.get('lugar_recogida')
+        destino = request.form.get('destino')
+        pasajeros = request.form.get('pasajeros')
+
+        mensaje = (
+            "*Solicitud de Taxi*\n\n"
+            f"👤 Nombre: {nombre}\n"
+            f"📞 Teléfono: {telefono}\n"
+            f"📍 Lugar de Recogida: {lugar_recogida}\n"
+            f"🎯 Destino: {destino}\n"
+            f"👥 Pasajeros: {pasajeros}"
+        )
+
+        enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
+        return render_template('success.html', mensaje="¡Gracias! Su solicitud de taxi ha sido enviada.")
+    except Exception as e:
+        app.logger.error(f"Error en /solicitar-taxi: {e}")
+        return "Error al procesar la solicitud de taxi.", 500
+
+# Ruta para el formulario de Turismo
 @app.route('/turismo')
 def turismo():
     return render_template('turismo.html')
 
-# Ruta para procesar el formulario Turismo Local y Nacional
+# Procesar formulario de Turismo
 @app.route('/solicitar-turismo', methods=['POST'])
 def solicitar_turismo():
     try:
-        # Capturar los datos enviados desde el formulario
         nombre = request.form.get('nombre')
         telefono = request.form.get('telefono')
         origen = request.form.get('origen')
         destino = request.form.get('destino')
         fecha = request.form.get('fecha')
-
-        # Verificar si todos los datos se reciben correctamente
-        if not all([nombre, telefono, origen, destino, fecha]):
-            raise ValueError("Faltan datos en el formulario")
 
         mensaje = (
             "*Solicitud de Turismo Local y Nacional*\n\n"
@@ -69,8 +94,6 @@ def solicitar_turismo():
     except Exception as e:
         app.logger.error(f"Error en /solicitar-turismo: {e}")
         return "Error al procesar la solicitud de turismo.", 500
-
-# Otras rutas (Taxi, VIP, etc.) se mantienen igual
 
 if __name__ == '__main__':
     app.run(debug=True)
