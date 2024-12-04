@@ -5,10 +5,10 @@ import logging
 
 app = Flask(__name__)
 
-# Tokens de los bots
+# Tokens de los bots para los formularios
 BOT_TOKEN_TAXI = '8146583492:AAFP-9CTNvmNR13aFxvJB6Q1WS0eBbZhAc0'
 BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
-CHAT_ID = '5828174289'  # Reemplaza con el chat ID correcto
+CHAT_ID = '5828174289'  # Reemplaza con el chat ID correcto para ambos bots si es necesario
 
 # Configuración de logging
 logging.basicConfig(
@@ -17,7 +17,7 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()]
 )
 
-# Función asincrónica para enviar mensaje
+# Función asincrónica para enviar el mensaje
 async def enviar_mensaje_async(mensaje, token):
     bot = telegram.Bot(token=token)
     try:
@@ -26,28 +26,21 @@ async def enviar_mensaje_async(mensaje, token):
     except Exception as e:
         app.logger.error(f"Error al enviar mensaje a Telegram: {e}")
 
-# Función para ejecutar el envío de manera asincrónica
+# Función para ejecutar el envío de manera asincrónica en cada solicitud
 def enviar_mensaje(mensaje, token):
     asyncio.run(enviar_mensaje_async(mensaje, token))
 
-# Rutas
-
-# Ruta para la ventana emergente
+# Ruta para la ventana principal
 @app.route('/')
-def emergente():
-    return render_template('emergente.html')
-
-# Ruta para la página principal
-@app.route('/principal')
 def principal():
     return render_template('principal.html')
 
-# Ruta para el servicio de Taxi
+# Ruta para el formulario de Taxi
 @app.route('/taxi-service')
 def taxi_service():
     return render_template('taxi.html')
 
-# Ruta para manejar el formulario de Taxi
+# Ruta para procesar el formulario de Taxi y enviar el mensaje al bot de Taxi
 @app.route('/solicitar-taxi', methods=['POST'])
 def solicitar_taxi():
     try:
@@ -63,7 +56,7 @@ def solicitar_taxi():
             f"📞 Teléfono: {telefono}\n"
             f"📍 Lugar de recogida: {lugar_recogida}\n"
             f"🎯 Destino: {destino}\n"
-            f"👥 Pasajeros: {pasajeros}"
+            f"👥 Número de pasajeros: {pasajeros}"
         )
 
         enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
@@ -72,25 +65,69 @@ def solicitar_taxi():
         app.logger.error(f"Error en /solicitar-taxi: {e}")
         return "Error al procesar la solicitud de taxi.", 500
 
-# Ruta para Turismo Local y Nacional
+# Ruta para el formulario Turismo Local y Nacional
 @app.route('/turismo')
 def turismo():
     return render_template('turismo.html')
 
-# Ruta para Alta Gama
-@app.route('/alta-gama')
-def alta_gama():
-    return render_template('alta_gama.html')
+# Ruta para procesar el formulario Turismo Local y Nacional
+@app.route('/solicitar-turismo', methods=['POST'])
+def solicitar_turismo():
+    try:
+        nombre = request.form['nombre']
+        telefono = request.form['telefono']
+        origen = request.form['origen']
+        destino = request.form['destino']
+        fecha = request.form['fecha']
 
-# Ruta para Fletes y Mudanzas
-@app.route('/fletes-mudanzas')
-def fletes_mudanzas():
-    return render_template('fletes_mudanzas.html')
+        mensaje = (
+            "*Solicitud de Turismo Local y Nacional*\n\n"
+            f"👤 Nombre: {nombre}\n"
+            f"📞 Teléfono: {telefono}\n"
+            f"📍 Origen: {origen}\n"
+            f"🎯 Destino: {destino}\n"
+            f"📅 Fecha: {fecha}"
+        )
 
-# Ruta para Apoyo Hoteles
-@app.route('/apoyo-hoteles')
-def apoyo_hoteles():
-    return render_template('apoyo_hoteles.html')
+        enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
+        return render_template('success.html', mensaje="¡Gracias! Su solicitud de turismo ha sido enviada.")
+    except Exception as e:
+        app.logger.error(f"Error en /solicitar-turismo: {e}")
+        return "Error al procesar la solicitud de turismo.", 500
+
+# Ruta para el formulario TAXI VIP SUVS & VANS
+@app.route('/solicitud-vip')
+def solicitud_vip():
+    return render_template('index.html')
+
+# Ruta para procesar el formulario TAXI VIP SUVS & VANS y enviar el mensaje al bot
+@app.route('/reservar', methods=['POST'])
+def reservar():
+    try:
+        nombre = request.form['nombre']
+        telefono = request.form['telefono']
+        origen = request.form['origen']
+        destino = request.form['destino']
+        fecha = request.form['fecha']
+        hora = request.form['hora']
+        personas = request.form['personas']
+
+        mensaje = (
+            "*Solicitud de TAXI VIP SUVS & VANS*\n\n"
+            f"👤 Nombre: {nombre}\n"
+            f"📞 Teléfono: {telefono}\n"
+            f"📍 Origen: {origen}\n"
+            f"🎯 Destino: {destino}\n"
+            f"📅 Fecha: {fecha}\n"
+            f"⏰ Hora: {hora}\n"
+            f"👥 Personas: {personas}"
+        )
+
+        enviar_mensaje(mensaje, BOT_TOKEN_VIP)
+        return render_template('success.html', mensaje="¡Gracias! Su reservación está confirmada.")
+    except Exception as e:
+        app.logger.error(f"Error en /reservar: {e}")
+        return "Error al procesar la reserva.", 500
 
 if __name__ == '__main__':
     app.run(debug=True)
