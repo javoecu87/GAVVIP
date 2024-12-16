@@ -40,8 +40,15 @@ def apoyo_hoteles():
 
 # Ruta para mostrar el formulario de Alta Gama
 @app.route('/alta-gama')
-def formulario_alta_gama():
-    return render_template('formulario_alta_gama.html')
+def alta_gama():
+    # Lista de vehículos disponibles para Alta Gama
+    vehiculos = ['SUV', 'Van', 'Sedan']
+    return render_template('alta_gama.html', vehiculos=vehiculos)
+
+# Ruta para mostrar el formulario de Alta Gama con el vehículo seleccionado
+@app.route('/formulario-alta-gama/<vehiculo>')
+def formulario_alta_gama(vehiculo):
+    return render_template('formulario_alta_gama.html', vehiculo=vehiculo)
 
 # Ruta para procesar el formulario de Alta Gama
 @app.route('/procesar-alta-gama', methods=['POST'])
