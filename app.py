@@ -38,10 +38,40 @@ def fletes_mudanzas():
 def apoyo_hoteles():
     return render_template('apoyo_hoteles.html')
 
-
+# Ruta para mostrar el formulario de Alta Gama
 @app.route('/alta-gama')
-def alta_gama():
-    return render_template('alta_gama.html')
+def formulario_alta_gama():
+    return render_template('formulario_alta_gama.html')
+
+# Ruta para procesar el formulario de Alta Gama
+@app.route('/procesar-alta-gama', methods=['POST'])
+def procesar_solicitud_alta_gama():
+    try:
+        nombre = request.form.get('nombre')
+        telefono = request.form.get('telefono')
+        tipo_vehiculo = request.form.get('tipo_vehiculo')
+        fecha = request.form.get('fecha')
+        hora = request.form.get('hora')
+        detalles = request.form.get('detalles')
+
+        mensaje = (
+            "*Solicitud de Alta Gama*\n\n"
+            f"👤 Nombre: {nombre}\n"
+            f"📞 Teléfono: {telefono}\n"
+            f"🚘 Tipo de Vehículo: {tipo_vehiculo}\n"
+            f"📅 Fecha: {fecha}\n"
+            f"⏰ Hora: {hora}\n"
+            f"📋 Detalles Adicionales: {detalles}"
+        )
+
+        # Enviar mensaje a Telegram
+        enviar_mensaje(mensaje, BOT_TOKEN_VIP)
+
+        # Mostrar página de éxito con ventana emergente
+        return render_template('success.html', mensaje="¡Gracias! Su solicitud de Alta Gama ha sido enviada.")
+    except Exception as e:
+        app.logger.error(f"Error en /procesar-alta-gama: {e}")
+        return "Error al procesar la solicitud de Alta Gama.", 500
 
 # Ruta para la ventana emergente
 @app.route('/')
@@ -112,43 +142,6 @@ def solicitar_turismo():
     except Exception as e:
         app.logger.error(f"Error en /solicitar-turismo: {e}")
         return "Error al procesar la solicitud de turismo.", 500
-
-# Ruta para el formulario de Alta Gama
-@app.route('/alta-gama')
-def formulario_alta_gama():
-    return render_template('formulario_alta_gama.html')
-
-# Procesar formulario de Alta Gama
-@app.route('/solicitar-alta-gama', methods=['POST'])
-def procesar_solicitud_alta_gama():
-    try:
-        nombre = request.form.get('nombre')
-        telefono = request.form.get('telefono')
-        tipo_vehiculo = request.form.get('tipo_vehiculo')
-        fecha = request.form.get('fecha')
-        hora = request.form.get('hora')
-        detalles = request.form.get('detalles')
-
-        mensaje = (
-            "*Solicitud de Alta Gama*\n\n"
-            f"👤 Nombre: {nombre}\n"
-            f"📞 Teléfono: {telefono}\n"
-            f"🚘 Tipo de Vehículo: {tipo_vehiculo}\n"
-            f"📅 Fecha: {fecha}\n"
-            f"⏰ Hora: {hora}\n"
-            f"📋 Detalles Adicionales: {detalles}"
-        )
-
-        # Enviar mensaje a Telegram
-        enviar_mensaje(mensaje, BOT_TOKEN_VIP)
-
-        # Mostrar página de éxito con ventana emergente
-        return render_template('success.html', mensaje="¡Gracias! Su solicitud de Alta Gama ha sido enviada.")
-    except Exception as e:
-        app.logger.error(f"Error en /solicitar-alta-gama: {e}")
-        return "Error al procesar la solicitud de Alta Gama.", 500
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)

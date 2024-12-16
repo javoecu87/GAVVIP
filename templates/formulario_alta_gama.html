@@ -38,25 +38,24 @@
 </head>
 <body>
     <div class="container">
-        <h1>Solicitud para {{ vehiculo }}</h1>
+        <h1>Solicitud para Alta Gama</h1>
         <form action="/procesar-alta-gama" method="POST">
-            <input type="hidden" name="vehiculo" value="{{ vehiculo }}">
             <input type="text" name="nombre" placeholder="Tu nombre" required>
-            <input type="text" name="recogida" placeholder="Lugar de recogida" required>
-            <input type="text" name="tiempo" placeholder="Tiempo estimado" required>
+            <input type="text" name="telefono" placeholder="Tu teléfono" required>
+            <select name="tipo_vehiculo" required>
+                <option value="" disabled selected>Selecciona el tipo de vehículo</option>
+                <option value="SUV">SUV</option>
+                <option value="Van">Van</option>
+                <option value="Sedan">Sedan</option>
+            </select>
+            <input type="date" name="fecha" required>
+            <input type="time" name="hora" required>
+            <textarea name="detalles" placeholder="Detalles adicionales (opcional)" rows="4"></textarea>
             <button type="submit">Enviar Solicitud</button>
         </form>
-<div style="text-align: center; margin-top: 20px;">
-    <a href="/" style="
-        text-decoration: none;
-        background-color: #4facfe;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-size: 1em;
-        transition: background-color 0.3s ease;
-    ">Volver a la Página Principal</a>
-</div>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/" style="text-decoration: none; background-color: #4facfe; color: white; padding: 10px 20px; border-radius: 5px; font-size: 1em;">Volver a la Página Principal</a>
+        </div>
     </div>
 </body>
 </html>
