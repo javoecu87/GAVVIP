@@ -115,12 +115,12 @@ def solicitar_turismo():
 
 # Ruta para el formulario de Alta Gama
 @app.route('/alta-gama')
-def alta_gama():
+def formulario_alta_gama():
     return render_template('formulario_alta_gama.html')
 
 # Procesar formulario de Alta Gama
 @app.route('/solicitar-alta-gama', methods=['POST'])
-def solicitar_alta_gama():
+def procesar_solicitud_alta_gama():
     try:
         nombre = request.form.get('nombre')
         telefono = request.form.get('telefono')
@@ -147,6 +147,7 @@ def solicitar_alta_gama():
     except Exception as e:
         app.logger.error(f"Error en /solicitar-alta-gama: {e}")
         return "Error al procesar la solicitud de Alta Gama.", 500
+
 
 
 if __name__ == '__main__':
