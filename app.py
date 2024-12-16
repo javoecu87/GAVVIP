@@ -30,6 +30,15 @@ async def enviar_mensaje_async(mensaje, token):
 def enviar_mensaje(mensaje, token):
     asyncio.run(enviar_mensaje_async(mensaje, token))
 
+@app.route('/fletes_mudanzas')
+def fletes_mudanzas():
+    return render_template('fletes_mudanzas.html')
+
+@app.route('/apoyo_hoteles')
+def apoyo_hoteles():
+    return render_template('apoyo_hoteles.html')
+
+
 @app.route('/alta-gama')
 def alta_gama():
     return render_template('alta_gama.html')
