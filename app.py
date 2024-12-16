@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import telegram
 import asyncio
 import logging
@@ -30,8 +30,13 @@ async def enviar_mensaje_async(mensaje, token):
 def enviar_mensaje(mensaje, token):
     asyncio.run(enviar_mensaje_async(mensaje, token))
 
-# Ruta para la ventana principal
+# Ruta para la ventana emergente
 @app.route('/')
+def ventana_emergente():
+    return render_template('emergente.html')
+
+# Ruta para la ventana principal
+@app.route('/principal')
 def principal():
     return render_template('principal.html')
 
