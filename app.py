@@ -46,7 +46,7 @@ def alta_gama():
     return render_template('alta_gama.html', vehiculos=vehiculos)
 
 # Ruta para mostrar el formulario de Alta Gama con el vehículo seleccionado
-@app.route('/formulario-alta-gama/<vehiculo>')
+@app.route('/formulario-alta-gama/<string:vehiculo>')
 def formulario_alta_gama(vehiculo):
     return render_template('formulario_alta_gama.html', vehiculo=vehiculo)
 

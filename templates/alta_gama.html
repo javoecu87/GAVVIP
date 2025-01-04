@@ -3,58 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alta_Gama</title>
+    <title>Selección de Vehículo Alta Gama</title>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
             text-align: center;
-            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
-            color: white;
+            background-color: #001f3f;
+            color: #FFD700;
             margin: 0;
             padding: 0;
         }
         .container {
             margin: 50px auto;
             max-width: 600px;
-            background-color: rgba(0, 0, 0, 0.8);
-            border-radius: 15px;
             padding: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
         }
-        h1 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            color: #ffd700;
-        }
-        button {
-            display: block;
+        .vehiculo-button {
             width: 100%;
             margin: 10px 0;
             padding: 15px;
-            font-size: 18px;
-            color: white;
-            background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
-            border: none;
-            border-radius: 10px;
+            font-size: 20px;
+            border: 1px solid #FFD700;
+            border-radius: 5px;
+            color: #FFD700;
+            background-color: transparent;
             cursor: pointer;
-            transition: 0.3s;
         }
-        button:hover {
-            background: linear-gradient(135deg, #ff7eb3 0%, #ff758c 100%);
-            transform: scale(1.05);
+        .vehiculo-button:hover {
+            background-color: #FFD700;
+            color: #001f3f;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Seleccione un Vehículo Alta Gama</h1>
-        <form action="/formulario_alta_gama" method="POST">
-            <button type="submit" name="vehiculo" value="Ford Expedition, V6, EcoBoost">Ford Expedition, V6, EcoBoost</button>
-            <button type="submit" name="vehiculo" value="Toyota Fortuner 2.7, V6, TRD">Toyota Fortuner 2.7, V6, TRD</button>
-            <button type="submit" name="vehiculo" value="Mitsubishi Outlander">Mitsubishi Outlander</button>
-            <button type="submit" name="vehiculo" value="Tiggo 7 Luxuri">Tiggo 7 Luxuri</button>
-            <button type="submit" name="vehiculo" value="Land Rover Discovery (4X4 Recomendado)">Land Rover Discovery (4X4 Recomendado)</button>
-        </form>
+        <h1>Selecciona un Vehículo de Alta Gama</h1>
+        {% for vehiculo in vehiculos %}
+            <a href="{{ url_for('formulario_alta_gama', vehiculo=vehiculo) }}">
+                <button class="vehiculo-button">{{ vehiculo }}</button>
+            </a>
+        {% endfor %}
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/" style="text-decoration: none; background-color: #4facfe; color: white; padding: 10px 20px; border-radius: 5px; font-size: 1em;">Volver a la Página Principal</a>
+        </div>
     </div>
 </body>
 </html>

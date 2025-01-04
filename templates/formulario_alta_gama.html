@@ -24,38 +24,33 @@
             width: 100%;
             margin: 10px 0;
             padding: 10px;
-            font-size: 16px;
-            border: 1px solid #FFD700;
-            border-radius: 5px;
-            color: #FFD700;
-            background-color: transparent;
-        }
-        button:hover {
-            background-color: #FFD700;
-            color: #001f3f;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Solicitud para Alta Gama</h1>
-        <form action="/procesar-alta-gama" method="POST">
-            <input type="text" name="nombre" placeholder="Tu nombre" required>
-            <input type="text" name="telefono" placeholder="Tu teléfono" required>
-            <select name="tipo_vehiculo" required>
-                <option value="" disabled selected>Selecciona el tipo de vehículo</option>
-                <option value="SUV">SUV</option>
-                <option value="Van">Van</option>
-                <option value="Sedan">Sedan</option>
-            </select>
-            <input type="date" name="fecha" required>
-            <input type="time" name="hora" required>
-            <textarea name="detalles" placeholder="Detalles adicionales (opcional)" rows="4"></textarea>
+        <h1>Solicitud de Alta Gama</h1>
+        <form action="{{ url_for('procesar_solicitud_alta_gama') }}" method="post">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
+
+            <label for="telefono">Teléfono:</label>
+            <input type="text" id="telefono" name="telefono" required>
+
+            <label for="tipo_vehiculo">Vehículo seleccionado:</label>
+            <input type="text" id="tipo_vehiculo" name="tipo_vehiculo" value="{{ vehiculo }}" readonly>
+
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" name="fecha" required>
+
+            <label for="hora">Hora:</label>
+            <input type="time" id="hora" name="hora" required>
+
+            <label for="detalles">Detalles adicionales:</label>
+            <textarea id="detalles" name="detalles"></textarea>
+
             <button type="submit">Enviar Solicitud</button>
         </form>
-        <div style="text-align: center; margin-top: 20px;">
-            <a href="/" style="text-decoration: none; background-color: #4facfe; color: white; padding: 10px 20px; border-radius: 5px; font-size: 1em;">Volver a la Página Principal</a>
-        </div>
     </div>
 </body>
 </html>
