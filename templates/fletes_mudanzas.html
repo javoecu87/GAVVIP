@@ -8,24 +8,24 @@
 <body>
     <div class="container">
         <h1>Fletes y Mudanzas</h1>
-        <form action="/solicitar-fletes" method="POST">
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" required>
+    <form action="/solicitar-fletes-mudanzas" method="post">
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre" name="nombre" required>
 
-            <label for="telefono">Teléfono:</label>
-            <input type="tel" id="telefono" name="telefono" required>
+    <label for="telefono">Teléfono:</label>
+    <input type="text" id="telefono" name="telefono" required>
 
-            <label for="origen">Origen:</label>
-            <input type="text" id="origen" name="origen" required>
+    <label for="origen">Origen:</label>
+    <input type="text" id="origen" name="origen" required>
 
-            <label for="destino">Destino:</label>
-            <input type="text" id="destino" name="destino" required>
+    <label for="destino">Destino:</label>
+    <input type="text" id="destino" name="destino" required>
 
-            <label for="detalles">Detalles:</label>
-            <textarea id="detalles" name="detalles" rows="4"></textarea>
+    <label for="detalles">Detalles:</label>
+    <textarea id="detalles" name="detalles"></textarea>
 
-            <button type="submit">Enviar Solicitud</button>
-        </form>
+    <button type="submit">Enviar Solicitud</button>
+</form>
 <div style="text-align: center; margin-top: 20px;">
     <a href="/" style="
         text-decoration: none;
