@@ -34,6 +34,35 @@ def enviar_mensaje(mensaje, token):
 def fletes_mudanzas():
     return render_template('fletes_mudanzas.html')
 
+# Procesar formulario de Fletes y Mudanzas
+@app.route('/solicitar-fletes-mudanzas', methods=['POST'])
+def solicitar_fletes_mudanzas():
+    try:
+        nombre = request.form.get('nombre')
+        telefono = request.form.get('telefono')
+        origen = request.form.get('origen')
+        destino = request.form.get('destino')
+        detalles = request.form.get('detalles')
+
+        mensaje = (
+            "*Solicitud de Fletes y Mudanzas*\n\n"
+            f"👤 Nombre: {nombre}\n"
+            f"📞 Teléfono: {telefono}\n"
+            f"📍 Origen: {origen}\n"
+            f"🎯 Destino: {destino}\n"
+            f"📋 Detalles: {detalles}"
+        )
+
+        # Enviar mensaje a Telegram
+        enviar_mensaje(mensaje, BOT_TOKEN_VIP)
+
+        # Mostrar página de éxito con ventana emergente
+        return render_template('success.html', mensaje="¡Gracias! Su solicitud de Fletes y Mudanzas ha sido enviada.")
+    except Exception as e:
+        app.logger.error(f"Error en /solicitar-fletes-mudanzas: {e}")
+        return "Error al procesar la solicitud de Fletes y Mudanzas.", 500
+
+
 @app.route('/apoyo-hoteles')
 def apoyo_hoteles():
     return render_template('apoyo_hoteles.html')
