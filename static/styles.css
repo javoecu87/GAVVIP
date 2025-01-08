@@ -1,111 +1,63 @@
-/* Estilo general */
+/* Aplicación de los nuevos colores y estilos */
+
+/* Establecer fuente global */
 body {
+    font-family: Arial, sans-serif;
+    background-color: #495254;
+    color: #FFFFFF;
     margin: 0;
     padding: 0;
-    font-family: 'Arial', sans-serif;
-    color: #FFD700; /* Dorado */
-    text-align: center; /* Asegura que todo esté centrado */
+    text-align: center;
 }
 
-/* Fondo para la ventana emergente */
-.background-emergente {
-    background: url('/static/images/emergente.png') no-repeat center center;
-    background-size: cover; /* Cubre toda la pantalla */
-    background-attachment: fixed;
-    background-color: #001f3f; /* Azul oscuro */
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* Estilo de botones */
+button {
+    background-color: #FFD24C;
+    color: #495254;
+    font-family: Arial Bold, sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    padding: 15px 30px;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
 }
 
-/* Fondo para las demás ventanas */
-.background-ventas {
-    background: url('/static/images/fondoventas.png') no-repeat center center;
-    background-size: cover; /* Cubre toda la pantalla */
-    background-attachment: fixed;
-    background-color: #001f3f; /* Azul oscuro */
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column; /* Alinea elementos en columna */
-    justify-content: center; /* Centra elementos verticalmente */
-    align-items: center; /* Centra elementos horizontalmente */
+button:hover {
+    background-color: #FFBA42;
+    color: #FFFFFF;
 }
 
-/* Contenedor principal */
+/* Estilo de contenedores */
 .container {
-    text-align: center;
+    max-width: 800px;
+    margin: auto;
     padding: 20px;
-    background-color: rgba(0, 0, 0, 0.7); /* Fondo semitransparente */
-    border-radius: 15px;
-    max-width: 90%;
-    margin: 50px auto;
-    color: #FFF;
-}
-
-/* Logo */
-.logo {
-    max-width: 120px;
-    margin: 0 auto 20px;
-    display: block;
-}
-
-/* Botones */
-button {
-    display: block;
-    width: 80%;
-    max-width: 300px;
-    margin: 10px auto;
-    padding: 15px;
-    font-size: 18px;
-    color: #001f3f; /* Azul oscuro */
-    background-color: #FFD700; /* Dorado */
-    border: none;
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
-    cursor: pointer;
-    transition: 0.3s ease;
-    text-decoration: none;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-button:hover {
-    background-color: #FFC300;
-    color: #000;
+/* Estilo de encabezados */
+h1 {
+    color: #FFD24C;
+    font-size: 36px;
+    font-weight: bold;
 }
 
-/* Pie de página */
+p {
+    font-size: 18px;
+    color: #FFFFFF;
+}
+
+/* Estilo del footer */
 footer {
-    text-align: center;
-    margin: 20px 0;
-    font-size: 14px;
-    color: #FFD700;
+    background-color: #222222;
+    color: #FFFFFF;
+    padding: 10px;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
 }
-
-
-/* Eliminar subrayado de los enlaces */
-a {
-    text-decoration: none; /* Elimina el subrayado */
-    color: inherit; /* Usa el color de texto definido por el botón */
-}
-
-/* Botones */
-button {
-    display: block;
-    width: 80%;
-    max-width: 300px;
-    margin: 10px auto;
-    padding: 15px;
-    font-size: 18px;
-    color: #001f3f; /* Azul oscuro */
-    background-color: #FFD700; /* Dorado */
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.3s ease;
-    text-decoration: none; /* Asegura que el texto no tenga subrayado */
-}
-
-button:hover {
-    background-color: #FFC300;
-    color: #000;
-}
-
