@@ -4,124 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solicitud de Taxi</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0 20px 200px; /* Espaciado inferior */
-            background: linear-gradient(to bottom, #4facfe, #00f2fe);
-        }
-        .container {
-            background: #fff;
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-        h1 {
-            font-size: 1.8em;
-            text-align: center;
-            margin-bottom: 20px;
-            color: #444;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        label {
-            font-size: 1em;
-            font-weight: bold;
-        }
-        input, button {
-            padding: 12px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            font-size: 1em;
-            width: 100%;
-        }
-        input:focus {
-            outline: none;
-            border-color: #4facfe;
-            box-shadow: 0 0 5px rgba(79, 172, 254, 0.8);
-        }
-        button {
-            background-color: #4facfe;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #008cba;
-        }
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 1.5em;
-            }
-            input, button {
-                font-size: 1em;
-                padding: 10px;
-            }
-        }
-    </style>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const inputs = document.querySelectorAll("input");
-            inputs.forEach(input => {
-                input.addEventListener("focus", () => {
-                    window.scrollTo(0, input.getBoundingClientRect().top + window.scrollY - 50);
-                });
-            });
-        });
-
-        document.addEventListener("touchstart", function (event) {
-            const focusedElement = document.activeElement;
-            if (focusedElement && focusedElement.tagName === "INPUT") {
-                focusedElement.blur();
-            }
-        });
-    </script>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body>
+<body class="background-ventas">
     <div class="container">
+        <img src="/static/images/logo.png" alt="Logo GAVVIP" class="logo">
         <h1>Solicitud de Taxi</h1>
+
+        <!-- Imagen de agradecimiento -->
+        <img src="/static/images/thx.png" alt="Gracias" class="imagen-gracias">
+
         <form action="/solicitar-taxi" method="POST">
             <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+            <input type="text" id="nombre" name="nombre" required>
 
             <label for="telefono">Teléfono:</label>
-            <input type="tel" id="telefono" name="telefono" placeholder="Tu teléfono" required>
+            <input type="tel" id="telefono" name="telefono" required>
 
             <label for="lugar_recogida">Lugar de Recogida:</label>
-            <input type="text" id="lugar_recogida" name="lugar_recogida" placeholder="Ej: Av. Amazonas" required>
+            <input type="text" id="lugar_recogida" name="lugar_recogida" required>
 
             <label for="destino">Destino:</label>
-            <input type="text" id="destino" name="destino" placeholder="Ej: Centro Histórico" required>
+            <input type="text" id="destino" name="destino" required>
 
-            <label for="pasajeros">Número de Pasajeros:</label>
-            <input type="number" id="pasajeros" name="pasajeros" min="1" max="6" required>
+            <label for="pasajeros">Cantidad de Pasajeros:</label>
+            <input type="number" id="pasajeros" name="pasajeros" required>
 
-            <button type="submit">Enviar Solicitud</button>
+            <button type="submit">Solicitar Taxi</button>
         </form>
-<div style="text-align: center; margin-top: 20px;">
-    <a href="/" style="
-        text-decoration: none;
-        background-color: #4facfe;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-size: 1em;
-        transition: background-color 0.3s ease;
-    ">Volver a la Página Principal</a>
-</div>
-</div>
+    </div>
+    <footer>
+        &copy; 2025 GAVVIP - Todos los derechos reservados.
+    </footer>
 </body>
 </html>
