@@ -105,3 +105,9 @@ button:hover {
     color: #000;
 }
 
+h1 {
+    color: #FFFFFF; /* Blanco óptico */
+    font-family: 'Arial Bold', sans-serif;
+    font-weight: 900;
+}
+
