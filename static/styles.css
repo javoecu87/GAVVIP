@@ -121,14 +121,14 @@ button:hover {
 /* Fondo para la ventana gracias.html */
 .background-gracias {
     background: url('/static/images/spasiva.png') no-repeat center center fixed;
-    background-size: cover; /* Ajustar la imagen para cubrir toda la pantalla */
-    color: #FFD700; /* Texto dorado */
-    height: 100vh; /* Asegurar que cubre toda la ventana */
+    background-size: cover; /* Ajusta la imagen para cubrir toda la ventana */
+    color: #FFD700; /* Color de texto dorado */
+    height: 100vh; /* Asegura que la ventana ocupe toda la altura */
+    margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0;
-    padding: 0;
 }
 
 /* Estilo del contenedor en gracias.html */
