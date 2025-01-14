@@ -118,11 +118,12 @@ button:hover {
     color: #000;
 }
 
-/* Estilo específico para gracias.html */
+/* Estilo específico para la ventana gracias.html */
 .background-gracias {
     background: url('/static/images/spasiva.png') no-repeat center center fixed;
-    background-size: cover; /* Asegura que la imagen cubra toda la ventana */
+    background-size: cover;
     height: 100vh; /* Asegura que ocupe toda la altura */
+    width: 100vw; /* Asegura que ocupe todo el ancho */
     margin: 0;
     padding: 0;
     display: flex;
