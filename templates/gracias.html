@@ -3,25 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>¡Gracias!</title>
+    <title>Gracias</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body class="background-ventas">
     <div class="container">
-        <h1>¡Gracias por tu solicitud!</h1>
-        <p>Nos pondremos en contacto contigo pronto.</p>
-        <div style="text-align: center; margin-top: 20px;">
-            <a href="/principal" style="
-                text-decoration: none;
-                background-color: #FFD24C;
-                color: #495254;
-                padding: 10px 20px;
-                border-radius: 5px;
-                font-size: 1em;
-                font-weight: bold;
-                transition: background-color 0.3s ease;
-            ">Regresar al Menú Principal</a>
-        </div>
+        <h1>¡Gracias!</h1>
+        <p>{{ mensaje }}</p>
+        <div id="map" style="width: 100%; height: 400px;"></div>
+        <a href="/" class="back-btn">Regresar al Menú Principal</a>
     </div>
+    <script>
+        // Opcional: Agrega funcionalidades adicionales al mapa aquí
+    </script>
 </body>
 </html>
