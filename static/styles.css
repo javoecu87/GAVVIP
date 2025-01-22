@@ -1,37 +1,124 @@
-/* Agrega configuraciones globales aquí */
-body {
+/* Estilo general */
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
     font-family: 'Arial', sans-serif;
-    color: #FFD700;
-}
-
-.background-ventas {
-    background: url('/static/images/fondoventas.png') no-repeat center center;
-    background-size: cover;
-    background-attachment: fixed;
-    color: #FFFFFF;
+    color: #FFD700; /* Dorado */
+    text-align: center; /* Asegura que todo esté centrado */
+    display: flex;
+    flex-direction: column;
 }
 
 .container {
-    background-color: rgba(0, 0, 0, 0.6);
+    flex: 1;
+}
+
+/* Fondo para la ventana emergente */
+.background-emergente {
+    background: url('/static/images/emergente.png') no-repeat center center;
+    background-size: cover; /* Cubre toda la pantalla */
+    background-attachment: fixed;
+    background-color: #001f3f; /* Azul oscuro */
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Fondo para las demás ventanas */
+.background-ventas {
+    background: url('/static/images/fondoventas.png') no-repeat center center;
+    background-size: cover; /* Cubre toda la pantalla */
+    background-attachment: fixed;
+    background-color: #001f3f; /* Azul oscuro */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column; /* Alinea elementos en columna */
+    justify-content: center; /* Centra elementos verticalmente */
+    align-items: center; /* Centra elementos horizontalmente */
+}
+
+/* Contenedor principal */
+.container {
+    background-color: rgba(34, 34, 34, 0.6); /* Gris oscuro con transparencia */
     padding: 20px;
     border-radius: 10px;
-    max-width: 600px;
-    margin: 20px auto;
     text-align: center;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
 }
 
-h1, p {
-    color: #FFD24C;
+/* Logo */
+.logo {
+    max-width: 120px;
+    margin: 0 auto 20px;
+    display: block;
 }
 
-button, .back-btn {
-    padding: 10px 20px;
-    color: #001f3f;
-    background-color: #FFD24C;
-    text-decoration: none;
-    border-radius: 5px;
+/* Botones */
+button {
+    font-family: 'Arial Bold', sans-serif;
+    font-weight: 900;  /* Hace las letras más gruesas */
+    background-color: #FFD24C; /* Dorado fuerte */
+    color: #222222; /* Gris oscuro */
     border: none;
+    padding: 15px 30px;
+    margin: 10px;
+    font-size: 18px;
+    border-radius: 8px;
     cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+button:hover {
+    background-color: #FFBA42; /* Dorado oscuro */
+    transform: scale(1.05);
+}
+
+/* Pie de página */
+footer {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 14px;
+    color: #FFD700;
+    position: absolute;
+    bottom: 10px; /* Ajusta el valor según sea necesario */
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    color: #FFBA42; /* Mantén el color adecuado */
+}
+
+/* Eliminar subrayado de los enlaces */
+a {
+    text-decoration: none; /* Elimina el subrayado */
+    color: inherit; /* Usa el color de texto definido por el botón */
+}
+
+/* Botones */
+button {
+    display: block;
+    width: 80%;
+    max-width: 300px;
+    margin: 10px auto;
+    padding: 15px;
+    font-size: 18px;
+    color: #001f3f; /* Azul oscuro */
+    background-color: #FFD700; /* Dorado */
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    text-decoration: none; /* Asegura que el texto no tenga subrayado */
+}
+
+button:hover {
+    background-color: #FFC300;
+    color: #000;
+}
+
+h1 {
+    color: #FFFFFF; /* Blanco óptico */
+    font-family: 'Arial Bold', sans-serif;
+    font-weight: 900;
 }
