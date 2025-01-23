@@ -31,7 +31,7 @@ html, body {
     background: url('/static/images/fondoventas.png') no-repeat center center;
     background-size: cover; /* Cubre toda la pantalla */
     background-attachment: fixed;
-    background-color: #001f3f; /* Azul oscuro */
+    background-color: #1F3B5C; /* Azul oscuro */
     min-height: 100vh;
     display: flex;
     flex-direction: column; /* Alinea elementos en columna */
@@ -60,19 +60,22 @@ button {
     font-family: 'Arial Bold', Arial, sans-serif;
     font-weight: bold;
     background-color: #FFE786; /* Dorado fuerte */
-    color: #222222; /* Gris oscuro */
-    border: none;
+    color: ##1F3B5C; /* Gris oscuro */
+    border: 2px solid #B8974A; /* Sombra en los bordes */
     padding: 15px 30px;
     margin: 10px;
     font-size: 18px;
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
+    transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+    box-shadow: 0px 4px 8px rgba(184, 151, 74, 0.5); /* Sombra sutil alrededor */
 }
 
 button:hover {
     background-color: #FFE786; /* Dorado oscuro */
     transform: scale(1.05);
+    box-shadow: 0px 6px 12px rgba(184, 151, 74, 0.8); /* Sombra más pronunciada al pasar el cursor */
+
 }
 
 /* Estilo de campos de formulario */
