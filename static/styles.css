@@ -142,3 +142,26 @@ button:hover {
     background-color: #FFC300; /* Amarillo más brillante */
     color: #000000; /* Negro */
 }
+
+/* Botones en la ventana principal */
+button {
+    font-family: 'Arial Bold', Arial, sans-serif;
+    font-weight: bold;
+    background-color: #FFD24C; /* Dorado fuerte */
+    color: #222222; /* Gris oscuro */
+    border: 2px solid #366E73; /* Nuevo color de borde */
+    padding: 15px 30px;
+    margin: 10px;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+    box-shadow: 0px 8px 16px rgba(54, 110, 115, 0.7); /* Nuevo sombreado */
+}
+
+button:hover {
+    background-color: #FFBA42; /* Dorado oscuro */
+    transform: scale(1.1); /* Aumenta el tamaño al pasar el cursor */
+    box-shadow: 0px 12px 24px rgba(54, 110, 115, 0.9); /* Sombra más pronunciada al hover */
+}
+
