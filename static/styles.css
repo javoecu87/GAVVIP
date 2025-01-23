@@ -73,8 +73,8 @@ button {
 
 button:hover {
     background-color: #FFE786; /* Dorado oscuro */
-    transform: scale(1.05);
-    box-shadow: 0px 6px 12px rgba(184, 151, 74, 0.8); /* Sombra más pronunciada al pasar el cursor */
+    transform: scale(1.1);
+    box-shadow: 0px 6px 12px rgba(184, 151, 74, 0.9); /* Sombra más pronunciada al pasar el cursor */
 
 }
 
