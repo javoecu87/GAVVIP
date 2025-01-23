@@ -4,79 +4,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solicitud de Taxi</title>
+    <link rel="stylesheet" href="/static/styles.css">
     <style>
+        /* Fondo específico para esta ventana */
         body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: url('/static/images/thx.png') no-repeat center center fixed;
+            background: url('/static/images/thx.png') no-repeat center center;
             background-size: cover;
-            color: #FFFFFF;
+            background-attachment: fixed;
         }
+        /* Contenedor del formulario */
         .container {
-            background: rgba(0, 0, 0, 0.8);
-            width: 100%;
-            max-width: 400px;
+            background-color: rgba(34, 34, 34, 0.6); /* Gris oscuro con transparencia */
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 400px;
+            margin: auto;
         }
         h1 {
+            color: #FFD700; /* Dorado */
             font-size: 1.8em;
-            text-align: center;
             margin-bottom: 20px;
-            color: #FFD24C;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
         }
         label {
-            font-size: 1em;
+            color: #FFFFFF; /* Blanco */
             font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
         }
         input, button {
-            padding: 12px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            font-size: 1em;
             width: 100%;
+            margin: 10px 0;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #FFD700; /* Dorado */
+        }
+        input {
+            background-color: rgba(255, 255, 255, 0.2); /* Transparente */
+            color: #FFFFFF; /* Blanco */
         }
         input:focus {
             outline: none;
-            border-color: #FFD24C;
-            box-shadow: 0 0 5px rgba(255, 210, 76, 0.8);
+            border-color: #FFBA42; /* Dorado oscuro */
+            box-shadow: 0 0 5px rgba(255, 186, 66, 0.8);
         }
         button {
-            background-color: #FFD24C;
-            color: #495254;
+            background-color: #FFD700; /* Dorado */
+            color: #222222; /* Gris oscuro */
             border: none;
             cursor: pointer;
             font-size: 1.1em;
             transition: background-color 0.3s ease;
+            font-weight: bold;
         }
         button:hover {
-            background-color: #FFBA42;
+            background-color: #FFBA42; /* Dorado oscuro */
             color: #FFFFFF;
         }
-        .back-button {
+        .back-link {
             margin-top: 20px;
         }
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 1.5em;
-            }
-            input, button {
-                font-size: 1em;
-                padding: 10px;
-            }
+        .back-link a {
+            text-decoration: none;
+            color: #FFD700; /* Dorado */
+            font-weight: bold;
+        }
+        .back-link a:hover {
+            color: #FFBA42; /* Dorado oscuro */
         }
     </style>
+    <script>
+        document.addEventListener("touchstart", function (event) {
+            const activeElement = document.activeElement;
+            if (activeElement && activeElement.tagName === "INPUT") {
+                activeElement.blur();
+            }
+        });
+
+        document.addEventListener("focusin", (event) => {
+            if (event.target.tagName === "INPUT") {
+                setTimeout(() => {
+                    event.target.scrollIntoView({ behavior: "smooth", block: "center" });
+                }, 300);
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="container">
@@ -99,17 +114,8 @@
 
             <button type="submit">Enviar Solicitud</button>
         </form>
-        <div class="back-button">
-            <a href="/principal" style="
-                text-decoration: none;
-                background-color: #FFD24C;
-                color: #495254;
-                padding: 10px 20px;
-                border-radius: 5px;
-                font-size: 1em;
-                transition: background-color 0.3s ease;">
-                Regresar al Menú Principal
-            </a>
+        <div class="back-link">
+            <a href="/principal">Regresar al Menú Principal</a>
         </div>
     </div>
 </body>
