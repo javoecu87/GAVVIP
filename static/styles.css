@@ -89,6 +89,7 @@ footer {
     color: #FFBA42; /* Mantén el color adecuado */
 }
 
+
 /* Eliminar subrayado de los enlaces */
 a {
     text-decoration: none; /* Elimina el subrayado */
@@ -122,3 +123,4 @@ h1 {
     font-family: 'Arial Bold', sans-serif;
     font-weight: 900;
 }
+
