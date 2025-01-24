@@ -3,8 +3,8 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family: 'Arial Bold', Arial, sans-serif; /* Tipo de letra global Arial Bold */
-    color: #FFE786; /* Dorado */
+    font-family: 'Arial', sans-serif;
+    color: #FFD700; /* Dorado */
     text-align: center; /* Asegura que todo esté centrado */
     display: flex;
     flex-direction: column;
@@ -31,7 +31,7 @@ html, body {
     background: url('/static/images/fondoventas.png') no-repeat center center;
     background-size: cover; /* Cubre toda la pantalla */
     background-attachment: fixed;
-    background-color: #1F3B5C; /* Azul oscuro */
+    background-color: #001f3f; /* Azul oscuro */
     min-height: 100vh;
     display: flex;
     flex-direction: column; /* Alinea elementos en columna */
@@ -57,51 +57,25 @@ html, body {
 
 /* Botones */
 button {
-    font-family: 'Arial Bold', Arial, sans-serif;
-    font-weight: bold;
-    background-color: #FFE786; /* Dorado fuerte */
-    color: ##1F3B5C; /* Gris oscuro */
-    border: 2px solid #B8974A; /* Sombra en los bordes */
-    padding: 15px 30px;
-    margin: 10px;
-    font-size: 18px;
+    font-family: 'Arial Bold', sans-serif;
+    font-weight: 900;  /* Hace las letras más gruesas */
+    background-color: #FFD24C; /* Dorado fuerte */
+    color: #222222; /* Gris oscuro */
+    border: none;
+    padding: 10px 20px; /* Compacta el tamaño */
+    margin: 10px 0; /* Espaciado entre botones */
+    font-size: 16px; /* Reduce el tamaño del texto */
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
-    box-shadow: 0px 4px 8px rgba(184, 151, 74, 0.5); /* Sombra sutil alrededor */
+    transition: background 0.3s, transform 0.2s;
+    width: 80%; /* Ajusta el ancho para que sean uniformes */
+    max-width: 300px;
 }
 
 button:hover {
-    background-color: #FFE786; /* Dorado oscuro */
-    transform: scale(1.1);
-    box-shadow: 0px 6px 12px rgba(184, 151, 74, 0.9); /* Sombra más pronunciada al pasar el cursor */
-
-}
-
-/* Estilo de campos de formulario */
-input, select, textarea {
-    width: 100%;
-    margin: 10px 0;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #FFE786; /* Dorado */
-    background-color: rgba(255, 255, 255, 0.2); /* Transparencia */
-    color: #FFFFFF; /* Blanco */
-    font-family: 'Arial Bold', Arial, sans-serif; /* Tipo de letra Arial Bold */
-}
-
-input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: #FFE786; /* Dorado oscuro */
-    box-shadow: 0 0 5px rgba(255, 186, 66, 0.8);
-}
-
-/* Estilo de encabezados */
-h1, h2, h3 {
-    font-family: 'Arial Bold', Arial, sans-serif;
-    font-weight: bold;
-    color: #FFFFFF; /* Blanco */
+    background-color: #FFBA42; /* Dorado oscuro */
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #366E73; /* Sombra visible */
 }
 
 /* Pie de página */
@@ -109,75 +83,23 @@ footer {
     text-align: center;
     margin: 20px 0;
     font-size: 14px;
-    color: #FFE786; /* Dorado oscuro */
+    color: #FFD700;
     position: absolute;
-    bottom: 10px;
+    bottom: 10px; /* Ajusta el valor según sea necesario */
     width: 100%;
+    text-align: center;
+    font-size: 14px;
+    color: #FFBA42; /* Mantén el color adecuado */
 }
 
 /* Eliminar subrayado de los enlaces */
 a {
-    text-decoration: none;
-    color: inherit;
+    text-decoration: none; /* Elimina el subrayado */
+    color: inherit; /* Usa el color de texto definido por el botón */
 }
 
-/* Ajuste de botones */
-button {
-    display: block;
-    width: 80%;
-    max-width: 300px;
-    margin: 10px auto;
-    padding: 15px;
-    font-size: 18px;
-    color: #001f3f; /* Azul oscuro */
-    background-color: #FFE786; /* Dorado */
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.3s ease;
-    text-decoration: none; /* Asegura que el texto no tenga subrayado */
+h1 {
+    color: #FFFFFF; /* Blanco óptico */
+    font-family: 'Arial Bold', sans-serif;
+    font-weight: 900;
 }
-
-button:hover {
-    background-color: #FFC300; /* Amarillo más brillante */
-    color: #000000; /* Negro */
-}
-
-/* Botones en la ventana principal */
-button {
-    font-family: 'Arial Bold', Arial, sans-serif;
-    font-weight: bold;
-    background-color: #FFD24C; /* Dorado fuerte */
-    color: #222222; /* Gris oscuro */
-    border: 2px solid #366E73; /* Nuevo color de borde */
-    padding: 15px 30px;
-    margin: 10px;
-    font-size: 18px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
-    box-shadow: 0px 8px 16px rgba(54, 110, 115, 0.7); /* Nuevo sombreado */
-}
-
-button:hover {
-    background-color: #FFBA42; /* Dorado oscuro */
-    transform: scale(0.8); /* Aumenta el tamaño al pasar el cursor */
-    box-shadow: 0px 12px 24px rgba(54, 110, 115, 0.9); /* Sombra más pronunciada al hover */
-}
-
-/* Asegurar que los botones estén centrados */
-.container {
-    display: flex;
-    flex-direction: column; /* Alinea los botones en columna */
-    align-items: center; /* Centra los botones horizontalmente */
-    justify-content: center; /* Centra los botones verticalmente si es necesario */
-}
-
-/* Botones con margen automático para mantener la alineación */
-button {
-    display: block;
-    margin: 10px auto; /* Centra los botones horizontalmente */
-    width: 80%; /* Ajusta el ancho del botón según sea necesario */
-    max-width: 300px; /* Establece un tamaño máximo */
-}
-
