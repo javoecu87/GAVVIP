@@ -4,7 +4,7 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: 'Arial', sans-serif;
-    color: #FFD700; /* Dorado */
+    color: #FFE786; /* Dorado */
     text-align: center; /* Asegura que todo esté centrado */
     display: flex;
     flex-direction: column;
@@ -19,7 +19,7 @@ html, body {
     background: url('/static/images/emergente.png') no-repeat center center;
     background-size: cover; /* Cubre toda la pantalla */
     background-attachment: fixed;
-    background-color: #001f3f; /* Azul oscuro */
+    background-color: #1F3B5C; /* Azul oscuro */
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -31,7 +31,7 @@ html, body {
     background: url('/static/images/fondoventas.png') no-repeat center center;
     background-size: cover; /* Cubre toda la pantalla */
     background-attachment: fixed;
-    background-color: #001f3f; /* Azul oscuro */
+    background-color: #1F3B5C; /* Azul oscuro */
     min-height: 100vh;
     display: flex;
     flex-direction: column; /* Alinea elementos en columna */
@@ -59,7 +59,7 @@ html, body {
 button {
     font-family: 'Arial Bold', sans-serif;
     font-weight: 900;  /* Hace las letras más gruesas */
-    background-color: #FFD24C; /* Dorado fuerte */
+    background-color: #FFE786; /* Dorado fuerte */
     color: #222222; /* Gris oscuro */
     border: none;
     padding: 10px 20px; /* Compacta el tamaño */
@@ -73,8 +73,8 @@ button {
 }
 
 button:hover {
-    background-color: #FFBA42; /* Dorado oscuro */
-    transform: scale(1.05);
+    background-color: #FFE786; /* Dorado oscuro */
+    transform: scale(1.4);
     box-shadow: 0 0 10px #366E73; /* Sombra visible */
 }
 
@@ -89,7 +89,7 @@ footer {
     width: 100%;
     text-align: center;
     font-size: 14px;
-    color: #FFBA42; /* Mantén el color adecuado */
+    color: #FFE786; /* Mantén el color adecuado */
 }
 
 /* Eliminar subrayado de los enlaces */
