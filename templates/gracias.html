@@ -4,34 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gracias</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #366E73;
-            background-image: url('pic.jpg');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            margin: 50px auto;
-            max-width: 600px;
-            background-color: rgba(54, 110, 115, 0.6);
-            border-radius: 10px;
-            padding: 20px;
-        }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body>
-    <div class="container">
-        <h1>{{ mensaje }}</h1>
+<body class="background-gracias">
+    <div>
+        <h1>¡Gracias!</h1>
+        <p>Tu solicitud ha sido procesada con éxito.</p>
+        <a href="/principal"><button>Volver al Menú Principal</button></a>
     </div>
 </body>
 </html>
