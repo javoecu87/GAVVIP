@@ -59,23 +59,24 @@ html, body {
 button {
     font-family: 'Arial Bold', sans-serif;
     font-weight: 900;  /* Hace las letras más gruesas */
-    background-color: #FFE786; /* Dorado fuerte */
-    color: #222222; /* Gris oscuro */
+    background-color: #FFE786; /* Dorado */
+    color: #1F3B5C; /* Azul oscuro */
     border: none;
-    padding: 10px 20px; /* Compacta el tamaño */
-    margin: 10px 0; /* Espaciado entre botones */
-    font-size: 16px; /* Reduce el tamaño del texto */
+    padding: 15px 30px;
+    margin: 10px 0;
+    font-size: 18px;
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
+    transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
     width: 80%; /* Ajusta el ancho para que sean uniformes */
     max-width: 300px;
+    box-shadow: 0px 5px 15px #7D6029; /* Sombra encima del botón */
 }
 
 button:hover {
-    background-color: #FFE786; /* Dorado oscuro */
-    transform: scale(1.4);
-    box-shadow: 0 0 10px #366E73; /* Sombra visible */
+    background-color: #FFD700; /* Un dorado más fuerte */
+    transform: translateY(-2px); /* Eleva el botón al pasar el mouse */
+    box-shadow: 0px 7px 20px #7D6029; /* Sombra más intensa al pasar el mouse */
 }
 
 /* Pie de página */
