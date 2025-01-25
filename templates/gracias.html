@@ -22,9 +22,10 @@
         #map {
             width: 100%;
             height: 50vh; /* La mitad de la altura de la pantalla */
-            border-radius: 15px; /* Bordes redondeados como en las apps tipo Uber/Indrive */
+            border-radius: 15px; /* Bordes redondeados */
             box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Sombra sutil */
             margin-top: 20px;
+            background-color: #366E73; /* Mismo color de fondo que la ventana */
         }
 
         #distancia, #tiempo {
@@ -35,7 +36,7 @@
         /* Contenedor del mapa y texto para mejor alineación */
         .map-container {
             width: 90%;
-            max-width: 600px;
+            max-width: 800px;
             margin: 20px auto;
             text-align: center;
         }
@@ -73,141 +74,8 @@
             const clienteLatLng = { lat: CLIENTE_LATITUD, lng: CLIENTE_LONGITUD };
             map = new google.maps.Map(document.getElementById("map"), {
                 center: clienteLatLng,
-                zoom: 14,
-                disableDefaultUI: true, // Desactivar los controles predeterminados para mayor simplicidad
-                styles: [ // Estilo similar a las aplicaciones de transporte como Uber/Indrive
-                    {
-                        "elementType": "geometry",
-                        "stylers": [
-                            {
-                                "color": "#212121"
-                            }
-                        ]
-                    },
-                    {
-                        "elementType": "labels.icon",
-                        "stylers": [
-                            {
-                                "visibility": "off"
-                            }
-                        ]
-                    },
-                    {
-                        "elementType": "labels.text.fill",
-                        "stylers": [
-                            {
-                                "color": "#757575"
-                            }
-                        ]
-                    },
-                    {
-                        "elementType": "labels.text.stroke",
-                        "stylers": [
-                            {
-                                "color": "#212121"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "administrative.land_parcel",
-                        "elementType": "labels.text.fill",
-                        "stylers": [
-                            {
-                                "color": "#BDBDBD"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "poi",
-                        "elementType": "geometry",
-                        "stylers": [
-                            {
-                                "color": "#eeeeee"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "poi",
-                        "elementType": "labels.text.fill",
-                        "stylers": [
-                            {
-                                "color": "#757575"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "road",
-                        "elementType": "geometry",
-                        "stylers": [
-                            {
-                                "color": "#212121"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "road.arterial",
-                        "elementType": "labels.text.fill",
-                        "stylers": [
-                            {
-                                "color": "#757575"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "road.highway",
-                        "elementType": "geometry",
-                        "stylers": [
-                            {
-                                "color": "#373737"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "road.highway",
-                        "elementType": "labels.text.fill",
-                        "stylers": [
-                            {
-                                "color": "#BDBDBD"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "transit",
-                        "elementType": "geometry",
-                        "stylers": [
-                            {
-                                "color": "#2f2f2f"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "transit.station",
-                        "elementType": "labels.text.fill",
-                        "stylers": [
-                            {
-                                "color": "#BDBDBD"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "water",
-                        "elementType": "geometry",
-                        "stylers": [
-                            {
-                                "color": "#000000"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "water",
-                        "elementType": "labels.text.fill",
-                        "stylers": [
-                            {
-                                "color": "#3d3d3d"
-                            }
-                        ]
-                    }
-                ]
+                zoom: 14,  // Ajusta el zoom según sea necesario
+                disableDefaultUI: true,  // Desactivar los controles predeterminados
             });
 
             // Marcar la ubicación del cliente
