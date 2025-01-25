@@ -25,7 +25,6 @@
             border-radius: 15px; /* Bordes redondeados */
             box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Sombra sutil */
             margin-top: 20px;
-            background-color: #366E73; /* Mismo color de fondo que la ventana */
         }
 
         #distancia, #tiempo {
@@ -68,6 +67,105 @@
         const VEHICULO_LATITUD = {{ vehiculo_latitud }};  // Pasada desde Flask
         const VEHICULO_LONGITUD = {{ vehiculo_longitud }};  // Pasada desde Flask
 
+        // Estilos del mapa (similar al estilo de Uber)
+        const mapStyles = [
+            {
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#212121"
+                    }
+                ]
+            },
+            {
+                "elementType": "labels.icon",
+                "stylers": [
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            },
+            {
+                "elementType": "labels.text.fill",
+                "stylers": [
+                    {
+                        "color": "#757575"
+                    }
+                ]
+            },
+            {
+                "elementType": "labels.text.stroke",
+                "stylers": [
+                    {
+                        "color": "#212121"
+                    }
+                ]
+            },
+            {
+                "featureType": "poi",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#eeeeee"
+                    }
+                ]
+            },
+            {
+                "featureType": "road",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#3e3e3e"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.arterial",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                    {
+                        "color": "#757575"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.highway",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#373737"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.highway",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                    {
+                        "color": "#BDBDBD"
+                    }
+                ]
+            },
+            {
+                "featureType": "transit",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#2f2f2f"
+                    }
+                ]
+            },
+            {
+                "featureType": "water",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#000000"
+                    }
+                ]
+            }
+        ];
+
         // Función para inicializar el mapa
         function initMap() {
             // Inicializar el mapa centrado en la ubicación del cliente
@@ -76,6 +174,7 @@
                 center: clienteLatLng,
                 zoom: 14,  // Ajusta el zoom según sea necesario
                 disableDefaultUI: true,  // Desactivar los controles predeterminados
+                styles: mapStyles,  // Aplicar los estilos personalizados
             });
 
             // Marcar la ubicación del cliente
