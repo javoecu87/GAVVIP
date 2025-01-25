@@ -17,20 +17,34 @@
             padding: 0;
             text-align: center;
         }
+
+        /* Ajustar el contenedor del mapa para que ocupe la mitad de la pantalla */
         #map {
             width: 100%;
-            height: 400px;
+            height: 50vh; /* La mitad de la altura de la pantalla */
+            border-radius: 15px; /* Bordes redondeados como en las apps tipo Uber/Indrive */
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+            margin-top: 20px;
         }
+
         #distancia, #tiempo {
             font-size: 1.2em;
             color: #FFFFFF;
+        }
+
+        /* Contenedor del mapa y texto para mejor alineación */
+        .map-container {
+            width: 90%;
+            max-width: 600px;
+            margin: 20px auto;
+            text-align: center;
         }
     </style>
     <!-- Agregar la API de Google Maps -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&callback=initMap&v=weekly" async></script>
 </head>
 <body>
-    <div>
+    <div class="map-container">
         <h1>¡Gracias por tu solicitud!</h1>
         <p>Tu solicitud ha sido procesada. Aquí está el mapa con tu ubicación y la del vehículo:</p>
         
@@ -48,10 +62,10 @@
         let vehiculoMarker;
 
         // Coordenadas de ejemplo: Reemplaza estas con los valores reales
-        const CLIENTE_LATITUD = 19.4326;  // Ejemplo de latitud cliente
-        const CLIENTE_LONGITUD = -99.1332;  // Ejemplo de longitud cliente
-        const VEHICULO_LATITUD = 19.4500;  // Ejemplo de latitud vehículo
-        const VEHICULO_LONGITUD = -99.1700;  // Ejemplo de longitud vehículo
+        const CLIENTE_LATITUD = {{ cliente_latitud }};  // Pasada desde Flask
+        const CLIENTE_LONGITUD = {{ cliente_longitud }};  // Pasada desde Flask
+        const VEHICULO_LATITUD = {{ vehiculo_latitud }};  // Pasada desde Flask
+        const VEHICULO_LONGITUD = {{ vehiculo_longitud }};  // Pasada desde Flask
 
         // Función para inicializar el mapa
         function initMap() {
@@ -59,7 +73,141 @@
             const clienteLatLng = { lat: CLIENTE_LATITUD, lng: CLIENTE_LONGITUD };
             map = new google.maps.Map(document.getElementById("map"), {
                 center: clienteLatLng,
-                zoom: 14
+                zoom: 14,
+                disableDefaultUI: true, // Desactivar los controles predeterminados para mayor simplicidad
+                styles: [ // Estilo similar a las aplicaciones de transporte como Uber/Indrive
+                    {
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#212121"
+                            }
+                        ]
+                    },
+                    {
+                        "elementType": "labels.icon",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#757575"
+                            }
+                        ]
+                    },
+                    {
+                        "elementType": "labels.text.stroke",
+                        "stylers": [
+                            {
+                                "color": "#212121"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "administrative.land_parcel",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#BDBDBD"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#eeeeee"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#757575"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#212121"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.arterial",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#757575"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#373737"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#BDBDBD"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#2f2f2f"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit.station",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#BDBDBD"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#000000"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#3d3d3d"
+                            }
+                        ]
+                    }
+                ]
             });
 
             // Marcar la ubicación del cliente
