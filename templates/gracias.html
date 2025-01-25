@@ -20,8 +20,8 @@
 
         /* Ajustar el contenedor del mapa para que ocupe toda la pantalla en dispositivos grandes */
         #map {
-            width: 100%; /* Ocupa todo el ancho de la pantalla */
-            height: 100%; /* Ocupa todo el alto disponible */
+            width: 100%;
+            height: 50vh; /* La mitad de la altura de la pantalla */
             border-radius: 15px; /* Bordes redondeados */
             box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Sombra sutil */
             margin-top: 20px;
@@ -34,19 +34,10 @@
 
         /* Contenedor del mapa y texto para mejor alineación */
         .map-container {
-            width: 100%;
-            height: 100%;
+            width: 90%;
             max-width: 800px;
-            margin: 0;
-            padding: 0;
+            margin: 20px auto;
             text-align: center;
-        }
-
-        /* Para dispositivos más pequeños, ajustamos el tamaño del mapa */
-        @media (max-width: 768px) {
-            #map {
-                height: 50vh; /* La mitad de la pantalla en pantallas más pequeñas */
-            }
         }
     </style>
     <!-- Agregar la API de Google Maps -->
@@ -70,11 +61,39 @@
         let clienteMarker;
         let vehiculoMarker;
 
-        // Coordenadas de ejemplo: Reemplaza estas con los valores reales
-        const CLIENTE_LATITUD = {{ cliente_latitud }};  // Pasada desde Flask
-        const CLIENTE_LONGITUD = {{ cliente_longitud }};  // Pasada desde Flask
-        const VEHICULO_LATITUD = {{ vehiculo_latitud }};  // Pasada desde Flask
-        const VEHICULO_LONGITUD = {{ vehiculo_longitud }};  // Pasada desde Flask
+        // Obtener la ubicación actual del usuario usando la API de Geolocalización
+        function obtenerUbicacionUsuario() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(mostrarUbicacionUsuario, manejarError);
+            } else {
+                alert("Geolocalización no soportada por este navegador.");
+            }
+        }
+
+        function mostrarUbicacionUsuario(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            // Mostrar el mapa centrado en la ubicación del usuario
+            const clienteLatLng = { lat: lat, lng: lon };
+            map.setCenter(clienteLatLng);
+
+            // Marcar la ubicación del cliente en el mapa
+            if (clienteMarker) {
+                clienteMarker.setPosition(clienteLatLng); // Mover el marcador si ya existe
+            } else {
+                clienteMarker = new google.maps.Marker({
+                    position: clienteLatLng,
+                    map: map,
+                    title: "Tu Ubicación"
+                });
+            }
+        }
+
+        function manejarError(error) {
+            console.error(error);
+            alert("No se pudo obtener tu ubicación.");
+        }
 
         // Estilos del mapa (similar al estilo de Uber)
         const mapStyles = [
@@ -83,84 +102,6 @@
                 "stylers": [
                     {
                         "color": "#212121"
-                    }
-                ]
-            },
-            {
-                "elementType": "labels.icon",
-                "stylers": [
-                    {
-                        "visibility": "off"
-                    }
-                ]
-            },
-            {
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#757575"
-                    }
-                ]
-            },
-            {
-                "elementType": "labels.text.stroke",
-                "stylers": [
-                    {
-                        "color": "#212121"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi",
-                "elementType": "geometry",
-                "stylers": [
-                    {
-                        "color": "#eeeeee"
-                    }
-                ]
-            },
-            {
-                "featureType": "road",
-                "elementType": "geometry",
-                "stylers": [
-                    {
-                        "color": "#3e3e3e"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.arterial",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#757575"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.highway",
-                "elementType": "geometry",
-                "stylers": [
-                    {
-                        "color": "#373737"
-                    }
-                ]
-            },
-            {
-                "featureType": "road.highway",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    {
-                        "color": "#BDBDBD"
-                    }
-                ]
-            },
-            {
-                "featureType": "transit",
-                "elementType": "geometry",
-                "stylers": [
-                    {
-                        "color": "#2f2f2f"
                     }
                 ]
             },
@@ -177,8 +118,8 @@
 
         // Función para inicializar el mapa
         function initMap() {
-            // Inicializar el mapa centrado en la ubicación del cliente
-            const clienteLatLng = { lat: CLIENTE_LATITUD, lng: CLIENTE_LONGITUD };
+            // Inicializar el mapa centrado en la ubicación del cliente (predeterminado, cambiar después)
+            const clienteLatLng = { lat: 19.4326, lng: -99.1332 }; // Esto se actualizará con la geolocalización
             map = new google.maps.Map(document.getElementById("map"), {
                 center: clienteLatLng,
                 zoom: 14,  // Ajusta el zoom según sea necesario
@@ -186,15 +127,11 @@
                 styles: mapStyles,  // Aplicar los estilos personalizados
             });
 
-            // Marcar la ubicación del cliente
-            clienteMarker = new google.maps.Marker({
-                position: clienteLatLng,
-                map: map,
-                title: "Cliente"
-            });
+            // Obtener la ubicación del usuario
+            obtenerUbicacionUsuario();
 
-            // Marcar la ubicación del vehículo
-            const vehiculoLatLng = { lat: VEHICULO_LATITUD, lng: VEHICULO_LONGITUD };
+            // Marcar la ubicación del vehículo (puedes cambiar las coordenadas según lo necesites)
+            const vehiculoLatLng = { lat: {{ vehiculo_latitud }} , lng: {{ vehiculo_longitud }} };
             vehiculoMarker = new google.maps.Marker({
                 position: vehiculoLatLng,
                 map: map,
@@ -226,4 +163,3 @@
     </script>
 </body>
 </html>
-
