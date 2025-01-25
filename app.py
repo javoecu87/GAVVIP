@@ -144,7 +144,7 @@ def solicitar_taxi():
         )
 
         enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
-        return render_template('success.html', mensaje="¡Gracias! Su solicitud de taxi ha sido enviada.")
+        return render_template('gracias.html', mensaje="¡Gracias! Su solicitud de taxi ha sido enviada.")
     except Exception as e:
         app.logger.error(f"Error en /solicitar-taxi: {e}")
         return "Error al procesar la solicitud de taxi.", 500
