@@ -18,10 +18,10 @@
             text-align: center;
         }
 
-        /* Ajustar el contenedor del mapa para que ocupe la mitad de la pantalla */
+        /* Ajustar el contenedor del mapa para que ocupe toda la pantalla en dispositivos grandes */
         #map {
-            width: 100%;
-            height: 50vh; /* La mitad de la altura de la pantalla */
+            width: 100%; /* Ocupa todo el ancho de la pantalla */
+            height: 100%; /* Ocupa todo el alto disponible */
             border-radius: 15px; /* Bordes redondeados */
             box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Sombra sutil */
             margin-top: 20px;
@@ -34,10 +34,19 @@
 
         /* Contenedor del mapa y texto para mejor alineación */
         .map-container {
-            width: 90%;
+            width: 100%;
+            height: 100%;
             max-width: 800px;
-            margin: 20px auto;
+            margin: 0;
+            padding: 0;
             text-align: center;
+        }
+
+        /* Para dispositivos más pequeños, ajustamos el tamaño del mapa */
+        @media (max-width: 768px) {
+            #map {
+                height: 50vh; /* La mitad de la pantalla en pantallas más pequeñas */
+            }
         }
     </style>
     <!-- Agregar la API de Google Maps -->
@@ -217,3 +226,4 @@
     </script>
 </body>
 </html>
+
