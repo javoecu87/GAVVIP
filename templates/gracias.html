@@ -4,23 +4,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gracias</title>
-</head>
     <style>
         body {
-        background-color: #366E73 !important;
-        color: #FFE786 !important;
+            background-color: #366E73;
+            color: #FFE786;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        #map {
+            width: 100%;
+            height: 400px;
+        }
+        #distancia, #tiempo {
+            font-size: 1.2em;
+            color: #FFFFFF;
         }
     </style>
+    <!-- Agregar la API de Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&callback=initMap&v=weekly" async></script>
+</head>
+<body>
+    <div>
+        <h1>¡Gracias por tu solicitud!</h1>
+        <p>Tu solicitud ha sido procesada. Aquí está el mapa con tu ubicación y la del vehículo:</p>
+        
+        <!-- Contenedor del mapa -->
+        <div id="map"></div>
 
-<body style="background-color: #366E73; color: #FFE786; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; padding: 0; text-align: center;">
-<body class="background-gracias">
-<link rel="stylesheet" href="/static/styles.css">
-
-    <div class="container">
-        <h1>¡Gracias!</h1>
-        <p>Tu solicitud ha sido procesada con éxito.</p>
-        <a href="/principal"><button>Volver al Menú Principal</button></a>
+        <!-- Mostrar Distancia y Tiempo -->
+        <div id="distancia"></div>
+        <div id="tiempo"></div>
     </div>
-</body>
 
+    <script>
+        let map;
+        let clienteMarker;
+        let vehiculoMarker;
+
+        // Coordenadas de ejemplo: Reemplaza estas con los valores reales
+        const CLIENTE_LATITUD = 19.4326;  // Ejemplo de latitud cliente
+        const CLIENTE_LONGITUD = -99.1332;  // Ejemplo de longitud cliente
+        const VEHICULO_LATITUD = 19.4500;  // Ejemplo de latitud vehículo
+        const VEHICULO_LONGITUD = -99.1700;  // Ejemplo de longitud vehículo
+
+        // Función para inicializar el mapa
+        function initMap() {
+            // Inicializar el mapa centrado en la ubicación del cliente
+            const clienteLatLng = { lat: CLIENTE_LATITUD, lng: CLIENTE_LONGITUD };
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: clienteLatLng,
+                zoom: 14
+            });
+
+            // Marcar la ubicación del cliente
+            clienteMarker = new google.maps.Marker({
+                position: clienteLatLng,
+                map: map,
+                title: "Cliente"
+            });
+
+            // Marcar la ubicación del vehículo
+            const vehiculoLatLng = { lat: VEHICULO_LATITUD, lng: VEHICULO_LONGITUD };
+            vehiculoMarker = new google.maps.Marker({
+                position: vehiculoLatLng,
+                map: map,
+                title: "Vehículo"
+            });
+
+            // Calcular la distancia y tiempo entre el cliente y el vehículo
+            const service = new google.maps.DistanceMatrixService();
+            service.getDistanceMatrix(
+                {
+                    origins: [clienteLatLng],
+                    destinations: [vehiculoLatLng],
+                    travelMode: google.maps.TravelMode.DRIVING,
+                }, callback);
+        }
+
+        // Función de callback para mostrar la distancia y el tiempo estimado
+        function callback(response, status) {
+            if (status == "OK") {
+                const results = response.rows[0].elements[0];
+                const distancia = results.distance.text;
+                const tiempo = results.duration.text;
+
+                // Mostrar la distancia y el tiempo estimado
+                document.getElementById("distancia").innerText = `Distancia: ${distancia}`;
+                document.getElementById("tiempo").innerText = `Tiempo estimado: ${tiempo}`;
+            }
+        }
+    </script>
+</body>
 </html>
