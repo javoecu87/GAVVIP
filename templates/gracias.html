@@ -64,7 +64,7 @@
         // Obtener la ubicación actual del usuario usando la API de Geolocalización
         function obtenerUbicacionUsuario() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(mostrarUbicacionUsuario, manejarError);
+                navigator.geolocation.getCurrentPosition(mostrarUbicacionUsuario, manejarError, {timeout: 10000, enableHighAccuracy: true});
             } else {
                 alert("Geolocalización no soportada por este navegador.");
             }
@@ -91,8 +91,22 @@
         }
 
         function manejarError(error) {
-            console.error(error);
-            alert("No se pudo obtener tu ubicación.");
+            let mensaje = "No se pudo obtener tu ubicación.";
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    mensaje = "Permiso denegado. Por favor habilita los permisos de ubicación.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    mensaje = "No se pudo obtener la ubicación.";
+                    break;
+                case error.TIMEOUT:
+                    mensaje = "El tiempo de solicitud ha expirado.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    mensaje = "Error desconocido.";
+                    break;
+            }
+            alert(mensaje);
         }
 
         // Estilos del mapa (similar al estilo de Uber)
