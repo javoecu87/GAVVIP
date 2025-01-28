@@ -15,6 +15,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
+            overflow: hidden;  /* Evitar scroll en el body */
         }
 
         /* Hacer que el mapa ocupe toda la pantalla como fondo */
@@ -34,6 +35,7 @@
             z-index: 1; /* Asegurarse de que el contenido esté sobre el mapa */
             width: 90%;
             max-width: 800px;
+            text-align: center;
         }
 
         h1, p {
@@ -109,6 +111,7 @@
                 fullscreenControl: false,  // Desactivar control de pantalla completa
                 disableDefaultUI: false,  // Permitir la manipulación completa
                 styles: mapStyles,  // Aplicar los estilos personalizados
+                draggable: true,  // Permitir que el mapa sea arrastrable
             });
 
             // Marcar la ubicación del cliente
