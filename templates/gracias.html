@@ -6,25 +6,39 @@
     <title>Gracias</title>
     <style>
         body {
-            background-color: #366E73;
-            color: #FFE786;
+            background-color: #366E73; /* El color de fondo de la ventana */
+            color: #FFE786;  /* Color de texto */
             height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             margin: 0;
             padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             text-align: center;
         }
 
-        /* Ajustar el contenedor del mapa para que ocupe toda la pantalla en dispositivos grandes */
+        /* Hacer que el mapa ocupe toda la pantalla como fondo */
         #map {
-            width: 100%;
-            height: 50vh; /* La mitad de la altura de la pantalla */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%; /* Ocupar todo el ancho */
+            height: 100%; /* Ocupar todo el alto */
+            z-index: -1;  /* Colocar el mapa detrás del contenido */
             border-radius: 15px; /* Bordes redondeados */
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Sombra sutil */
-            margin-top: 20px;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1; /* Asegurarse de que el contenido esté sobre el mapa */
+            width: 90%;
+            max-width: 800px;
+        }
+
+        h1, p {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #FFE786;
         }
 
         #distancia, #tiempo {
@@ -32,82 +46,34 @@
             color: #FFFFFF;
         }
 
-        /* Contenedor del mapa y texto para mejor alineación */
-        .map-container {
-            width: 90%;
-            max-width: 800px;
-            margin: 20px auto;
-            text-align: center;
-        }
     </style>
     <!-- Agregar la API de Google Maps -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&callback=initMap&v=weekly" async></script>
 </head>
 <body>
-    <div class="map-container">
+    <!-- Contenedor del contenido -->
+    <div class="content">
         <h1>¡Gracias por tu solicitud!</h1>
         <p>Tu solicitud ha sido procesada. Aquí está el mapa con tu ubicación y la del vehículo:</p>
         
-        <!-- Contenedor del mapa -->
-        <div id="map"></div>
-
-        <!-- Mostrar Distancia y Tiempo -->
+        <!-- Mostrar la Distancia y Tiempo -->
         <div id="distancia"></div>
         <div id="tiempo"></div>
     </div>
+
+    <!-- Contenedor del mapa -->
+    <div id="map"></div>
 
     <script>
         let map;
         let clienteMarker;
         let vehiculoMarker;
 
-        // Obtener la ubicación actual del usuario usando la API de Geolocalización
-        function obtenerUbicacionUsuario() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(mostrarUbicacionUsuario, manejarError, {timeout: 10000, enableHighAccuracy: true});
-            } else {
-                alert("Geolocalización no soportada por este navegador.");
-            }
-        }
-
-        function mostrarUbicacionUsuario(position) {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-
-            // Mostrar el mapa centrado en la ubicación del usuario
-            const clienteLatLng = { lat: lat, lng: lon };
-            map.setCenter(clienteLatLng);
-
-            // Marcar la ubicación del cliente en el mapa
-            if (clienteMarker) {
-                clienteMarker.setPosition(clienteLatLng); // Mover el marcador si ya existe
-            } else {
-                clienteMarker = new google.maps.Marker({
-                    position: clienteLatLng,
-                    map: map,
-                    title: "Tu Ubicación"
-                });
-            }
-        }
-
-        function manejarError(error) {
-            let mensaje = "No se pudo obtener tu ubicación.";
-            switch(error.code) {
-                case error.PERMISSION_DENIED:
-                    mensaje = "Permiso denegado. Por favor habilita los permisos de ubicación.";
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    mensaje = "No se pudo obtener la ubicación.";
-                    break;
-                case error.TIMEOUT:
-                    mensaje = "El tiempo de solicitud ha expirado.";
-                    break;
-                case error.UNKNOWN_ERROR:
-                    mensaje = "Error desconocido.";
-                    break;
-            }
-            alert(mensaje);
-        }
+        // Coordenadas de ejemplo: Reemplaza estas con las reales
+        const CLIENTE_LATITUD = {{ cliente_latitud }};  // Pasada desde Flask
+        const CLIENTE_LONGITUD = {{ cliente_longitud }};  // Pasada desde Flask
+        const VEHICULO_LATITUD = {{ vehiculo_latitud }};  // Pasada desde Flask
+        const VEHICULO_LONGITUD = {{ vehiculo_longitud }};  // Pasada desde Flask
 
         // Estilos del mapa (similar al estilo de Uber)
         const mapStyles = [
@@ -132,8 +98,8 @@
 
         // Función para inicializar el mapa
         function initMap() {
-            // Inicializar el mapa centrado en la ubicación del cliente (predeterminado, cambiar después)
-            const clienteLatLng = { lat: 19.4326, lng: -99.1332 }; // Esto se actualizará con la geolocalización
+            // Inicializar el mapa centrado en la ubicación del cliente
+            const clienteLatLng = { lat: CLIENTE_LATITUD, lng: CLIENTE_LONGITUD };
             map = new google.maps.Map(document.getElementById("map"), {
                 center: clienteLatLng,
                 zoom: 14,  // Ajusta el zoom según sea necesario
@@ -141,11 +107,15 @@
                 styles: mapStyles,  // Aplicar los estilos personalizados
             });
 
-            // Obtener la ubicación del usuario
-            obtenerUbicacionUsuario();
+            // Marcar la ubicación del cliente
+            clienteMarker = new google.maps.Marker({
+                position: clienteLatLng,
+                map: map,
+                title: "Tu Ubicación"
+            });
 
-            // Marcar la ubicación del vehículo (puedes cambiar las coordenadas según lo necesites)
-            const vehiculoLatLng = { lat: {{ vehiculo_latitud }} , lng: {{ vehiculo_longitud }} };
+            // Marcar la ubicación del vehículo
+            const vehiculoLatLng = { lat: VEHICULO_LATITUD, lng: VEHICULO_LONGITUD };
             vehiculoMarker = new google.maps.Marker({
                 position: vehiculoLatLng,
                 map: map,
