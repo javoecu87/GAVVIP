@@ -6,7 +6,7 @@
     <title>Gracias</title>
     <style>
         body {
-            background-color: #366E73; /* El color de fondo de la ventana */
+            background-color: #366E73; /* Color de fondo de la ventana */
             color: #FFE786;  /* Color de texto */
             height: 100vh;
             margin: 0;
@@ -22,12 +22,13 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%; /* Ocupar todo el ancho */
-            height: 100%; /* Ocupar todo el alto */
+            width: 100%; /* Ocupa todo el ancho de la pantalla */
+            height: 100%; /* Ocupa todo el alto de la pantalla */
             z-index: -1;  /* Colocar el mapa detrás del contenido */
             border-radius: 15px; /* Bordes redondeados */
         }
 
+        /* Contenedor del contenido encima del mapa */
         .content {
             position: relative;
             z-index: 1; /* Asegurarse de que el contenido esté sobre el mapa */
@@ -45,7 +46,6 @@
             font-size: 1.2em;
             color: #FFFFFF;
         }
-
     </style>
     <!-- Agregar la API de Google Maps -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&callback=initMap&v=weekly" async></script>
@@ -103,7 +103,12 @@
             map = new google.maps.Map(document.getElementById("map"), {
                 center: clienteLatLng,
                 zoom: 14,  // Ajusta el zoom según sea necesario
-                disableDefaultUI: true,  // Desactivar los controles predeterminados
+                // Permitimos la interacción básica del mapa (desactivando controles no necesarios)
+                zoomControl: true,  // Habilitar control de zoom
+                streetViewControl: false,  // Desactivar vista de calle
+                mapTypeControl: false,  // Desactivar el control de tipo de mapa
+                fullscreenControl: false,  // Desactivar control de pantalla completa
+                disableDefaultUI: false,  // No deshabilitar la UI por completo
                 styles: mapStyles,  // Aplicar los estilos personalizados
             });
 
