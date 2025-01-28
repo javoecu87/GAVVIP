@@ -6,7 +6,7 @@
     <title>Gracias</title>
     <style>
         body {
-            background-color: #366E73; /* Color de fondo de la ventana */
+            background-color: #366E73; /* El color de fondo de la ventana */
             color: #FFE786;  /* Color de texto */
             height: 100vh;
             margin: 0;
@@ -103,12 +103,11 @@
             map = new google.maps.Map(document.getElementById("map"), {
                 center: clienteLatLng,
                 zoom: 14,  // Ajusta el zoom según sea necesario
-                // Permitimos la interacción básica del mapa (desactivando controles no necesarios)
                 zoomControl: true,  // Habilitar control de zoom
                 streetViewControl: false,  // Desactivar vista de calle
                 mapTypeControl: false,  // Desactivar el control de tipo de mapa
                 fullscreenControl: false,  // Desactivar control de pantalla completa
-                disableDefaultUI: false,  // No deshabilitar la UI por completo
+                disableDefaultUI: false,  // Permitir la manipulación completa
                 styles: mapStyles,  // Aplicar los estilos personalizados
             });
 
