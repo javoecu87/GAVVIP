@@ -60,9 +60,19 @@
     </div>
 
     <!-- Video de fondo -->
-    <video autoplay muted loop playsinline>
-        <source src="{{ url_for('static', filename='images/test.webm') }}" type="video/webm">
+    <video id="videoFondo" muted loop playsinline>
+       <source src="{{ url_for('static', filename='images/mm.webm') }}" type="video/webm">
         Tu navegador no soporta la etiqueta de video.
     </video>
+
+ <button onclick="document.getElementById('videoFondo').play()">Reproducir Video</button>
+
 </body>
 </html>
+
+
+
+
+
+
+
