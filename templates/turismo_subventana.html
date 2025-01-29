@@ -75,10 +75,19 @@
     </div>
 
     <!-- Video de fondo -->
-    <video autoplay muted loop playsinline>
-        <source src="{{ url_for('static', filename='images/mm.webm') }}" type="video/webm">
-        <source src="{{ url_for('static', filename='images/mm.mp4') }}" type="video/mp4">
-        Tu navegador no soporta la etiqueta de video.
-    </video>
+    <video id="videoFondo" muted loop playsinline>
+    <source src="{{ url_for('static', filename='images/mm.webm') }}" type="video/webm">
+    Tu navegador no soporta la etiqueta de video.
+</video>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var video = document.getElementById("videoFondo");
+        video.play().catch(error => {
+            console.log("Autoplay bloqueado, esperando interacción del usuario.");
+        });
+    });
+</script>
+
 </body>
 </html>
