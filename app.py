@@ -32,7 +32,11 @@ def enviar_mensaje(mensaje, token):
 
 @app.route('/fletes-mudanzas')
 def fletes_mudanzas():
-    return render_template('fletes_mudanzas.html')
+    return render_template('fletes_mudanzas.html') 
+
+@app.route('/static/images/<path:filename>')
+def serve_images(filename):
+    return send_from_directory('static/images', filename)
 
 # Procesar formulario de Fletes y Mudanzas
 @app.route('/solicitar-fletes-mudanzas', methods=['POST'])
