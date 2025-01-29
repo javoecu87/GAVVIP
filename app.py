@@ -30,13 +30,15 @@ async def enviar_mensaje_async(mensaje, token):
 def enviar_mensaje(mensaje, token):
     asyncio.run(enviar_mensaje_async(mensaje, token))
 
-@app.route('/fletes-mudanzas')
-def fletes_mudanzas():
-    return render_template('fletes_mudanzas.html') 
-
+# Ruta para servir archivos en static/images/
 @app.route('/static/images/<path:filename>')
 def serve_images(filename):
     return send_from_directory('static/images', filename)
+
+
+@app.route('/fletes-mudanzas')
+def fletes_mudanzas():
+    return render_template('fletes_mudanzas.html')
 
 # Procesar formulario de Fletes y Mudanzas
 @app.route('/solicitar-fletes-mudanzas', methods=['POST'])
