@@ -17,7 +17,7 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()]
 )
 
-# Función asincrónica para enviar el mensaje a Telegram
+# Función asincrónica para enviar el mensaje
 async def enviar_mensaje_async(mensaje, token, chat_id):
     bot = telegram.Bot(token=token)
     try:
@@ -34,6 +34,11 @@ def enviar_mensaje(mensaje, token, chat_id):
 @app.route('/principal')
 def principal():
     return render_template('principal.html')
+
+# Ruta para la ventana emergente
+@app.route('/ventana-emergente')
+def ventana_emergente():
+    return render_template('emergente.html')
 
 # Ruta para la subventana de Turismo Local y Nacional
 @app.route('/turismo-subventana')
