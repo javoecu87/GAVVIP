@@ -166,7 +166,7 @@ def solicitar_taxi():
 
 @app.route('/turismo')
 def turismo():
-    return render_template('turismo.html')
+    return render_template('turismo_subventana.html')
 
 @app.route('/solicitar-turismo', methods=['POST'])
 def solicitar_turismo():
