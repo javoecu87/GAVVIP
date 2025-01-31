@@ -6,13 +6,13 @@
     <title>Fletes y Mudanzas</title>
     <style>
         /* Ajuste del video para pantalla completa */
-        video {
+        #videoContainer {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            background: black; /* Fallback si el video no carga */
         }
 
         /* Estilos generales */
@@ -39,6 +39,7 @@
             box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.7);
             width: 90%;
             max-width: 400px;
+            position: relative;
         }
 
         h1 {
@@ -135,17 +136,32 @@
         <a href="/principal" class="back-button">Regresar</a>
     </div>
 
-    <!-- Video de fondo con reproducción forzada en Telegram -->
-    <video id="videoFondo" muted loop playsinline>
-        <source src="{{ url_for('static', filename='images/mudanza.webm') }}" type="video/webm">
-        <source src="{{ url_for('static', filename='images/mudanza.mp4') }}" type="video/mp4">
-        Tu navegador no soporta la etiqueta de video.
-    </video>
+    <!-- Contenedor del video -->
+    <div id="videoContainer"></div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            var video = document.getElementById("videoFondo");
-            video.play().catch(error => {
+            var videoContainer = document.getElementById("videoContainer");
+
+            // Crear elemento video
+            var videoElement = document.createElement("video");
+            videoElement.src = "{{ url_for('static', filename='images/mudanza.webm') }}";
+            videoElement.muted = true;
+            videoElement.loop = true;
+            videoElement.autoplay = true;
+            videoElement.playsinline = true;
+            videoElement.style.position = "absolute";
+            videoElement.style.top = "0";
+            videoElement.style.left = "0";
+            videoElement.style.width = "100%";
+            videoElement.style.height = "100%";
+            videoElement.style.objectFit = "cover";
+
+            // Agregar video al contenedor
+            videoContainer.appendChild(videoElement);
+
+            // Intentar reproducirlo
+            videoElement.play().catch(error => {
                 console.log("Autoplay bloqueado, esperando interacción del usuario.");
             });
         });
