@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import send_from_directory
 import telegram
 import asyncio
 import logging
