@@ -2,144 +2,18 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gracias</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html, body {
-            width: 100vw;
-            height: 100vh;
-            font-family: Arial, sans-serif;
-            overflow: hidden;
-        }
-
-        /* El mapa cubre toda la pantalla */
-        #map {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            touch-action: manipulation; /* Permite zoom y arrastre */
-        }
-
-        .content {
-            position: absolute;
-            top: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            z-index: 2;
-        }
-
-        h1 {
-            font-size: 1.8em;
-            margin-bottom: 10px;
-        }
-
-        #distancia, #tiempo {
-            font-size: 1.2em;
-            color: #FFD24C;
-        }
-    </style>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&callback=initMap&v=weekly" async defer></script>
 </head>
-<body>
+<body style="background-color: #366E73; color: #FFE786; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; padding: 0; text-align: center;">
+<body class="background-gracias">
+<link rel="stylesheet" href="/static/styles.css">
 
-    <!-- Mapa de fondo -->
-    <div id="map"></div>
-
-    <!-- Información sobre el viaje -->
-    <div class="content">
-        <h1>¡Gracias por tu solicitud!</h1>
-        <div id="distancia">Calculando distancia...</div>
-        <div id="tiempo">Calculando tiempo...</div>
+    <div class="container">
+        <h1>¡Gracias!</h1>
+        <p>Tu solicitud ha sido procesada con éxito.</p>
+        <a href="/principal"><button>Volver al Menú Principal</button></a>
     </div>
-
-    <script>
-        let map;
-        let vehiculoMarker;
-        let clienteMarker;
-
-        function initMap() {
-            const clienteLatLng = { lat: {{ cliente_latitud }}, lng: {{ cliente_longitud }} };
-            let vehiculoLatLng = { lat: {{ vehiculo_latitud }}, lng: {{ vehiculo_longitud }} };
-
-            map = new google.maps.Map(document.getElementById("map"), {
-                center: clienteLatLng,
-                zoom: 14,
-                zoomControl: true,  /* 🔹 Permite zoom manual */
-                streetViewControl: false,
-                mapTypeControl: false,
-                fullscreenControl: false,
-                gestureHandling: "greedy",  /* 🔹 Permite gestos táctiles */
-                draggable: true,  /* 🔹 Permite arrastrar el mapa */
-                disableDefaultUI: false,
-                styles: [{ elementType: "geometry", stylers: [{ color: "#1a1a1a" }] }]
-            });
-
-            // Marcador del cliente
-            clienteMarker = new google.maps.Marker({
-                position: clienteLatLng,
-                map: map,
-                title: "Tu Ubicación",
-                icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-            });
-
-            // Marcador del vehículo
-            vehiculoMarker = new google.maps.Marker({
-                position: vehiculoLatLng,
-                map: map,
-                title: "Vehículo",
-                icon: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
-            });
-
-            // Calcular distancia y tiempo estimado
-            calcularDistancia();
-
-            // Actualizar la posición del vehículo en tiempo real
-            setInterval(actualizarPosicionVehiculo, 5000);
-        }
-
-        function actualizarPosicionVehiculo() {
-            fetch("/ubicacion-vehiculo")
-                .then(response => response.json())
-                .then(data => {
-                    vehiculoMarker.setPosition(new google.maps.LatLng(data.lat, data.lng));
-                    calcularDistancia();
-                });
-        }
-
-        function calcularDistancia() {
-            const service = new google.maps.DistanceMatrixService();
-            service.getDistanceMatrix(
-                {
-                    origins: [clienteMarker.getPosition()],
-                    destinations: [vehiculoMarker.getPosition()],
-                    travelMode: google.maps.TravelMode.DRIVING,
-                }, callback);
-        }
-
-        function callback(response, status) {
-            if (status == "OK") {
-                const results = response.rows[0].elements[0];
-                document.getElementById("distancia").innerText = `Distancia: ${results.distance.text}`;
-                document.getElementById("tiempo").innerText = `Tiempo estimado: ${results.duration.text}`;
-            }
-        }
-    </script>
-
 </body>
+
 </html>
