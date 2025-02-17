@@ -2,93 +2,101 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gracias</title>
     <style>
-        * {
+        body {
+            background-color: #366E73;
+            color: #FFE786;
+            height: 100vh;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
         }
 
-        html, body {
-            width: 100vw;
-            height: 100vh;
-            font-family: Arial, sans-serif;
-            overflow: hidden; /* Evita scroll */
-            touch-action: manipulation; /* Permite gestos táctiles */
-        }
-
-        /* El mapa ocupa toda la pantalla */
         #map {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Detrás del contenido */
+            z-index: -1;
+            border-radius: 15px;
         }
 
         .content {
             position: relative;
             z-index: 1;
-            text-align: center;
-            color: white;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 15px;
-            border-radius: 10px;
-            max-width: 400px;
             width: 90%;
-            margin: auto;
-            top: 10%;
+            max-width: 800px;
+            text-align: center;
         }
 
-        h1 {
-            font-size: 1.8em;
-            margin-bottom: 10px;
+        h1, p {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #FFE786;
         }
 
         #distancia, #tiempo {
             font-size: 1.2em;
-            color: #FFD24C;
+            color: #FFFFFF;
         }
     </style>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&callback=initMap&v=weekly" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&callback=initMap&v=weekly" async></script>
 </head>
 <body>
 
-    <!-- Mapa de fondo -->
-    <div id="map"></div>
-
-    <!-- Información sobre el viaje -->
     <div class="content">
         <h1>¡Gracias por tu solicitud!</h1>
-        <div id="distancia">Calculando distancia...</div>
-        <div id="tiempo">Calculando tiempo...</div>
+        <p>Tu solicitud ha sido procesada. Aquí está el mapa con tu ubicación y la del vehículo:</p>
+        <div id="distancia"></div>
+        <div id="tiempo"></div>
     </div>
+
+    <div id="map"></div>
 
     <script>
         let map;
-        let vehiculoMarker;
         let clienteMarker;
+        let vehiculoMarker;
+
+        const CLIENTE_LATITUD = {{ cliente_latitud }};
+        const CLIENTE_LONGITUD = {{ cliente_longitud }};
+        let vehiculoLatLng = { lat: {{ vehiculo_latitud }}, lng: {{ vehiculo_longitud }} };
+
+        // Estilos del mapa estilo inDrive
+        const mapStyles = [
+            { elementType: "geometry", stylers: [{ color: "#1a1a1a" }] },
+            { elementType: "labels.text.fill", stylers: [{ color: "#ffffff" }] },
+            { elementType: "labels.text.stroke", stylers: [{ color: "#333333" }] },
+            { featureType: "road", elementType: "geometry.fill", stylers: [{ color: "#333333" }] },
+            { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#222222" }] },
+            { featureType: "poi", stylers: [{ visibility: "off" }] }, 
+            { featureType: "transit", stylers: [{ visibility: "off" }] },
+            { featureType: "water", elementType: "geometry", stylers: [{ color: "#000000" }] },
+        ];
 
         function initMap() {
-            const clienteLatLng = { lat: 19.4326, lng: -99.1332 };
-            const vehiculoLatLng = { lat: 19.4500, lng: -99.1700 };
+            const clienteLatLng = { lat: CLIENTE_LATITUD, lng: CLIENTE_LONGITUD };
 
             map = new google.maps.Map(document.getElementById("map"), {
                 center: clienteLatLng,
                 zoom: 14,
-                zoomControl: true,  /* 🔹 Habilita zoom manual */
+                zoomControl: true,
                 streetViewControl: false,
                 mapTypeControl: false,
                 fullscreenControl: false,
-                gestureHandling: "greedy",  /* 🔹 Permite gestos táctiles */
-                draggable: true,  /* 🔹 Permite arrastrar el mapa */
-                styles: [{ elementType: "geometry", stylers: [{ color: "#1a1a1a" }] }]
+                disableDefaultUI: false,
+                draggable: true,
+                gestureHandling: "greedy",
+                styles: mapStyles
             });
 
-            // Marcador del cliente
             clienteMarker = new google.maps.Marker({
                 position: clienteLatLng,
                 map: map,
@@ -96,7 +104,6 @@
                 icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
             });
 
-            // Marcador del vehículo
             vehiculoMarker = new google.maps.Marker({
                 position: vehiculoLatLng,
                 map: map,
@@ -104,18 +111,34 @@
                 icon: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
             });
 
-            // Actualizar posición del vehículo en tiempo real
+            calcularDistancia();
             setInterval(actualizarPosicionVehiculo, 5000);
         }
 
         function actualizarPosicionVehiculo() {
-            fetch("/ubicacion-vehiculo")
-                .then(response => response.json())
-                .then(data => {
-                    vehiculoMarker.setPosition(new google.maps.LatLng(data.lat, data.lng));
-                });
+            vehiculoLatLng.lat += (Math.random() - 0.5) * 0.001;  
+            vehiculoLatLng.lng += (Math.random() - 0.5) * 0.001;
+            vehiculoMarker.setPosition(vehiculoLatLng);
+            calcularDistancia();
+        }
+
+        function calcularDistancia() {
+            const service = new google.maps.DistanceMatrixService();
+            service.getDistanceMatrix(
+                {
+                    origins: [clienteMarker.getPosition()],
+                    destinations: [vehiculoMarker.getPosition()],
+                    travelMode: google.maps.TravelMode.DRIVING,
+                }, callback);
+        }
+
+        function callback(response, status) {
+            if (status == "OK") {
+                const results = response.rows[0].elements[0];
+                document.getElementById("distancia").innerText = `Distancia: ${results.distance.text}`;
+                document.getElementById("tiempo").innerText = `Tiempo estimado: ${results.duration.text}`;
+            }
         }
     </script>
-
 </body>
 </html>
