@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Solicitar Taxi</title>
+    <title>Gracias</title>
     <style>
         * {
             margin: 0;
@@ -16,119 +16,72 @@
             height: 100vh;
             font-family: Arial, sans-serif;
             overflow: hidden; /* Evita scroll */
-            touch-action: manipulation; /* Mejora gestos táctiles */
+            touch-action: manipulation; /* Permite gestos táctiles */
         }
 
-        /* El mapa debe cubrir toda la pantalla */
+        /* El mapa cubre toda la pantalla */
         #map {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Detrás del formulario */
-            touch-action: manipulation; /* Permite zoom y arrastre */
+            z-index: -1; /* Detrás del contenido */
+            touch-action: manipulation; /* 🔹 Permite zoom y arrastre */
         }
 
-        /* Contenedor del formulario centrado */
-        .container {
+        .content {
             position: absolute;
-            top: 50%;
+            top: 10%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(54, 110, 115, 0.95);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            width: 85%;
-            max-width: 400px;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
             text-align: center;
-            z-index: 2; /* Sobre el mapa */
+            max-width: 400px;
+            width: 90%;
+            z-index: 2;
         }
 
-        input, button {
-            width: 100%;
-            padding: 14px;
-            margin: 12px 0;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
         }
 
-        button {
-            background-color: #FFD24C;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        button:hover {
-            background-color: #008cba;
-        }
-
-        /* Botón de chat oculto hasta que el conductor acepte */
-        #chat-icon {
-            display: none;
-            position: fixed;
-            bottom: 15px;
-            right: 15px;
-            z-index: 3;
-        }
-
-        #chat-icon button {
-            background: #FFD24C;
-            border-radius: 50%;
-            padding: 20px;
-            font-size: 1.5em;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Ajustes responsivos */
-        @media screen and (max-width: 430px) { /* iPhone 16 Pro Max */
-            .container {
-                width: 90%;
-                padding: 20px;
-            }
-            input, button {
-                font-size: 1.1em;
-            }
-            #chat-icon button {
-                font-size: 1.3em;
-                padding: 18px;
-            }
+        #distancia, #tiempo {
+            font-size: 1.2em;
+            color: #FFD24C;
         }
     </style>
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&v=weekly" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&callback=initMap&v=weekly" async defer></script>
 </head>
 <body>
 
     <!-- Mapa de fondo -->
     <div id="map"></div>
 
-    <!-- Formulario de solicitud de taxi -->
-    <div id="formulario" class="container">
-        <h1>Solicitar Taxi</h1>
-        <form id="solicitud-form">
-            <input type="text" name="nombre" placeholder="Tu Nombre" required>
-            <input type="text" name="telefono" placeholder="Teléfono" required>
-            <input type="text" name="origen" placeholder="Origen" required>
-            <input type="text" name="destino" placeholder="Destino" required>
-            <button type="submit">Solicitar Taxi</button>
-        </form>
-    </div>
-
-    <!-- Botón de Chat (Aparece cuando el conductor acepta el viaje) -->
-    <div id="chat-icon">
-        <button onclick="abrirChat()">💬</button>
+    <!-- Información sobre el viaje -->
+    <div class="content">
+        <h1>¡Gracias por tu solicitud!</h1>
+        <div id="distancia">Calculando distancia...</div>
+        <div id="tiempo">Calculando tiempo...</div>
     </div>
 
     <script>
+        let map;
+        let vehiculoMarker;
+        let clienteMarker;
+
         function initMap() {
-            let map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: 19.4326, lng: -99.1332 },
+            const clienteLatLng = { lat: 19.4326, lng: -99.1332 };
+            const vehiculoLatLng = { lat: 19.4500, lng: -99.1700 };
+
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: clienteLatLng,
                 zoom: 14,
-                zoomControl: true,  /* 🔹 Habilita zoom manual */
+                zoomControl: true,  /* 🔹 Permite zoom manual */
                 streetViewControl: false,
                 mapTypeControl: false,
                 fullscreenControl: false,
@@ -137,30 +90,33 @@
                 disableDefaultUI: false,
                 styles: [{ elementType: "geometry", stylers: [{ color: "#1a1a1a" }] }]
             });
+
+            // Marcador del cliente
+            clienteMarker = new google.maps.Marker({
+                position: clienteLatLng,
+                map: map,
+                title: "Tu Ubicación",
+                icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+            });
+
+            // Marcador del vehículo
+            vehiculoMarker = new google.maps.Marker({
+                position: vehiculoLatLng,
+                map: map,
+                title: "Vehículo",
+                icon: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+            });
+
+            // Actualizar posición del vehículo en tiempo real
+            setInterval(actualizarPosicionVehiculo, 5000);
         }
 
-        document.getElementById("solicitud-form").addEventListener("submit", function(event) {
-            event.preventDefault();
-            let formData = new FormData(this);
-
-            fetch("/solicitar-taxi", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.mensaje) {
-                    document.getElementById("formulario").style.display = "none";
-                    setTimeout(() => {
-                        document.getElementById("chat-icon").style.display = "block";
-                    }, 3000);
-                }
-            })
-            .catch(error => console.error("Error al enviar la solicitud:", error));
-        });
-
-        function abrirChat() {
-            alert("Aquí se abriría el chat con el conductor.");
+        function actualizarPosicionVehiculo() {
+            fetch("/ubicacion-vehiculo")
+                .then(response => response.json())
+                .then(data => {
+                    vehiculoMarker.setPosition(new google.maps.LatLng(data.lat, data.lng));
+                });
         }
     </script>
 
