@@ -71,15 +71,11 @@ def solicitar_taxi():
         origen = request.form.get('origen')
         destino = request.form.get('destino')
 
-        viaje_id = str(len(viajes_activos) + 1)
-        viajes_activos[viaje_id] = {
-            "nombre": nombre,
-            "telefono": telefono,
-            "origen": origen,
-            "destino": destino,
-            "estado": "pendiente",
-            "conductor": None
-        }
+        # Coordenadas de ejemplo (deben ser dinámicas más adelante)
+        cliente_lat = 19.4326  # Latitud del cliente
+        cliente_lng = -99.1332  # Longitud del cliente
+        vehiculo_lat = 19.4500  # Latitud del vehículo
+        vehiculo_lng = -99.1700  # Longitud del vehículo
 
         mensaje = (
             "*Solicitud de Taxi*\n\n"
@@ -89,10 +85,14 @@ def solicitar_taxi():
             f"🎯 Destino: {destino}"
         )
 
-        # Enviar mensaje a Telegram
+        # Enviar mensaje al bot de Telegram
         enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
 
-        return jsonify({"mensaje": "Solicitud de taxi enviada", "viaje_id": viaje_id})
+        return render_template('gracias.html',
+                               cliente_latitud=cliente_lat,
+                               cliente_longitud=cliente_lng,
+                               vehiculo_latitud=vehiculo_lat,
+                               vehiculo_longitud=vehiculo_lng)
     except Exception as e:
         app.logger.error(f"Error en /solicitar-taxi: {e}")
         return jsonify({"error": "Error al procesar la solicitud de taxi"}), 500

@@ -75,8 +75,10 @@
         let clienteMarker;
 
         function initMap() {
-            const clienteLatLng = { lat: 19.4326, lng: -99.1332 };
-            const vehiculoLatLng = { lat: 19.4500, lng: -99.1700 };
+            const CLIENTE_LATITUD = {{ cliente_latitud | default(19.4326) }};
+            const CLIENTE_LONGITUD = {{ cliente_longitud | default(-99.1332) }};
+            let vehiculoLatLng = { lat: {{ vehiculo_latitud | default(19.4500) }}, lng: {{ vehiculo_longitud | default(-99.1700) }} };
+            map.setOptions({ gestureHandling: "greedy", draggable: true });
 
             map = new google.maps.Map(document.getElementById("map"), {
                 center: clienteLatLng,
