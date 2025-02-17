@@ -18,7 +18,7 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()]
 )
 
-# Función asincrónica para enviar mensajes a Telegram
+# Función asincrónica para enviar el mensaje a Telegram
 async def enviar_mensaje_async(mensaje, token):
     bot = telegram.Bot(token=token)
     try:
@@ -31,12 +31,10 @@ async def enviar_mensaje_async(mensaje, token):
 def enviar_mensaje(mensaje, token):
     asyncio.run(enviar_mensaje_async(mensaje, token))
 
-# Ruta para servir imágenes estáticas
 @app.route('/static/images/<path:filename>')
 def serve_images(filename):
     return send_from_directory('static/images', filename)
 
-# Rutas originales que se mantienen
 @app.route('/fletes-mudanzas')
 def fletes_mudanzas():
     return render_template('fletes_mudanzas.html')
@@ -64,7 +62,7 @@ def taxi_service():
 # Diccionario para almacenar viajes activos
 viajes_activos = {}
 
-# ✅ Ruta para manejar la solicitud de taxi y pasar coordenadas a gracias.html
+# ✅ Ruta para manejar reservas desde taxi.html y enviar mensaje al bot
 @app.route('/solicitar-taxi', methods=['POST'])
 def solicitar_taxi():
     try:
@@ -73,11 +71,15 @@ def solicitar_taxi():
         origen = request.form.get('origen')
         destino = request.form.get('destino')
 
-        # Coordenadas de ejemplo (deben ser dinámicas más adelante)
-        cliente_lat = 19.4326  
-        cliente_lng = -99.1332  
-        vehiculo_lat = 19.4500  
-        vehiculo_lng = -99.1700  
+        viaje_id = str(len(viajes_activos) + 1)
+        viajes_activos[viaje_id] = {
+            "nombre": nombre,
+            "telefono": telefono,
+            "origen": origen,
+            "destino": destino,
+            "estado": "pendiente",
+            "conductor": None
+        }
 
         mensaje = (
             "*Solicitud de Taxi*\n\n"
@@ -90,11 +92,7 @@ def solicitar_taxi():
         # Enviar mensaje a Telegram
         enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
 
-        return render_template('gracias.html',
-                               cliente_latitud=cliente_lat,
-                               cliente_longitud=cliente_lng,
-                               vehiculo_latitud=vehiculo_lat,
-                               vehiculo_longitud=vehiculo_lng)
+        return jsonify({"mensaje": "Solicitud de taxi enviada", "viaje_id": viaje_id})
     except Exception as e:
         app.logger.error(f"Error en /solicitar-taxi: {e}")
         return jsonify({"error": "Error al procesar la solicitud de taxi"}), 500
@@ -111,7 +109,7 @@ def ubicacion_vehiculo():
         app.logger.error(f"Error en /ubicacion-vehiculo: {e}")
         return jsonify({"error": "Error al obtener la ubicación"}), 500
 
-# ✅ Ruta para asignar un conductor a un viaje
+# ✅ Ruta para asignar un conductor a un viaje y habilitar el botón de chat
 @app.route('/asignar-conductor/<viaje_id>')
 def asignar_conductor(viaje_id):
     try:
