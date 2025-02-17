@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 import telegram
 import asyncio
 import logging
@@ -56,8 +56,18 @@ def solicitar_fletes_mudanzas():
         # Enviar mensaje a Telegram
         enviar_mensaje(mensaje, BOT_TOKEN_VIP)
 
-        # Mostrar página de éxito con ventana emergente
-        return render_template('success.html', mensaje="¡Gracias! Su solicitud de Fletes y Mudanzas ha sido enviada.")
+        # Coordenadas del cliente y vehículo (ejemplo)
+        cliente_lat = 19.4326  # Ejemplo de latitud del cliente
+        cliente_lng = -99.1332  # Ejemplo de longitud del cliente
+        vehiculo_lat = 19.4500  # Ejemplo de latitud del vehículo
+        vehiculo_lng = -99.1700  # Ejemplo de longitud del vehículo
+
+        # Renderizar la página de éxito y pasar las coordenadas
+        return render_template('gracias.html', 
+                               cliente_latitud=cliente_lat, 
+                               cliente_longitud=cliente_lng,
+                               vehiculo_latitud=vehiculo_lat,
+                               vehiculo_longitud=vehiculo_lng)
     except Exception as e:
         app.logger.error(f"Error en /solicitar-fletes-mudanzas: {e}")
         return "Error al procesar la solicitud de Fletes y Mudanzas.", 500
@@ -67,19 +77,16 @@ def solicitar_fletes_mudanzas():
 def apoyo_hoteles():
     return render_template('apoyo_hoteles.html')
 
-# Ruta para mostrar el formulario de Alta Gama
 @app.route('/alta-gama')
 def alta_gama():
     # Lista de vehículos disponibles para Alta Gama
     vehiculos = ['SUV', 'Van', 'Sedan']
     return render_template('alta_gama.html', vehiculos=vehiculos)
 
-# Ruta para mostrar el formulario de Alta Gama con el vehículo seleccionado
 @app.route('/formulario-alta-gama/<string:vehiculo>')
 def formulario_alta_gama(vehiculo):
     return render_template('formulario_alta_gama.html', vehiculo=vehiculo)
 
-# Ruta para procesar el formulario de Alta Gama
 @app.route('/procesar-alta-gama', methods=['POST'])
 def procesar_solicitud_alta_gama():
     try:
@@ -103,28 +110,23 @@ def procesar_solicitud_alta_gama():
         # Enviar mensaje a Telegram
         enviar_mensaje(mensaje, BOT_TOKEN_VIP)
 
-        # Mostrar página de éxito con ventana emergente
         return render_template('success.html', mensaje="¡Gracias! Su solicitud de Alta Gama ha sido enviada.")
     except Exception as e:
         app.logger.error(f"Error en /procesar-alta-gama: {e}")
         return "Error al procesar la solicitud de Alta Gama.", 500
 
-# Ruta para la ventana emergente
 @app.route('/')
 def ventana_emergente():
     return render_template('emergente.html')
 
-# Ruta para la ventana principal
 @app.route('/principal')
 def principal():
     return render_template('principal.html')
 
-# Ruta para el formulario de Taxi
 @app.route('/taxi-service')
 def taxi_service():
     return render_template('taxi.html')
 
-# Procesar formulario de Taxi
 @app.route('/solicitar-taxi', methods=['POST'])
 def solicitar_taxi():
     try:
@@ -143,18 +145,29 @@ def solicitar_taxi():
             f"👥 Pasajeros: {pasajeros}"
         )
 
+        # Enviar mensaje a Telegram
         enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
-        return render_template('gracias.html', mensaje="¡Gracias! Su solicitud de taxi ha sido enviada.")
+
+        # Coordenadas del cliente y vehículo (ejemplo)
+        cliente_lat = 19.4326  # Ejemplo de latitud del cliente
+        cliente_lng = -99.1332  # Ejemplo de longitud del cliente
+        vehiculo_lat = 19.4500  # Ejemplo de latitud del vehículo
+        vehiculo_lng = -99.1700  # Ejemplo de longitud del vehículo
+
+        # Renderizar la página de éxito y pasar las coordenadas
+        return render_template('gracias.html', 
+                               cliente_latitud=cliente_lat, 
+                               cliente_longitud=cliente_lng,
+                               vehiculo_latitud=vehiculo_lat,
+                               vehiculo_longitud=vehiculo_lng)
     except Exception as e:
         app.logger.error(f"Error en /solicitar-taxi: {e}")
         return "Error al procesar la solicitud de taxi.", 500
 
-# Ruta para el formulario de Turismo
 @app.route('/turismo')
 def turismo():
-    return render_template('turismo.html')
+    return render_template('turismo_subventana.html')
 
-# Procesar formulario de Turismo
 @app.route('/solicitar-turismo', methods=['POST'])
 def solicitar_turismo():
     try:

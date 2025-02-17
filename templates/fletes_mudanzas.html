@@ -4,39 +4,150 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fletes y Mudanzas</title>
+    <style>
+        /* Ajuste del video para pantalla completa */
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Estilos generales */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #FFE786;
+            background-color: #366E73;
+        }
+
+        /* Contenedor del formulario con opacidad */
+        .container {
+            text-align: center;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.4); /* Mismo estilo que Turismo */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.7);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFE786;
+        }
+
+        /* Estilos para los campos del formulario */
+        label {
+            display: block;
+            margin-top: 10px;
+            font-size: 16px;
+            color: #FFE786;
+            text-align: left;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+        }
+
+        /* Estilos del botón de envío */
+        button {
+            background-color: #FFD24C;
+            color: #1F3B5C;
+            font-size: 18px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+            margin-top: 15px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #FFBA42;
+            transform: scale(1.05);
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Botón de regreso con opacidad */
+        .back-button {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: none;
+            margin-top: 15px;
+            transition: background 0.3s ease-in-out;
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>Fletes y Mudanzas</h1>
-    <form action="/solicitar-fletes-mudanzas" method="post">
-    <label for="nombre">Nombre:</label>
-    <input type="text" id="nombre" name="nombre" required>
+        <form action="/solicitar-fletes-mudanzas" method="post">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
 
-    <label for="telefono">Teléfono:</label>
-    <input type="text" id="telefono" name="telefono" required>
+            <label for="telefono">Teléfono:</label>
+            <input type="text" id="telefono" name="telefono" required>
 
-    <label for="origen">Origen:</label>
-    <input type="text" id="origen" name="origen" required>
+            <label for="origen">Origen:</label>
+            <input type="text" id="origen" name="origen" required>
 
-    <label for="destino">Destino:</label>
-    <input type="text" id="destino" name="destino" required>
+            <label for="destino">Destino:</label>
+            <input type="text" id="destino" name="destino" required>
 
-    <label for="detalles">Detalles:</label>
-    <textarea id="detalles" name="detalles"></textarea>
+            <label for="detalles">Detalles:</label>
+            <textarea id="detalles" name="detalles"></textarea>
 
-    <button type="submit">Enviar Solicitud</button>
-</form>
-<div style="text-align: center; margin-top: 20px;">
-    <a href="/" style="
-        text-decoration: none;
-        background-color: #4facfe;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-size: 1em;
-        transition: background-color 0.3s ease;
-    ">Volver a la Página Principal</a>
-</div>
+            <button type="submit">Enviar Solicitud</button>
+        </form>
+        
+        <!-- Botón de regreso -->
+        <a href="/principal" class="back-button">Regresar</a>
     </div>
+
+    <!-- Video de fondo con reproducción forzada en Telegram -->
+    <video id="videoFondo" muted loop playsinline>
+        <source src="{{ url_for('static', filename='videos/mudanza.mp4') }}" type="video/mp4">
+        Tu navegador no soporta la etiqueta de video.
+    </video>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var video = document.getElementById("videoFondo");
+            video.play().catch(error => {
+                console.log("Autoplay bloqueado, esperando interacción del usuario.");
+            });
+        });
+    </script>
 </body>
 </html>

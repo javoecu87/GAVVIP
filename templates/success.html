@@ -3,38 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Éxito</title>
+    <title>Solicitud Enviada</title>
     <style>
         body {
+            background-color: #366E73; /* Fondo general */
+            color: #FFE786; /* Color del texto */
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: #366E73;
-            color: white;
-        }
-        .message {
+            height: 100vh;
             text-align: center;
         }
-        .message h1 {
+
+        .container {
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #1F3B5C;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        h1 {
             font-size: 2em;
         }
-        .message p {
+
+        p {
             font-size: 1.2em;
         }
-        a {
-            color: #ffffff;
-            text-decoration: underline;
+
+        button {
+            background-color: #FFD24C;
+            color: #1F3B5C;
+            font-size: 18px;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: none;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #FFBA42;
         }
     </style>
 </head>
 <body>
-    <div class="message">
-        <h1>¡Éxito!</h1>
-        <p>{{ mensaje }}</p>
-        <a href="/principal">Volver a la página principal</a>
+    <div class="container">
+        <h1>{{ mensaje }}</h1>
+        <p>¡Gracias por tu solicitud! Nos pondremos en contacto contigo pronto.</p>
+        
+        <!-- Botón para regresar a la página principal -->
+        <a href="/principal"><button>Regresar a la Página Principal</button></a>
     </div>
 </body>
 </html>

@@ -4,16 +4,153 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gracias</title>
+    <style>
+        body {
+            background-color: #366E73; /* El color de fondo de la ventana */
+            color: #FFE786;  /* Color de texto */
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;  /* Evitar scroll en el body */
+        }
+
+        /* Hacer que el mapa ocupe toda la pantalla como fondo */
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%; /* Ocupa todo el ancho de la pantalla */
+            height: 100%; /* Ocupa todo el alto de la pantalla */
+            z-index: -1;  /* Colocar el mapa detrás del contenido */
+            border-radius: 15px; /* Bordes redondeados */
+        }
+
+        /* Contenedor del contenido encima del mapa */
+        .content {
+            position: relative;
+            z-index: 1; /* Asegurarse de que el contenido esté sobre el mapa */
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        h1, p {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #FFE786;
+        }
+
+        #distancia, #tiempo {
+            font-size: 1.2em;
+            color: #FFFFFF;
+        }
+    </style>
+    <!-- Agregar la API de Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&callback=initMap&v=weekly" async></script>
 </head>
-<body style="background-color: #366E73; color: #FFE786; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; padding: 0; text-align: center;">
-<body class="background-gracias">
-<link rel="stylesheet" href="/static/styles.css">
-
-    <div class="container">
-        <h1>¡Gracias!</h1>
-        <p>Tu solicitud ha sido procesada con éxito.</p>
-        <a href="/principal"><button>Volver al Menú Principal</button></a>
+<body>
+    <!-- Contenedor del contenido -->
+    <div class="content">
+        <h1>¡Gracias por tu solicitud!</h1>
+        <p>Tu solicitud ha sido procesada. Aquí está el mapa con tu ubicación y la del vehículo:</p>
+        
+        <!-- Mostrar la Distancia y Tiempo -->
+        <div id="distancia"></div>
+        <div id="tiempo"></div>
     </div>
-</body>
 
+    <!-- Contenedor del mapa -->
+    <div id="map"></div>
+
+    <script>
+        let map;
+        let clienteMarker;
+        let vehiculoMarker;
+
+        // Coordenadas de ejemplo: Reemplaza estas con las reales
+        const CLIENTE_LATITUD = {{ cliente_latitud }};  // Pasada desde Flask
+        const CLIENTE_LONGITUD = {{ cliente_longitud }};  // Pasada desde Flask
+        const VEHICULO_LATITUD = {{ vehiculo_latitud }};  // Pasada desde Flask
+        const VEHICULO_LONGITUD = {{ vehiculo_longitud }};  // Pasada desde Flask
+
+        // Estilos del mapa (similar al estilo de Uber)
+        const mapStyles = [
+            {
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#212121"
+                    }
+                ]
+            },
+            {
+                "featureType": "water",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#000000"
+                    }
+                ]
+            }
+        ];
+
+        // Función para inicializar el mapa
+        function initMap() {
+            // Inicializar el mapa centrado en la ubicación del cliente
+            const clienteLatLng = { lat: CLIENTE_LATITUD, lng: CLIENTE_LONGITUD };
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: clienteLatLng,
+                zoom: 14,  // Ajusta el zoom según sea necesario
+                zoomControl: true,  // Habilitar control de zoom
+                streetViewControl: false,  // Desactivar vista de calle
+                mapTypeControl: false,  // Desactivar el control de tipo de mapa
+                fullscreenControl: false,  // Desactivar control de pantalla completa
+                disableDefaultUI: false,  // Permitir la manipulación completa
+                styles: mapStyles,  // Aplicar los estilos personalizados
+                draggable: true,  // Permitir que el mapa sea arrastrable
+            });
+
+            // Marcar la ubicación del cliente
+            clienteMarker = new google.maps.Marker({
+                position: clienteLatLng,
+                map: map,
+                title: "Tu Ubicación"
+            });
+
+            // Marcar la ubicación del vehículo
+            const vehiculoLatLng = { lat: VEHICULO_LATITUD, lng: VEHICULO_LONGITUD };
+            vehiculoMarker = new google.maps.Marker({
+                position: vehiculoLatLng,
+                map: map,
+                title: "Vehículo"
+            });
+
+            // Calcular la distancia y tiempo entre el cliente y el vehículo
+            const service = new google.maps.DistanceMatrixService();
+            service.getDistanceMatrix(
+                {
+                    origins: [clienteLatLng],
+                    destinations: [vehiculoLatLng],
+                    travelMode: google.maps.TravelMode.DRIVING,
+                }, callback);
+        }
+
+        // Función de callback para mostrar la distancia y el tiempo estimado
+        function callback(response, status) {
+            if (status == "OK") {
+                const results = response.rows[0].elements[0];
+                const distancia = results.distance.text;
+                const tiempo = results.duration.text;
+
+                // Mostrar la distancia y el tiempo estimado
+                document.getElementById("distancia").innerText = `Distancia: ${distancia}`;
+                document.getElementById("tiempo").innerText = `Tiempo estimado: ${tiempo}`;
+            }
+        }
+    </script>
+</body>
 </html>
