@@ -35,6 +35,22 @@ def enviar_mensaje(mensaje, token):
 def serve_images(filename):
     return send_from_directory('static/images', filename)
 
+@app.route('/fletes-mudanzas')
+def fletes_mudanzas():
+    return render_template('fletes_mudanzas.html')
+
+@app.route('/apoyo-hoteles')
+def apoyo_hoteles():
+    return render_template('apoyo_hoteles.html')
+
+@app.route('/alta-gama')
+def alta_gama():
+    return render_template('alta_gama.html')
+
+@app.route('/')
+def ventana_emergente():
+    return render_template('emergente.html')
+
 @app.route('/principal')
 def principal():
     return render_template('principal.html')
