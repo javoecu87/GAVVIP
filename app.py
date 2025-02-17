@@ -18,7 +18,7 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()]
 )
 
-# Función asincrónica para enviar el mensaje
+# Función asincrónica para enviar el mensaje a Telegram
 async def enviar_mensaje_async(mensaje, token):
     bot = telegram.Bot(token=token)
     try:
@@ -38,33 +38,6 @@ def serve_images(filename):
 @app.route('/fletes-mudanzas')
 def fletes_mudanzas():
     return render_template('fletes_mudanzas.html')
-
-# Procesar formulario de Fletes y Mudanzas
-@app.route('/solicitar-fletes-mudanzas', methods=['POST'])
-def solicitar_fletes_mudanzas():
-    try:
-        nombre = request.form.get('nombre')
-        telefono = request.form.get('telefono')
-        origen = request.form.get('origen')
-        destino = request.form.get('destino')
-        detalles = request.form.get('detalles')
-
-        mensaje = (
-            "*Solicitud de Fletes y Mudanzas*\n\n"
-            f"👤 Nombre: {nombre}\n"
-            f"📞 Teléfono: {telefono}\n"
-            f"📍 Origen: {origen}\n"
-            f"🎯 Destino: {destino}\n"
-            f"📋 Detalles: {detalles}"
-        )
-
-        # Enviar mensaje a Telegram
-        enviar_mensaje(mensaje, BOT_TOKEN_VIP)
-
-        return render_template('gracias.html')
-    except Exception as e:
-        app.logger.error(f"Error en /solicitar-fletes-mudanzas: {e}")
-        return "Error al procesar la solicitud de Fletes y Mudanzas.", 500
 
 @app.route('/apoyo-hoteles')
 def apoyo_hoteles():
@@ -86,38 +59,12 @@ def principal():
 def taxi_service():
     return render_template('taxi.html')
 
-@app.route('/solicitar-taxi', methods=['POST'])
-def solicitar_taxi():
-    try:
-        nombre = request.form.get('nombre')
-        telefono = request.form.get('telefono')
-        lugar_recogida = request.form.get('lugar_recogida')
-        destino = request.form.get('destino')
-        pasajeros = request.form.get('pasajeros')
-
-        mensaje = (
-            "*Solicitud de Taxi*\n\n"
-            f"👤 Nombre: {nombre}\n"
-            f"📞 Teléfono: {telefono}\n"
-            f"📍 Lugar de Recogida: {lugar_recogida}\n"
-            f"🎯 Destino: {destino}\n"
-            f"👥 Pasajeros: {pasajeros}"
-        )
-
-        enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
-
-        return render_template('gracias.html')
-    except Exception as e:
-        app.logger.error(f"Error en /solicitar-taxi: {e}")
-        return "Error al procesar la solicitud de taxi.", 500
-
-### 🔹 MEJORAS AÑADIDAS (SIN ELIMINAR NADA) 🔹 ###
 # Diccionario para almacenar viajes activos
 viajes_activos = {}
 
-# Ruta para manejar reservas desde index.html y enviar mensaje al bot
-@app.route('/reservar', methods=['POST'])
-def reservar():
+# ✅ Ruta para manejar reservas desde taxi.html y enviar mensaje al bot
+@app.route('/solicitar-taxi', methods=['POST'])
+def solicitar_taxi():
     try:
         nombre = request.form.get('nombre')
         telefono = request.form.get('telefono')
@@ -135,7 +82,7 @@ def reservar():
         }
 
         mensaje = (
-            "*Nueva Solicitud de Viaje*\n\n"
+            "*Solicitud de Taxi*\n\n"
             f"👤 Nombre: {nombre}\n"
             f"📞 Teléfono: {telefono}\n"
             f"📍 Origen: {origen}\n"
@@ -145,12 +92,12 @@ def reservar():
         # Enviar mensaje a Telegram
         enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
 
-        return jsonify({"mensaje": "Solicitud recibida", "viaje_id": viaje_id})
+        return jsonify({"mensaje": "Solicitud de taxi enviada", "viaje_id": viaje_id})
     except Exception as e:
-        app.logger.error(f"Error en /reservar: {e}")
-        return jsonify({"error": "Error al procesar la solicitud"}), 500
+        app.logger.error(f"Error en /solicitar-taxi: {e}")
+        return jsonify({"error": "Error al procesar la solicitud de taxi"}), 500
 
-# Ruta para obtener la ubicación en tiempo real del vehículo
+# ✅ Ruta para obtener la ubicación en tiempo real del vehículo
 @app.route('/ubicacion-vehiculo')
 def ubicacion_vehiculo():
     try:
@@ -162,7 +109,7 @@ def ubicacion_vehiculo():
         app.logger.error(f"Error en /ubicacion-vehiculo: {e}")
         return jsonify({"error": "Error al obtener la ubicación"}), 500
 
-# Ruta para asignar un conductor a un viaje
+# ✅ Ruta para asignar un conductor a un viaje y habilitar el botón de chat
 @app.route('/asignar-conductor/<viaje_id>')
 def asignar_conductor(viaje_id):
     try:
