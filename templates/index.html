@@ -7,127 +7,109 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0 20px 200px; /* Espaciado inferior para el teclado */
-            background: linear-gradient(to bottom, #4facfe, #00f2fe);
         }
-        .container {
-            background: #366E73;
+
+        #map {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 400px;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            background: rgba(54, 110, 115, 0.9);
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-        h1 {
-            font-size: 1.8em;
+            max-width: 400px;
+            width: 90%;
             text-align: center;
-            margin-bottom: 20px;
-            color: #444;
         }
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        label {
+
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 5px;
             font-size: 1em;
+        }
+
+        button {
+            background-color: #FFD24C;
+            cursor: pointer;
             font-weight: bold;
         }
-        input, button {
-            padding: 12px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            font-size: 1em;
-            width: 100%;
-        }
-        input:focus {
-            outline: none;
-            border-color: #4facfe;
-            box-shadow: 0 0 5px rgba(79, 172, 254, 0.8);
-        }
-        button {
-            background-color: #4facfe;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: background-color 0.3s ease;
-        }
+
         button:hover {
             background-color: #008cba;
         }
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 1.5em;
-            }
-            input, button {
-                font-size: 1em;
-                padding: 10px;
-            }
+
+        #chat-icon {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        #chat-icon button {
+            background: #FFD24C;
+            border-radius: 50%;
+            padding: 15px;
+            font-size: 1.2em;
+            cursor: pointer;
         }
     </style>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const inputs = document.querySelectorAll("input");
-            inputs.forEach(input => {
-                input.addEventListener("focus", () => {
-                    window.scrollTo(0, input.getBoundingClientRect().top + window.scrollY - 50);
-                });
-            });
-        });
-
-        document.addEventListener("touchstart", function (event) {
-            const focusedElement = document.activeElement;
-            if (focusedElement && focusedElement.tagName === "INPUT") {
-                focusedElement.blur();
-            }
-        });
-    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&v=weekly" async></script>
 </head>
 <body>
-    <div class="container">
+
+    <div id="map"></div>
+
+    <div id="formulario" class="container">
         <h1>TAXI VIP SUVS & VANS</h1>
-        <form action="/reservar" method="POST">
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
-
-            <label for="telefono">Teléfono:</label>
-            <input type="tel" id="telefono" name="telefono" placeholder="Tu teléfono" required>
-
-            <label for="origen">Origen:</label>
-            <input type="text" id="origen" name="origen" placeholder="Lugar de recogida" required>
-
-            <label for="destino">Destino:</label>
-            <input type="text" id="destino" name="destino" placeholder="Lugar de destino" required>
-
-            <label for="fecha">Fecha:</label>
-            <input type="date" id="fecha" name="fecha" required>
-
-            <label for="hora">Hora:</label>
-            <input type="time" id="hora" name="hora" required>
-
-            <label for="personas">Número de Personas:</label>
-            <input type="number" id="personas" name="personas" min="1" max="6" required>
-
-            <button type="submit">Enviar Solicitud</button>
+        <form id="solicitud-form">
+            <input type="text" name="nombre" placeholder="Tu Nombre" required>
+            <input type="text" name="telefono" placeholder="Teléfono" required>
+            <input type="text" name="origen" placeholder="Origen" required>
+            <input type="text" name="destino" placeholder="Destino" required>
+            <button type="submit">Solicitar Viaje</button>
         </form>
-<div style="text-align: center; margin-top: 20px;">
-    <a href="/" style="
-        text-decoration: none;
-        background-color: #4facfe;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-size: 1em;
-        transition: background-color 0.3s ease;
-    ">Volver a la Página Principal</a>
-</div>
     </div>
+
+    <div id="chat-icon">
+        <button onclick="abrirChat()">💬</button>
+    </div>
+
+    <script>
+        function initMap() {
+            let map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 19.4326, lng: -99.1332 },
+                zoom: 14,
+                styles: [{ elementType: "geometry", stylers: [{ color: "#1a1a1a" }] }]
+            });
+        }
+
+        document.getElementById("solicitud-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            document.getElementById("formulario").style.display = "none";
+            setTimeout(() => {
+                document.getElementById("chat-icon").style.display = "block";
+            }, 3000);
+        });
+
+        function abrirChat() {
+            alert("Aquí se abriría el chat con el conductor.");
+        }
+    </script>
+
 </body>
 </html>
