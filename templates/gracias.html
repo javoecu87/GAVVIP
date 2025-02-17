@@ -15,8 +15,7 @@
             width: 100vw;
             height: 100vh;
             font-family: Arial, sans-serif;
-            overflow: hidden; /* Evita scroll */
-            touch-action: manipulation; /* Permite gestos táctiles */
+            overflow: hidden;
         }
 
         /* El mapa cubre toda la pantalla */
@@ -26,8 +25,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Detrás del contenido */
-            touch-action: manipulation; /* 🔹 Permite zoom y arrastre */
+            z-index: -1;
+            touch-action: manipulation; /* Permite zoom y arrastre */
         }
 
         .content {
@@ -75,10 +74,8 @@
         let clienteMarker;
 
         function initMap() {
-            const CLIENTE_LATITUD = {{ cliente_latitud | default(19.4326) }};
-            const CLIENTE_LONGITUD = {{ cliente_longitud | default(-99.1332) }};
-            let vehiculoLatLng = { lat: {{ vehiculo_latitud | default(19.4500) }}, lng: {{ vehiculo_longitud | default(-99.1700) }} };
-            map.setOptions({ gestureHandling: "greedy", draggable: true });
+            const clienteLatLng = { lat: {{ cliente_latitud }}, lng: {{ cliente_longitud }} };
+            let vehiculoLatLng = { lat: {{ vehiculo_latitud }}, lng: {{ vehiculo_longitud }} };
 
             map = new google.maps.Map(document.getElementById("map"), {
                 center: clienteLatLng,
@@ -109,7 +106,10 @@
                 icon: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
             });
 
-            // Actualizar posición del vehículo en tiempo real
+            // Calcular distancia y tiempo estimado
+            calcularDistancia();
+
+            // Actualizar la posición del vehículo en tiempo real
             setInterval(actualizarPosicionVehiculo, 5000);
         }
 
@@ -118,7 +118,26 @@
                 .then(response => response.json())
                 .then(data => {
                     vehiculoMarker.setPosition(new google.maps.LatLng(data.lat, data.lng));
+                    calcularDistancia();
                 });
+        }
+
+        function calcularDistancia() {
+            const service = new google.maps.DistanceMatrixService();
+            service.getDistanceMatrix(
+                {
+                    origins: [clienteMarker.getPosition()],
+                    destinations: [vehiculoMarker.getPosition()],
+                    travelMode: google.maps.TravelMode.DRIVING,
+                }, callback);
+        }
+
+        function callback(response, status) {
+            if (status == "OK") {
+                const results = response.rows[0].elements[0];
+                document.getElementById("distancia").innerText = `Distancia: ${results.distance.text}`;
+                document.getElementById("tiempo").innerText = `Tiempo estimado: ${results.duration.text}`;
+            }
         }
     </script>
 
