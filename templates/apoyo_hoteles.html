@@ -3,94 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apoyo a Hoteles</title>
+    <title>Apoyo Hoteles</title>
     <style>
+        /* Ajuste del fondo */
         body {
+            margin: 0;
+            padding: 0;
             font-family: Arial, sans-serif;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-            text-align: center;
+            flex-direction: column;
+            color: #FFE786;
+            background-color: #366E73;
         }
+
+        /* Contenedor principal */
         .container {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            background: rgba(0, 0, 0, 0.4);
             padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.7);
             width: 90%;
             max-width: 400px;
         }
+
         h1 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-        label {
+            font-size: 24px;
             font-weight: bold;
-            display: block;
-            margin: 10px 0 5px;
+            color: #FFE786;
         }
-        input, button {
-            padding: 10px;
-            font-size: 16px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            width: 100%;
-        }
-        button {
-            background-color: #007BFF;
-            color: white;
+
+        /* Estilo del botón */
+        .btn {
+            display: inline-block;
+            background-color: #FFD24C;
+            color: #1F3B5C;
+            font-size: 18px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            padding: 15px 30px;
+            border-radius: 10px;
             cursor: pointer;
+            border: none;
+            text-align: center;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease-in-out;
+            text-decoration: none;
+            margin-top: 20px;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        .btn:hover {
+            background-color: #FFBA42;
+            transform: scale(1.05);
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.7);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Apoyo a Hoteles</h1>
-        <label for="codigo">Ingrese el Código del Hotel:</label>
-        <input type="text" id="codigo" placeholder="Ej: 515" required>
-        <button onclick="verificarCodigo()">Continuar</button>
+        <h1>Apoyo Hoteles</h1>
+        <p>Bienvenido a nuestra sección de apoyo a hoteles.</p>
+
+        <!-- Botón centrado -->
+        <a href="/principal" class="btn">Regresar</a>
     </div>
-
-    <script>
-        function verificarCodigo() {
-            const codigo = document.getElementById('codigo').value;
-
-            if (!codigo) {
-                alert('Por favor, ingresa un código válido.');
-                return;
-            }
-
-            fetch('/verificar-codigo', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ codigo: codigo }),
-            })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = '/opciones-hoteles';
-                } else {
-                    response.json().then(data => alert(data.message || 'Código inválido.'));
-                }
-            });
-        }
-    </script>
-<div style="text-align: center; margin-top: 20px;">
-    <a href="/" style="
-        text-decoration: none;
-        background-color: #4facfe;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-size: 1em;
-        transition: background-color 0.3s ease;
-    ">Volver a la Página Principal</a>
-</div>
 </body>
 </html>
