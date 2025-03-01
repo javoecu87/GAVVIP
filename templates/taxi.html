@@ -3,120 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitud de Taxi</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <title>Solicitar Taxi</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&libraries=places"></script>
     <style>
-        /* Fondo específico para esta ventana */
+        /* Estilos generales */
         body {
-            background: url('/static/images/thx.png') no-repeat center center;
-            background-size: cover;
-            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #366E73;
+            color: #FFE786;
         }
+
         /* Contenedor del formulario */
         .container {
-            background-color: rgba(34, 34, 34, 0.6); /* Gris oscuro con transparencia */
+            text-align: center;
+            background: rgba(0, 0, 0, 0.4);
             padding: 20px;
             border-radius: 10px;
-            text-align: center;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.7);
             width: 90%;
             max-width: 400px;
-            margin: auto;
         }
+
         h1 {
-            color: #FFD97F; /* Dorado */
-            font-size: 1.8em;
-            margin-bottom: 20px;
-        }
-        label {
-            color: #FFFFFF; /* Blanco */
+            font-size: 24px;
             font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
         }
-        input, button {
+
+        /* Estilos del mapa */
+        #map {
             width: 100%;
-            margin: 10px 0;
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #FFD97F; /* Dorado */
+            height: 300px;
+            border-radius: 10px;
+            margin-top: 15px;
         }
+
+        /* Campos de entrada */
         input {
-            background-color: rgba(255, 255, 255, 0.2); /* Transparente */
-            color: #FFFFFF; /* Blanco */
-        }
-        input:focus {
-            outline: none;
-            border-color: #FFD97F; /* Dorado oscuro */
-            box-shadow: 0 0 5px rgba(255, 186, 66, 0.8);
-        }
-        button {
-            background-color: #FFD97F; /* Dorado */
-            color: #222222; /* Gris oscuro */
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
             border: none;
+            font-size: 16px;
+        }
+
+        /* Botón de solicitud */
+        .btn {
+            background-color: #FFD24C;
+            color: #1F3B5C;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 15px 30px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 1.1em;
-            transition: background-color 0.3s ease;
-            font-weight: bold;
+            border: none;
+            margin-top: 15px;
+            width: 100%;
+            transition: all 0.3s ease-in-out;
         }
-        button:hover {
-            background-color: #FFD97F; /* Dorado oscuro */
-            color: #FFFFFF;
-        }
-        .back-link {
-            margin-top: 20px;
-        }
-        .back-link a {
-            text-decoration: none;
-            color: #FFD97F; /* Dorado */
-            font-weight: bold;
-        }
-        .back-link a:hover {
-            color: #FFD97F; /* Dorado oscuro */
+
+        .btn:hover {
+            background-color: #FFBA42;
+            transform: scale(1.05);
         }
     </style>
-    <script>
-        document.addEventListener("touchstart", function (event) {
-            const activeElement = document.activeElement;
-            if (activeElement && activeElement.tagName === "INPUT") {
-                activeElement.blur();
-            }
-        });
-
-        document.addEventListener("focusin", (event) => {
-            if (event.target.tagName === "INPUT") {
-                setTimeout(() => {
-                    event.target.scrollIntoView({ behavior: "smooth", block: "center" });
-                }, 300);
-            }
-        });
-    </script>
 </head>
 <body>
+
     <div class="container">
-        <h1>Solicitud de Taxi</h1>
-        <form action="/solicitar-taxi" method="POST">
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+        <h1>Solicitar Taxi</h1>
 
-            <label for="telefono">Teléfono:</label>
-            <input type="tel" id="telefono" name="telefono" placeholder="Tu teléfono" required>
+        <!-- Mapa -->
+        <div id="map"></div>
 
-            <label for="lugar_recogida">Lugar de Recogida:</label>
-            <input type="text" id="lugar_recogida" name="lugar_recogida" placeholder="Ej: Av. Amazonas" required>
+        <!-- Campo de dirección -->
+        <label for="direccion">Dirección:</label>
+        <input type="text" id="direccion" placeholder="Escribe tu dirección o mueve el marcador">
 
-            <label for="destino">Destino:</label>
-            <input type="text" id="destino" name="destino" placeholder="Ej: Centro Histórico" required>
-
-            <label for="pasajeros">Número de Pasajeros:</label>
-            <input type="number" id="pasajeros" name="pasajeros" min="1" max="6" required>
-
-            <button type="submit">Enviar Solicitud</button>
-        </form>
-        <div class="back-link">
-            <a href="/principal">Regresar al Menú Principal</a>
-        </div>
+        <!-- Botón para solicitar taxi -->
+        <button class="btn" onclick="solicitarTaxi()">Solicitar Taxi</button>
     </div>
+
+    <script>
+        let map, marker, geocoder;
+
+        function initMap() {
+            geocoder = new google.maps.Geocoder();
+            const defaultLocation = { lat: -0.180653, lng: -78.467834 }; // Ubicación inicial (Ejemplo: Quito)
+
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: defaultLocation,
+                zoom: 15
+            });
+
+            marker = new google.maps.Marker({
+                position: defaultLocation,
+                map: map,
+                draggable: true
+            });
+
+            updateAddress(defaultLocation);
+
+            // Evento al mover el marcador
+            google.maps.event.addListener(marker, "dragend", function () {
+                const position = marker.getPosition();
+                updateAddress(position);
+            });
+        }
+
+        // Función para actualizar la dirección
+        function updateAddress(position) {
+            geocoder.geocode({ location: position }, function (results, status) {
+                if (status === "OK") {
+                    if (results[0]) {
+                        document.getElementById("direccion").value = results[0].formatted_address;
+                    } else {
+                        document.getElementById("direccion").value = "Ubicación desconocida";
+                    }
+                } else {
+                    console.error("Error en Geocoder: " + status);
+                }
+            });
+        }
+
+        // Función de prueba para solicitar taxi
+        function solicitarTaxi() {
+            alert("Taxi solicitado para: " + document.getElementById("direccion").value);
+        }
+
+        window.onload = initMap;
+    </script>
+
 </body>
 </html>
