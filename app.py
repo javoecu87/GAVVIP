@@ -35,6 +35,11 @@ def enviar_mensaje(mensaje, token):
 def serve_images(filename):
     return send_from_directory('static/images', filename)
 
+# ✅ Ruta principal corregida
+@app.route('/')
+def home():
+    return render_template('ventana_emergente.html')  # Puedes cambiar a 'principal.html' si lo prefieres
+
 @app.route('/fletes-mudanzas')
 def fletes_mudanzas():
     return render_template('fletes_mudanzas.html')
@@ -66,22 +71,18 @@ def solicitar_fletes_mudanzas():
         app.logger.error(f"Error en /solicitar-fletes-mudanzas: {e}")
         return "Error al procesar la solicitud de Fletes y Mudanzas.", 500
 
-# Ruta para la subventana de Turismo
 @app.route('/turismo-subventana')
 def turismo_subventana():
     return render_template('turismo_subventana.html')
 
-# Ruta para "Turismo Ecuador"
 @app.route('/turismo-ecuador')
 def turismo_ecuador():
     return render_template('turismo-ecuador.html')
 
-# Ruta para "Ecuador 420"
 @app.route('/ecuador-420')
 def ecuador_420():
     return render_template('ecuador-420.html')
 
-# Ruta para manejar la solicitud de Turismo Ecuador
 @app.route('/solicitar-turismo-ecuador', methods=['POST'])
 def solicitar_turismo_ecuador():
     try:
@@ -106,7 +107,6 @@ def solicitar_turismo_ecuador():
         app.logger.error(f"Error en /solicitar-turismo-ecuador: {e}")
         return "Error al procesar la solicitud de Turismo Ecuador.", 500
 
-# Ruta para manejar la solicitud de Ecuador 420
 @app.route('/solicitar-ecuador-420', methods=['POST'])
 def solicitar_ecuador_420():
     try:
@@ -131,12 +131,10 @@ def solicitar_ecuador_420():
         app.logger.error(f"Error en /solicitar-ecuador-420: {e}")
         return "Error al procesar la solicitud de Ecuador 420.", 500
 
-# Ruta para la página principal
 @app.route('/principal')
 def principal():
     return render_template('principal.html')
 
-# Ruta para la ventana emergente
 @app.route('/ventana-emergente')
 def ventana_emergente():
     return render_template('emergente.html')
