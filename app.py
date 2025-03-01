@@ -35,10 +35,10 @@ def enviar_mensaje(mensaje, token):
 def serve_images(filename):
     return send_from_directory('static/images', filename)
 
-# ✅ Ruta principal corregida
+# ✅ Ruta principal corregida para usar `emergente.html`
 @app.route('/')
 def home():
-    return render_template('ventana_emergente.html')  # Puedes cambiar a 'principal.html' si lo prefieres
+    return render_template('emergente.html')
 
 @app.route('/fletes-mudanzas')
 def fletes_mudanzas():
