@@ -20,7 +20,7 @@
             color: #FFE786;
         }
 
-        /* Contenedor del formulario */
+        /* Contenedor principal */
         .container {
             text-align: center;
             background: rgba(0, 0, 0, 0.4);
@@ -54,7 +54,7 @@
             font-size: 16px;
         }
 
-        /* Botón de solicitud */
+        /* Botones */
         .btn {
             background-color: #FFD24C;
             color: #1F3B5C;
@@ -73,6 +73,29 @@
             background-color: #FFBA42;
             transform: scale(1.05);
         }
+
+        /* Pestaña de opciones TAXI VIP */
+        .vip-options {
+            display: none;
+            margin-top: 15px;
+        }
+
+        /* Botón de regresar */
+        .btn-back {
+            background-color: #FF5555;
+            color: white;
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: none;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .btn-back:hover {
+            background-color: #CC4444;
+        }
     </style>
 </head>
 <body>
@@ -87,8 +110,23 @@
         <label for="direccion">Dirección:</label>
         <input type="text" id="direccion" placeholder="Escribe tu dirección o mueve el marcador">
 
-        <!-- Botón para solicitar taxi -->
-        <button class="btn" onclick="solicitarTaxi()">Solicitar Taxi</button>
+        <!-- Botón de TAXI -->
+        <button class="btn" onclick="calcularTarifa('TAXI')">Solicitar TAXI</button>
+
+        <!-- Botón para mostrar TAXI VIP -->
+        <button class="btn" onclick="toggleVipOptions()">TAXI VIP</button>
+
+        <!-- Opciones VIP -->
+        <div class="vip-options">
+            <button class="btn" onclick="calcularTarifa('SUV')">SUV</button>
+            <button class="btn" onclick="calcularTarifa('VAN')">VAN</button>
+        </div>
+
+        <!-- Resultado de tarifa -->
+        <p id="tarifa-estimada"></p>
+
+        <!-- Botón de regresar -->
+        <button class="btn-back" onclick="window.location.href='/principal'">Regresar</button>
     </div>
 
     <script>
@@ -96,7 +134,7 @@
 
         function initMap() {
             geocoder = new google.maps.Geocoder();
-            const defaultLocation = { lat: -0.180653, lng: -78.467834 }; // Ubicación inicial (Ejemplo: Quito)
+            const defaultLocation = { lat: -0.180653, lng: -78.467834 };
 
             map = new google.maps.Map(document.getElementById("map"), {
                 center: defaultLocation,
@@ -111,14 +149,12 @@
 
             updateAddress(defaultLocation);
 
-            // Evento al mover el marcador
             google.maps.event.addListener(marker, "dragend", function () {
                 const position = marker.getPosition();
                 updateAddress(position);
             });
         }
 
-        // Función para actualizar la dirección
         function updateAddress(position) {
             geocoder.geocode({ location: position }, function (results, status) {
                 if (status === "OK") {
@@ -133,9 +169,26 @@
             });
         }
 
-        // Función de prueba para solicitar taxi
-        function solicitarTaxi() {
-            alert("Taxi solicitado para: " + document.getElementById("direccion").value);
+        function toggleVipOptions() {
+            const vipDiv = document.querySelector(".vip-options");
+            vipDiv.style.display = vipDiv.style.display === "none" ? "block" : "none";
+        }
+
+        function calcularTarifa(tipo) {
+            let distancia = 10; // Ejemplo, se debe calcular con Google Maps Directions API
+            let tarifaBase = 2.00;
+            let precioPorKm;
+
+            if (tipo === "TAXI") {
+                precioPorKm = 0.50; // Tarifa dinámica (se ajustará con la demanda)
+            } else if (tipo === "SUV") {
+                precioPorKm = 0.50 + 0.80; // Tarifa VIP SUV
+            } else if (tipo === "VAN") {
+                precioPorKm = 1.30; // Tarifa VIP VAN
+            }
+
+            let tarifaFinal = tarifaBase + (precioPorKm * distancia);
+            document.getElementById("tarifa-estimada").innerHTML = `Tarifa estimada: $${tarifaFinal.toFixed(2)}`;
         }
 
         window.onload = initMap;
