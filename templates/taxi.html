@@ -13,38 +13,77 @@
             font-family: Arial, sans-serif;
             height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-direction: column;
+            align-items: center;
             background-color: #366E73;
             color: #FFE786;
+            position: relative;
         }
 
-        /* Contenedor principal */
-        .container {
-            text-align: center;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.7);
-            width: 90%;
-            max-width: 400px;
-        }
-
-        h1 {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        /* Estilos del mapa */
+        /* Mapa ocupa toda la pantalla */
         #map {
             width: 100%;
-            height: 300px;
-            border-radius: 10px;
-            margin-top: 15px;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
         }
 
-        /* Campos de entrada */
+        /* Cuadro transparente para opciones */
+        .options-container {
+            position: absolute;
+            bottom: 20px;
+            width: 90%;
+            max-width: 400px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 2;
+        }
+
+        /* Botones principales */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn-yellow { background-color: #FFD24C; color: #1F3B5C; }
+        .btn-yellow:hover { background-color: #FFBA42; transform: scale(1.05); }
+
+        .btn-gray { background-color: #444; color: white; }
+        .btn-gray:hover { background-color: #333; }
+
+        /* Mensaje pequeño debajo del botón MOTO */
+        .note {
+            font-size: 12px;
+            color: white;
+            margin-top: -8px;
+            margin-bottom: 10px;
+        }
+
+        /* Sección de casilleros de destino */
+        .destination-container {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            width: 90%;
+            max-width: 400px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 2;
+        }
+
         input {
             width: 100%;
             padding: 10px;
@@ -53,84 +92,35 @@
             border: none;
             font-size: 16px;
         }
-
-        /* Botones */
-        .btn {
-            background-color: #FFD24C;
-            color: #1F3B5C;
-            font-size: 18px;
-            font-weight: bold;
-            padding: 15px 30px;
-            border-radius: 10px;
-            cursor: pointer;
-            border: none;
-            margin-top: 15px;
-            width: 100%;
-            transition: all 0.3s ease-in-out;
-        }
-
-        .btn:hover {
-            background-color: #FFBA42;
-            transform: scale(1.05);
-        }
-
-        /* Pestaña de opciones TAXI VIP */
-        .vip-options {
-            display: none;
-            margin-top: 15px;
-        }
-
-        /* Botón de regresar */
-        .btn-back {
-            background-color: #FF5555;
-            color: white;
-            font-size: 16px;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            border: none;
-            margin-top: 15px;
-            width: 100%;
-        }
-
-        .btn-back:hover {
-            background-color: #CC4444;
-        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Solicitar Taxi</h1>
+    <!-- Mapa de Google -->
+    <div id="map"></div>
 
-        <!-- Mapa -->
-        <div id="map"></div>
+    <!-- Cuadro transparente con opciones -->
+    <div class="options-container" id="selectionBox">
+        <button class="btn btn-yellow" onclick="seleccionarServicio('TAXI')">TAXI</button>
+        <button class="btn btn-yellow" onclick="seleccionarServicio('SUV')">SUV</button>
+        <button class="btn btn-yellow" onclick="seleccionarServicio('VAN')">VAN</button>
+        <button class="btn btn-yellow" onclick="seleccionarServicio('MOTO')">MOTO</button>
+        <p class="note">* Solo 1 pasajero</p>
+        <button class="btn btn-yellow" onclick="seleccionarServicio('ENTREGAS')">ENTREGAS</button>
+        <button class="btn btn-gray" onclick="window.location.href='/principal'">Regresar</button>
+    </div>
 
-        <!-- Campo de dirección -->
-        <label for="direccion">Dirección:</label>
-        <input type="text" id="direccion" placeholder="Escribe tu dirección o mueve el marcador">
-
-        <!-- Botón de TAXI -->
-        <button class="btn" onclick="calcularTarifa('TAXI')">Solicitar TAXI</button>
-
-        <!-- Botón para mostrar TAXI VIP -->
-        <button class="btn" onclick="toggleVipOptions()">TAXI VIP</button>
-
-        <!-- Opciones VIP -->
-        <div class="vip-options">
-            <button class="btn" onclick="calcularTarifa('SUV')">SUV</button>
-            <button class="btn" onclick="calcularTarifa('VAN')">VAN</button>
-        </div>
-
-        <!-- Resultado de tarifa -->
-        <p id="tarifa-estimada"></p>
-
-        <!-- Botón de regresar -->
-        <button class="btn-back" onclick="window.location.href='/principal'">Regresar</button>
+    <!-- Casilleros de origen y destino -->
+    <div class="destination-container" id="destinationBox">
+        <input type="text" id="origen" placeholder="Punto de partida">
+        <input type="text" id="destino1" placeholder="Destino">
+        <button class="btn btn-yellow" onclick="agregarDestino()">+ Agregar otro destino</button>
+        <button class="btn btn-gray" onclick="solicitarTaxi()">Solicitar</button>
     </div>
 
     <script>
         let map, marker, geocoder;
+        let destinoCount = 1;
 
         function initMap() {
             geocoder = new google.maps.Geocoder();
@@ -159,9 +149,9 @@
             geocoder.geocode({ location: position }, function (results, status) {
                 if (status === "OK") {
                     if (results[0]) {
-                        document.getElementById("direccion").value = results[0].formatted_address;
+                        document.getElementById("origen").value = results[0].formatted_address;
                     } else {
-                        document.getElementById("direccion").value = "Ubicación desconocida";
+                        document.getElementById("origen").value = "Ubicación desconocida";
                     }
                 } else {
                     console.error("Error en Geocoder: " + status);
@@ -169,26 +159,29 @@
             });
         }
 
-        function toggleVipOptions() {
-            const vipDiv = document.querySelector(".vip-options");
-            vipDiv.style.display = vipDiv.style.display === "none" ? "block" : "none";
+        function seleccionarServicio(servicio) {
+            document.getElementById("selectionBox").style.display = "none";
+            document.getElementById("destinationBox").style.display = "block";
         }
 
-        function calcularTarifa(tipo) {
-            let distancia = 10; // Ejemplo, se debe calcular con Google Maps Directions API
-            let tarifaBase = 2.00;
-            let precioPorKm;
-
-            if (tipo === "TAXI") {
-                precioPorKm = 0.50; // Tarifa dinámica (se ajustará con la demanda)
-            } else if (tipo === "SUV") {
-                precioPorKm = 0.50 + 0.80; // Tarifa VIP SUV
-            } else if (tipo === "VAN") {
-                precioPorKm = 1.30; // Tarifa VIP VAN
+        function agregarDestino() {
+            if (destinoCount < 4) {
+                destinoCount++;
+                let newInput = document.createElement("input");
+                newInput.type = "text";
+                newInput.id = "destino" + destinoCount;
+                newInput.placeholder = "Destino " + destinoCount;
+                document.getElementById("destinationBox").insertBefore(newInput, document.querySelector(".btn-yellow"));
             }
+        }
 
-            let tarifaFinal = tarifaBase + (precioPorKm * distancia);
-            document.getElementById("tarifa-estimada").innerHTML = `Tarifa estimada: $${tarifaFinal.toFixed(2)}`;
+        function solicitarTaxi() {
+            let origen = document.getElementById("origen").value;
+            let destinos = [];
+            for (let i = 1; i <= destinoCount; i++) {
+                destinos.push(document.getElementById("destino" + i).value);
+            }
+            alert("Solicitud enviada\nOrigen: " + origen + "\nDestinos: " + destinos.join(", "));
         }
 
         window.onload = initMap;
