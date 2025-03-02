@@ -41,23 +41,31 @@
             border-radius: 10px;
             text-align: center;
             z-index: 2;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
         }
 
-        /* Botones principales */
-        .btn {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            font-size: 18px;
-            font-weight: bold;
+        /* Botones burbuja flotante */
+        .btn-bubble {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
             border: none;
-            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
         }
 
         .btn-yellow { background-color: #FFD24C; color: #1F3B5C; }
-        .btn-yellow:hover { background-color: #FFBA42; transform: scale(1.05); }
+        .btn-yellow:hover { background-color: #FFBA42; transform: scale(1.1); }
 
         .btn-gray { background-color: #444; color: white; }
         .btn-gray:hover { background-color: #333; }
@@ -66,8 +74,8 @@
         .note {
             font-size: 12px;
             color: white;
-            margin-top: -8px;
-            margin-bottom: 10px;
+            width: 100%;
+            text-align: center;
         }
 
         /* Sección de casilleros de destino */
@@ -101,21 +109,21 @@
 
     <!-- Cuadro transparente con opciones -->
     <div class="options-container" id="selectionBox">
-        <button class="btn btn-yellow" onclick="seleccionarServicio('TAXI')">TAXI</button>
-        <button class="btn btn-yellow" onclick="seleccionarServicio('SUV')">SUV</button>
-        <button class="btn btn-yellow" onclick="seleccionarServicio('VAN')">VAN</button>
-        <button class="btn btn-yellow" onclick="seleccionarServicio('MOTO')">MOTO</button>
+        <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('TAXI')">TAXI</button>
+        <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('SUV')">SUV</button>
+        <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('VAN')">VAN</button>
+        <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('MOTO')">MOTO</button>
         <p class="note">* Solo 1 pasajero</p>
-        <button class="btn btn-yellow" onclick="seleccionarServicio('ENTREGAS')">ENTREGAS</button>
-        <button class="btn btn-gray" onclick="window.location.href='/principal'">Regresar</button>
+        <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('ENTREGAS')">ENTREGAS</button>
+        <button class="btn-gray" onclick="window.location.href='/principal'">Regresar</button>
     </div>
 
     <!-- Casilleros de origen y destino -->
     <div class="destination-container" id="destinationBox">
         <input type="text" id="origen" placeholder="Punto de partida">
         <input type="text" id="destino1" placeholder="Destino">
-        <button class="btn btn-yellow" onclick="agregarDestino()">+ Agregar otro destino</button>
-        <button class="btn btn-gray" onclick="solicitarTaxi()">Solicitar</button>
+        <button class="btn-yellow" onclick="agregarDestino()">+ Agregar otro destino</button>
+        <button class="btn-gray" onclick="solicitarTaxi()">Solicitar</button>
     </div>
 
     <script>
