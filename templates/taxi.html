@@ -74,8 +74,9 @@
         .note {
             font-size: 12px;
             color: white;
-            width: 100%;
+            width: 70px;
             text-align: center;
+            margin-top: -5px;
         }
 
         /* Sección de casilleros de destino */
@@ -112,8 +113,10 @@
         <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('TAXI')">TAXI</button>
         <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('SUV')">SUV</button>
         <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('VAN')">VAN</button>
-        <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('MOTO')">MOTO</button>
-        <p class="note">* Solo 1 pasajero</p>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('MOTO')">MOTO</button>
+            <p class="note">Solo 1 pasajero</p>
+        </div>
         <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('ENTREGAS')">ENTREGAS</button>
         <button class="btn-gray" onclick="window.location.href='/principal'">Regresar</button>
     </div>
@@ -127,7 +130,7 @@
     </div>
 
     <script>
-        let map, marker, geocoder;
+        let map, marker, geocoder, autocompleteDestino;
         let destinoCount = 1;
 
         function initMap() {
@@ -151,6 +154,10 @@
                 const position = marker.getPosition();
                 updateAddress(position);
             });
+
+            // Autocompletar en campo destino
+            let destinoInput = document.getElementById("destino1");
+            autocompleteDestino = new google.maps.places.Autocomplete(destinoInput);
         }
 
         function updateAddress(position) {
@@ -180,6 +187,9 @@
                 newInput.id = "destino" + destinoCount;
                 newInput.placeholder = "Destino " + destinoCount;
                 document.getElementById("destinationBox").insertBefore(newInput, document.querySelector(".btn-yellow"));
+                
+                // Agregar autocompletado en el nuevo campo
+                new google.maps.places.Autocomplete(newInput);
             }
         }
 
