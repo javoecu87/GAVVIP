@@ -30,56 +30,7 @@
             z-index: 1;
         }
 
-        /* Cuadro transparente para opciones */
-        .options-container {
-            position: absolute;
-            bottom: 20px;
-            width: 90%;
-            max-width: 400px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            z-index: 2;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        /* Botones burbuja flotante */
-        .btn-bubble {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: none;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease-in-out;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-yellow { background-color: #FFD24C; color: #1F3B5C; }
-        .btn-yellow:hover { background-color: #FFBA42; transform: scale(1.1); }
-
-        .btn-gray { background-color: #444; color: white; }
-        .btn-gray:hover { background-color: #333; }
-
-        /* Mensaje pequeño debajo del botón MOTO */
-        .note {
-            font-size: 12px;
-            color: white;
-            width: 70px;
-            text-align: center;
-            margin-top: -5px;
-        }
-
-        /* Sección de casilleros de destino */
+        /* Contenedor de casilleros */
         .destination-container {
             display: none;
             position: absolute;
@@ -93,6 +44,7 @@
             z-index: 2;
         }
 
+        /* Estilos para los casilleros */
         input {
             width: 100%;
             padding: 10px;
@@ -100,7 +52,40 @@
             border-radius: 5px;
             border: none;
             font-size: 16px;
+            text-align: center;
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
         }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Botón */
+        .btn-yellow { 
+            background-color: #FFD24C; 
+            color: #1F3B5C; 
+            padding: 12px; 
+            border-radius: 10px; 
+            border: none; 
+            font-size: 18px; 
+            cursor: pointer; 
+            width: 100%; 
+            margin-top: 10px;
+        }
+
+        .btn-gray { 
+            background-color: #444; 
+            color: white; 
+            padding: 12px; 
+            border-radius: 10px; 
+            border: none; 
+            font-size: 18px; 
+            cursor: pointer; 
+            width: 100%; 
+            margin-top: 10px;
+        }
+
     </style>
 </head>
 <body>
@@ -108,23 +93,10 @@
     <!-- Mapa de Google -->
     <div id="map"></div>
 
-    <!-- Cuadro transparente con opciones -->
-    <div class="options-container" id="selectionBox">
-        <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('TAXI')">TAXI</button>
-        <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('SUV')">SUV</button>
-        <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('VAN')">VAN</button>
-        <div style="display: flex; flex-direction: column; align-items: center;">
-            <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('MOTO')">MOTO</button>
-            <p class="note">Solo 1 pasajero</p>
-        </div>
-        <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('ENTREGAS')">ENTREGAS</button>
-        <button class="btn-gray" onclick="window.location.href='/principal'">Regresar</button>
-    </div>
-
     <!-- Casilleros de origen y destino -->
     <div class="destination-container" id="destinationBox">
-        <input type="text" id="origen" placeholder="Punto de partida">
-        <input type="text" id="destino1" placeholder="Destino" onfocus="minimizarTecladoIOS()">
+        <input type="text" id="origen" placeholder="Ingrese Punto de Partida" readonly>
+        <input type="text" id="destino1" placeholder="Destino">
         <button class="btn-yellow" onclick="agregarDestino()">+ Agregar otro destino</button>
         <button class="btn-gray" onclick="solicitarTaxi()">Solicitar</button>
     </div>
@@ -135,47 +107,52 @@
 
         function initMap() {
             geocoder = new google.maps.Geocoder();
-            const defaultLocation = { lat: -0.180653, lng: -78.467834 };
+            
+            // Obtener la ubicación del usuario
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    loadMap(userLocation);
+                    updateAddress(userLocation, "origen"); // Guardar automáticamente la ubicación en "Punto de Partida"
+                }, function() {
+                    loadMap({ lat: -0.180653, lng: -78.467834 }); // Ubicación predeterminada (Quito)
+                });
+            } else {
+                loadMap({ lat: -0.180653, lng: -78.467834 });
+            }
+        }
 
+        function loadMap(location) {
             map = new google.maps.Map(document.getElementById("map"), {
-                center: defaultLocation,
+                center: location,
                 zoom: 15
             });
 
             marker = new google.maps.Marker({
-                position: defaultLocation,
+                position: location,
                 map: map,
                 draggable: true
             });
 
-            updateAddress(defaultLocation);
-
             google.maps.event.addListener(marker, "dragend", function () {
-                const position = marker.getPosition();
-                updateAddress(position);
-                document.getElementById("destino1").value = results[0].formatted_address; // Ahora destino se actualiza
+                updateAddress(marker.getPosition(), "destino1");
             });
 
             // Autocompletar en campo destino
             let destinoInput = document.getElementById("destino1");
             autocompleteDestino = new google.maps.places.Autocomplete(destinoInput);
+            destinoInput.addEventListener("focus", minimizarTecladoIOS);
         }
 
-        function updateAddress(position) {
+        function updateAddress(position, field) {
             geocoder.geocode({ location: position }, function (results, status) {
-                if (status === "OK") {
-                    if (results[0]) {
-                        document.getElementById("origen").value = results[0].formatted_address;
-                    }
-                } else {
-                    console.error("Error en Geocoder: " + status);
+                if (status === "OK" && results[0]) {
+                    document.getElementById(field).value = results[0].formatted_address;
                 }
             });
-        }
-
-        function seleccionarServicio(servicio) {
-            document.getElementById("selectionBox").style.display = "none";
-            document.getElementById("destinationBox").style.display = "block";
         }
 
         function agregarDestino() {
@@ -185,14 +162,14 @@
                 newInput.type = "text";
                 newInput.id = "destino" + destinoCount;
                 newInput.placeholder = "Destino " + destinoCount;
-                newInput.onfocus = minimizarTecladoIOS;
+                newInput.addEventListener("focus", minimizarTecladoIOS);
                 document.getElementById("destinationBox").insertBefore(newInput, document.querySelector(".btn-yellow"));
                 new google.maps.places.Autocomplete(newInput);
             }
         }
 
         function minimizarTecladoIOS() {
-            setTimeout(() => document.activeElement.blur(), 100); // Forzar minimización del teclado en iOS
+            setTimeout(() => document.activeElement.blur(), 100); // Minimiza el teclado en iOS
         }
 
         function solicitarTaxi() {
