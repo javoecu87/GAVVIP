@@ -124,7 +124,7 @@
     <!-- Casilleros de origen y destino -->
     <div class="destination-container" id="destinationBox">
         <input type="text" id="origen" placeholder="Punto de partida">
-        <input type="text" id="destino1" placeholder="Destino">
+        <input type="text" id="destino1" placeholder="Destino" onfocus="minimizarTecladoIOS()">
         <button class="btn-yellow" onclick="agregarDestino()">+ Agregar otro destino</button>
         <button class="btn-gray" onclick="solicitarTaxi()">Solicitar</button>
     </div>
@@ -153,6 +153,7 @@
             google.maps.event.addListener(marker, "dragend", function () {
                 const position = marker.getPosition();
                 updateAddress(position);
+                document.getElementById("destino1").value = results[0].formatted_address; // Ahora destino se actualiza
             });
 
             // Autocompletar en campo destino
@@ -165,8 +166,6 @@
                 if (status === "OK") {
                     if (results[0]) {
                         document.getElementById("origen").value = results[0].formatted_address;
-                    } else {
-                        document.getElementById("origen").value = "Ubicación desconocida";
                     }
                 } else {
                     console.error("Error en Geocoder: " + status);
@@ -186,11 +185,14 @@
                 newInput.type = "text";
                 newInput.id = "destino" + destinoCount;
                 newInput.placeholder = "Destino " + destinoCount;
+                newInput.onfocus = minimizarTecladoIOS;
                 document.getElementById("destinationBox").insertBefore(newInput, document.querySelector(".btn-yellow"));
-                
-                // Agregar autocompletado en el nuevo campo
                 new google.maps.places.Autocomplete(newInput);
             }
+        }
+
+        function minimizarTecladoIOS() {
+            setTimeout(() => document.activeElement.blur(), 100); // Forzar minimización del teclado en iOS
         }
 
         function solicitarTaxi() {
