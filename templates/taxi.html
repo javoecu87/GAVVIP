@@ -30,7 +30,56 @@
             z-index: 1;
         }
 
-        /* Contenedor de casilleros */
+        /* Cuadro transparente para opciones */
+        .options-container {
+            position: absolute;
+            bottom: 20px;
+            width: 90%;
+            max-width: 400px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 2;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Botones burbuja flotante */
+        .btn-bubble {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: none;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-yellow { background-color: #FFD24C; color: #1F3B5C; }
+        .btn-yellow:hover { background-color: #FFBA42; transform: scale(1.1); }
+
+        .btn-gray { background-color: #444; color: white; }
+        .btn-gray:hover { background-color: #333; }
+
+        /* Mensaje pequeño debajo del botón MOTO */
+        .note {
+            font-size: 12px;
+            color: white;
+            width: 70px;
+            text-align: center;
+            margin-top: -5px;
+        }
+
+        /* Sección de casilleros de destino */
         .destination-container {
             display: none;
             position: absolute;
@@ -44,7 +93,6 @@
             z-index: 2;
         }
 
-        /* Estilos para los casilleros */
         input {
             width: 100%;
             padding: 10px;
@@ -61,37 +109,25 @@
             color: rgba(255, 255, 255, 0.7);
         }
 
-        /* Botón */
-        .btn-yellow { 
-            background-color: #FFD24C; 
-            color: #1F3B5C; 
-            padding: 12px; 
-            border-radius: 10px; 
-            border: none; 
-            font-size: 18px; 
-            cursor: pointer; 
-            width: 100%; 
-            margin-top: 10px;
-        }
-
-        .btn-gray { 
-            background-color: #444; 
-            color: white; 
-            padding: 12px; 
-            border-radius: 10px; 
-            border: none; 
-            font-size: 18px; 
-            cursor: pointer; 
-            width: 100%; 
-            margin-top: 10px;
-        }
-
     </style>
 </head>
 <body>
 
     <!-- Mapa de Google -->
     <div id="map"></div>
+
+    <!-- Cuadro transparente con opciones -->
+    <div class="options-container" id="selectionBox">
+        <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('TAXI')">TAXI</button>
+        <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('SUV')">SUV</button>
+        <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('VAN')">VAN</button>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('MOTO')">MOTO</button>
+            <p class="note">Solo 1 pasajero</p>
+        </div>
+        <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('ENTREGAS')">ENTREGAS</button>
+        <button class="btn-gray" onclick="window.location.href='/principal'">Regresar</button>
+    </div>
 
     <!-- Casilleros de origen y destino -->
     <div class="destination-container" id="destinationBox">
@@ -108,7 +144,6 @@
         function initMap() {
             geocoder = new google.maps.Geocoder();
             
-            // Obtener la ubicación del usuario
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     const userLocation = {
@@ -116,9 +151,9 @@
                         lng: position.coords.longitude
                     };
                     loadMap(userLocation);
-                    updateAddress(userLocation, "origen"); // Guardar automáticamente la ubicación en "Punto de Partida"
+                    updateAddress(userLocation, "origen");
                 }, function() {
-                    loadMap({ lat: -0.180653, lng: -78.467834 }); // Ubicación predeterminada (Quito)
+                    loadMap({ lat: -0.180653, lng: -78.467834 });
                 });
             } else {
                 loadMap({ lat: -0.180653, lng: -78.467834 });
@@ -141,47 +176,19 @@
                 updateAddress(marker.getPosition(), "destino1");
             });
 
-            // Autocompletar en campo destino
             let destinoInput = document.getElementById("destino1");
             autocompleteDestino = new google.maps.places.Autocomplete(destinoInput);
-            destinoInput.addEventListener("focus", minimizarTecladoIOS);
         }
 
-        function updateAddress(position, field) {
-            geocoder.geocode({ location: position }, function (results, status) {
-                if (status === "OK" && results[0]) {
-                    document.getElementById(field).value = results[0].formatted_address;
-                }
-            });
+        function seleccionarServicio(servicio) {
+            document.getElementById("selectionBox").style.display = "none";
+            document.getElementById("destinationBox").style.display = "block";
         }
 
-        function agregarDestino() {
-            if (destinoCount < 4) {
-                destinoCount++;
-                let newInput = document.createElement("input");
-                newInput.type = "text";
-                newInput.id = "destino" + destinoCount;
-                newInput.placeholder = "Destino " + destinoCount;
-                newInput.addEventListener("focus", minimizarTecladoIOS);
-                document.getElementById("destinationBox").insertBefore(newInput, document.querySelector(".btn-yellow"));
-                new google.maps.places.Autocomplete(newInput);
-            }
-        }
-
-        function minimizarTecladoIOS() {
-            setTimeout(() => document.activeElement.blur(), 100); // Minimiza el teclado en iOS
-        }
-
-        function solicitarTaxi() {
-            let origen = document.getElementById("origen").value;
-            let destinos = [];
-            for (let i = 1; i <= destinoCount; i++) {
-                destinos.push(document.getElementById("destino" + i).value);
-            }
-            alert("Solicitud enviada\nOrigen: " + origen + "\nDestinos: " + destinos.join(", "));
-        }
-
-        window.onload = initMap;
+        window.onload = function() {
+            initMap();
+            document.getElementById("selectionBox").style.display = "flex";
+        };
     </script>
 
 </body>
