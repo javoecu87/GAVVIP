@@ -78,6 +78,36 @@
             text-align: center;
         }
 
+        /* Casilleros de origen y destino */
+        .destination-container {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            width: 90%;
+            max-width: 400px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 2;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+            text-align: center;
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
     </style>
 </head>
 <body>
@@ -96,6 +126,14 @@
         </div>
         <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('ENTREGAS')">ENTREGAS</button>
         <button class="btn-gray" onclick="window.location.href='/principal'">Regresar</button>
+    </div>
+
+    <!-- Casilleros -->
+    <div class="destination-container" id="destinationBox">
+        <input type="text" id="origen" placeholder="Ingrese Punto de Partida" readonly>
+        <input type="text" id="destino1" placeholder="Destino">
+        <button class="btn-yellow" onclick="agregarDestino()">+ Agregar otro destino</button>
+        <button class="btn-gray" onclick="solicitarTaxi()">Solicitar</button>
     </div>
 
     <script>
@@ -130,6 +168,7 @@
 
         function seleccionarServicio(servicio) {
             document.getElementById("selectionBox").style.display = "none";
+            document.getElementById("destinationBox").style.display = "block";
         }
 
         window.onload = function() {
