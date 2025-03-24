@@ -122,6 +122,11 @@ def solicitar_taxi():
         app.logger.error(f"Error en /solicitar-taxi: {e}")
         return "Error al procesar la solicitud de taxi.", 500
 
+@app.route('/conductor')
+def conductor():
+    return render_template('conductor.html')
+
+
 @app.route('/solicitar-turismo-ecuador', methods=['POST'])
 def solicitar_turismo_ecuador():
     try:
