@@ -15,6 +15,7 @@
     #map {
       width: 100%;
       height: 100%;
+      display: none;
     }
 
     .panel-solicitudes {
@@ -29,6 +30,7 @@
       overflow-y: auto;
       box-shadow: 0px -4px 10px rgba(0,0,0,0.4);
       border-radius: 20px 20px 0 0;
+      display: none;
     }
 
     .solicitud {
@@ -48,11 +50,30 @@
       border-radius: 20px;
       font-weight: bold;
       cursor: pointer;
+      display: none;
+      z-index: 10;
+    }
+
+    #btnIniciar {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 15px 30px;
+      font-size: 18px;
+      font-weight: bold;
+      background-color: #FFD24C;
+      color: #1F3B5C;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      z-index: 10;
     }
   </style>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w"></script>
 </head>
 <body>
+  <button id="btnIniciar" onclick="iniciarMapa()">Iniciar como Socio</button>
   <div id="map"></div>
   <div class="estado" onclick="toggleEstado()">Disponible</div>
   <div class="panel-solicitudes" id="panelSolicitudes">
@@ -64,41 +85,52 @@
     let map, marker;
     let disponible = true;
 
-    function initMap() {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        const pos = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        };
+    function iniciarMapa() {
+      document.getElementById('btnIniciar').style.display = 'none';
+      document.getElementById('map').style.display = 'block';
+      document.querySelector('.estado').style.display = 'block';
+      document.getElementById('panelSolicitudes').style.display = 'block';
 
-        map = new google.maps.Map(document.getElementById('map'), {
-          center: pos,
-          zoom: 15
-        });
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
 
-        marker = new google.maps.Marker({
-          position: pos,
-          map: map,
-          title: "Mi ubicación",
-          icon: {
-            url: "/static/images/icono-taxi.png",
-            scaledSize: new google.maps.Size(40, 40)
-          }
-        });
-
-        // Actualizar ubicación cada 30 segundos
-        setInterval(() => {
-          navigator.geolocation.getCurrentPosition(function(p) {
-            const nuevaPos = {
-              lat: p.coords.latitude,
-              lng: p.coords.longitude
-            };
-            marker.setPosition(nuevaPos);
-            map.setCenter(nuevaPos);
-            // Aquí puedes enviar la nueva ubicación a Firebase
+          map = new google.maps.Map(document.getElementById('map'), {
+            center: pos,
+            zoom: 15
           });
-        }, 30000);
-      });
+
+          marker = new google.maps.Marker({
+            position: pos,
+            map: map,
+            title: "Mi ubicación",
+            icon: {
+              url: "/static/images/icono-taxi.png",
+              scaledSize: new google.maps.Size(40, 40)
+            }
+          });
+
+          // Actualizar ubicación cada 30 segundos
+          setInterval(() => {
+            navigator.geolocation.getCurrentPosition(function(p) {
+              const nuevaPos = {
+                lat: p.coords.latitude,
+                lng: p.coords.longitude
+              };
+              marker.setPosition(nuevaPos);
+              map.setCenter(nuevaPos);
+              // Aquí puedes enviar la nueva ubicación a Firebase
+            });
+          }, 30000);
+        }, function(error) {
+          alert("Error al obtener la ubicación: " + error.message);
+        });
+      } else {
+        alert("Tu navegador no soporta geolocalización");
+      }
     }
 
     function toggleEstado() {
@@ -108,8 +140,6 @@
       estado.style.backgroundColor = disponible ? '#FFD24C' : '#999';
       // También puedes actualizar el estado en Firebase aquí
     }
-
-    window.onload = initMap;
   </script>
 </body>
 </html>
