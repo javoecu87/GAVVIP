@@ -35,6 +35,11 @@ def enviar_mensaje(mensaje, token):
 def serve_images(filename):
     return send_from_directory('static/images', filename)
 
+@app.route('/socio')
+def socio():
+    return render_template('socio.html')
+
+
 # Rutas de la ventana principal y sus botones
 @app.route('/')
 def ventana_emergente():
