@@ -21,13 +21,15 @@
     }
 
     .form-container {
-      width: 90%;
+      width: 100%;
       max-width: 500px;
       background-color: rgba(0, 0, 0, 0.6);
       padding: 20px;
       border-radius: 20px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
       color: #fff;
+      overflow-y: auto;
+      max-height: 100vh;
     }
 
     h2 {
@@ -106,6 +108,18 @@
 
       <label for="licencia">Número de Licencia</label>
       <input type="text" id="licencia" name="licencia" required>
+
+      <label for="fotoVehiculo">Foto del Vehículo</label>
+      <input type="file" id="fotoVehiculo" name="fotoVehiculo" accept="image/*" required>
+
+      <label for="fotoLicenciaFrontal">Foto de Licencia - Frente</label>
+      <input type="file" id="fotoLicenciaFrontal" name="fotoLicenciaFrontal" accept="image/*" required>
+
+      <label for="fotoLicenciaReverso">Foto de Licencia - Reverso</label>
+      <input type="file" id="fotoLicenciaReverso" name="fotoLicenciaReverso" accept="image/*" required>
+
+      <label for="fotoConductor">Foto del Conductor</label>
+      <input type="file" id="fotoConductor" name="fotoConductor" accept="image/*" required>
 
       <button type="submit">Enviar solicitud</button>
     </form>
