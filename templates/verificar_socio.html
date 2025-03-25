@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro de Socio Conductor</title>
+  <title>Verificación de Socio</title>
   <style>
     body {
       margin: 0;
@@ -18,16 +18,16 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      color: white;
     }
 
-    .form-container {
-      width: 90%;
-      max-width: 500px;
+    .container {
       background-color: rgba(0, 0, 0, 0.6);
-      padding: 20px;
+      padding: 30px;
       border-radius: 20px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-      color: #fff;
+      width: 90%;
+      max-width: 400px;
     }
 
     h2 {
@@ -42,7 +42,7 @@
       color: #FFD24C;
     }
 
-    input, select {
+    input {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
@@ -53,12 +53,8 @@
       color: #000;
     }
 
-    input[type="file"] {
-      background-color: #fff;
-    }
-
     button {
-      margin-top: 25px;
+      margin-top: 20px;
       width: 100%;
       padding: 12px;
       background-color: #FFD24C;
@@ -74,58 +70,26 @@
     button:hover {
       background-color: #FFBA42;
     }
+
+    .mensaje {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
-  <div class="form-container">
-    <h2>Registro de Socio Conductor</h2>
-    <form id="registroForm" enctype="multipart/form-data">
-      <label for="nombres">Nombres</label>
-      <input type="text" id="nombres" name="nombres" required>
-
-      <label for="apellidos">Apellidos</label>
-      <input type="text" id="apellidos" name="apellidos" required>
-
-      <label for="telefono">Teléfono de contacto</label>
-      <input type="tel" id="telefono" name="telefono" required>
-
-      <label for="correo">Correo electrónico</label>
-      <input type="email" id="correo" name="correo" required>
-
-      <label for="tipo">Tipo de Vehículo</label>
-      <select id="tipo" name="tipo" required>
-        <option value="" disabled selected>Seleccione un tipo</option>
-        <option value="Taxi">Taxi</option>
-        <option value="SUV">SUV</option>
-        <option value="Van">Van</option>
-        <option value="Moto">Moto</option>
-      </select>
-
-      <label for="placa">Placa del Vehículo</label>
-      <input type="text" id="placa" name="placa" required>
-
-      <label for="licencia">Número de Licencia</label>
-      <input type="text" id="licencia" name="licencia" required>
-
-      <label for="fotoVehiculo">Foto del Vehículo</label>
-      <input type="file" id="fotoVehiculo" name="fotoVehiculo" accept="image/*" required>
-
-      <label for="fotoLicenciaFrontal">Foto de Licencia - Frente</label>
-      <input type="file" id="fotoLicenciaFrontal" name="fotoLicenciaFrontal" accept="image/*" required>
-
-      <label for="fotoLicenciaReverso">Foto de Licencia - Reverso</label>
-      <input type="file" id="fotoLicenciaReverso" name="fotoLicenciaReverso" accept="image/*" required>
-
-      <label for="fotoConductor">Foto del Conductor</label>
-      <input type="file" id="fotoConductor" name="fotoConductor" accept="image/*" required>
-
-      <button type="submit">Enviar solicitud</button>
-    </form>
+  <div class="container">
+    <h2>Ingreso de Socio</h2>
+    <label for="licencia">Número de Licencia</label>
+    <input type="text" id="licencia" placeholder="Ingresa tu número de licencia" required>
+    <button onclick="verificarLicencia()">Verificar</button>
+    <div class="mensaje" id="mensaje"></div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCZNdViSZxd6ORwlP89bx-zX16ku4ZmFD0",
@@ -140,73 +104,26 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    document.getElementById('registroForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      const form = e.target;
-      const formData = new FormData(form);
-
-      const nombres = formData.get('nombres');
-      const apellidos = formData.get('apellidos');
-      const tipo = formData.get('tipo');
-      const placa = formData.get('placa');
-      const licencia = formData.get('licencia');
-      const telefono = formData.get('telefono');
-      const correo = formData.get('correo');
-
-      const mensaje = `🚗 *Nueva solicitud de socio conductor*\n\n` +
-        `👤 *Nombre:* ${nombres} ${apellidos}\n` +
-        `📞 *Teléfono:* ${telefono}\n` +
-        `✉️ *Correo:* ${correo}\n` +
-        `🚘 *Tipo de vehículo:* ${tipo}\n` +
-        `🔢 *Placa:* ${placa}\n` +
-        `🪪 *Licencia:* ${licencia}`;
-
-      const TOKEN = "8160209072:AAFnlNrBaML99akWHZMYdYZL7Y60udRquKA";
-      const CHAT_ID = "5828174289";
-
-      await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: CHAT_ID,
-          text: mensaje,
-          parse_mode: 'Markdown'
-        })
-      });
-
-      async function enviarFoto(nombreCampo, caption) {
-        const archivo = formData.get(nombreCampo);
-        if (!archivo) return;
-        const data = new FormData();
-        data.append('chat_id', CHAT_ID);
-        data.append('caption', caption);
-        data.append('photo', archivo);
-
-        await fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, {
-          method: 'POST',
-          body: data
-        });
+    window.verificarLicencia = async function() {
+      const licencia = document.getElementById("licencia").value.trim();
+      const mensaje = document.getElementById("mensaje");
+      if (!licencia) {
+        mensaje.textContent = "Por favor, ingresa tu número de licencia.";
+        return;
       }
 
-      await enviarFoto('fotoVehiculo', '📸 Foto del vehículo');
-      await enviarFoto('fotoLicenciaFrontal', '📄 Licencia - Frente');
-      await enviarFoto('fotoLicenciaReverso', '📄 Licencia - Reverso');
-      await enviarFoto('fotoConductor', '🤳 Foto del conductor');
-
-      // Guardar en Firebase como pendiente
-      await set(ref(db, 'socios/' + licencia), {
-        estado: 'pendiente',
-        nombre: nombres + ' ' + apellidos,
-        telefono: telefono,
-        correo: correo,
-        tipo: tipo,
-        placa: placa
-      });
-
-      alert("Solicitud enviada. En breve recibirás respuesta.");
-      form.reset();
-    });
+      const snapshot = await get(child(ref(db), `socios/${licencia}`));
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        if (data.estado === "aprobado") {
+          window.location.href = "/socio";
+        } else {
+          mensaje.textContent = "Tu solicitud está en revisión. Por favor, espera la aprobación.";
+        }
+      } else {
+        mensaje.textContent = "No encontramos una solicitud con ese número de licencia.";
+      }
+    }
   </script>
 </body>
 </html>
