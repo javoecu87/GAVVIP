@@ -130,15 +130,6 @@
       const placa = formData.get('placa');
       const licencia = formData.get('licencia');
 
-      if (!nombres || !apellidos || !tipo || !placa || !licencia ||
-          !formData.get('fotoVehiculo') ||
-          !formData.get('fotoLicenciaFrontal') ||
-          !formData.get('fotoLicenciaReverso') ||
-          !formData.get('fotoConductor')) {
-        alert("Por favor, complete todos los campos antes de continuar.");
-        return;
-      }
-
       const mensaje = `🚗 *Nueva solicitud de socio conductor*\n\n` +
         `👤 *Nombre:* ${nombres} ${apellidos}\n` +
         `🚘 *Tipo de vehículo:* ${tipo}\n` +
@@ -148,6 +139,7 @@
       const TOKEN = "8160209072:AAFnlNrBaML99akWHZMYdYZL7Y60udRquKA";
       const CHAT_ID = "5828174289";
 
+      // Enviar el mensaje de texto
       await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -157,6 +149,26 @@
           parse_mode: 'Markdown'
         })
       });
+
+      // Función para enviar cada foto al bot
+      async function enviarFoto(nombreCampo, caption) {
+        const archivo = formData.get(nombreCampo);
+        if (!archivo) return;
+        const data = new FormData();
+        data.append('chat_id', CHAT_ID);
+        data.append('caption', caption);
+        data.append('photo', archivo);
+
+        await fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, {
+          method: 'POST',
+          body: data
+        });
+      }
+
+      await enviarFoto('fotoVehiculo', '📸 Foto del vehículo');
+      await enviarFoto('fotoLicenciaFrontal', '📄 Licencia - Frente');
+      await enviarFoto('fotoLicenciaReverso', '📄 Licencia - Reverso');
+      await enviarFoto('fotoConductor', '🤳 Foto del conductor');
 
       alert("Solicitud enviada. En breve recibirás respuesta.");
       form.reset();
