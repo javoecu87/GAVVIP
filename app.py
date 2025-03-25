@@ -40,6 +40,11 @@ def socio():
     return render_template('socio.html')
 
 
+@app.route('/registro_socio')
+def registro_socio():
+    return render_template('registro_socio.html')
+
+
 # Rutas de la ventana principal y sus botones
 @app.route('/')
 def ventana_emergente():
