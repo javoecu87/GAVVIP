@@ -148,19 +148,60 @@
       const form = e.target;
       const formData = new FormData(form);
 
+      const nombres = formData.get('nombres');
+      const apellidos = formData.get('apellidos');
+      const tipo = formData.get('tipo');
+      const placa = formData.get('placa');
+      const licencia = formData.get('licencia');
+      const telefono = formData.get('telefono');
+      const correo = formData.get('correo');
+
       const datos = {
-        nombre: formData.get('nombres') + ' ' + formData.get('apellidos'),
-        telefono: formData.get('telefono'),
-        correo: formData.get('correo'),
-        tipo: formData.get('tipo'),
-        placa: formData.get('placa'),
+        nombre: nombres + ' ' + apellidos,
+        telefono,
+        correo,
+        tipo,
+        placa,
         estado: 'pendiente'
       };
 
-      const licencia = formData.get('licencia');
       await set(ref(db, 'socios/' + licencia), datos);
 
-      alert("Solicitud enviada correctamente. Espera la aprobación.");
+      const TOKEN = "8160209072:AAFnlNrBaML99akWHZMYdYZL7Y60udRquKA";
+      const CHAT_ID = "5828174289";
+
+      const mensaje = `🚗 *Nueva solicitud de socio conductor*\n\n👤 *Nombre:* ${nombres} ${apellidos}\n📞 *Teléfono:* ${telefono}\n✉️ *Correo:* ${correo}\n🚘 *Tipo:* ${tipo}\n🔢 *Placa:* ${placa}\n🪪 *Licencia:* ${licencia}`;
+
+      await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: CHAT_ID,
+          text: mensaje,
+          parse_mode: 'Markdown'
+        })
+      });
+
+      async function enviarFoto(nombreCampo, caption) {
+        const archivo = formData.get(nombreCampo);
+        if (!archivo) return;
+        const data = new FormData();
+        data.append('chat_id', CHAT_ID);
+        data.append('caption', caption);
+        data.append('photo', archivo);
+
+        await fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, {
+          method: 'POST',
+          body: data
+        });
+      }
+
+      await enviarFoto('fotoVehiculo', '📸 Foto del vehículo');
+      await enviarFoto('fotoLicenciaFrontal', '📄 Licencia - Frente');
+      await enviarFoto('fotoLicenciaReverso', '📄 Licencia - Reverso');
+      await enviarFoto('fotoConductor', '🤳 Foto del conductor');
+
+      alert("Solicitud enviada correctamente. En breve recibirás respuesta.");
       form.reset();
     });
   </script>
