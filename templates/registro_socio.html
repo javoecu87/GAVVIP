@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Socio Conductor</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
     body {
       margin: 0;
@@ -30,6 +32,24 @@
       color: #fff;
       overflow-y: auto;
       max-height: 100vh;
+      position: relative;
+    }
+
+    .loading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: #FFD24C;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 20px;
+      z-index: 10;
+      display: none;
     }
 
     h2 {
@@ -80,6 +100,7 @@
 </head>
 <body>
   <div class="form-container">
+    <div class="loading" id="loading">Enviando solicitud...</div>
     <h2>Registro de Socio Conductor</h2>
     <form id="registroForm" enctype="multipart/form-data">
       <label for="nombres">Nombres</label>
@@ -125,10 +146,7 @@
     </form>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCZNdViSZxd6ORwlP89bx-zX16ku4ZmFD0",
       authDomain: "gavvip-b7039.firebaseapp.com",
@@ -139,11 +157,14 @@
       appId: "1:803660953782:web:39c00063caaaaa99c84e17"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
     document.getElementById('registroForm').addEventListener('submit', async function(e) {
       e.preventDefault();
+
+      const loading = document.getElementById('loading');
+      loading.style.display = 'flex';
 
       const form = e.target;
       const formData = new FormData(form);
@@ -165,7 +186,7 @@
         estado: 'pendiente'
       };
 
-      await set(ref(db, 'socios/' + licencia), datos);
+      await db.ref('socios/' + licencia).set(datos);
 
       const TOKEN = "8160209072:AAFnlNrBaML99akWHZMYdYZL7Y60udRquKA";
       const CHAT_ID = "5828174289";
@@ -201,6 +222,7 @@
       await enviarFoto('fotoLicenciaReverso', '📄 Licencia - Reverso');
       await enviarFoto('fotoConductor', '🤳 Foto del conductor');
 
+      loading.style.display = 'none';
       alert("Solicitud enviada correctamente. En breve recibirás respuesta.");
       form.reset();
     });
