@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verificación de Socio</title>
+  <title>Ingreso de Socio</title>
   <style>
     body {
       margin: 0;
@@ -28,24 +28,17 @@
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
       width: 90%;
       max-width: 400px;
+      text-align: center;
     }
 
     h2 {
-      text-align: center;
-      color: #FFD24C;
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
       color: #FFD24C;
     }
 
     input {
       width: 100%;
       padding: 10px;
-      margin-top: 5px;
+      margin-top: 10px;
       border-radius: 8px;
       border: none;
       font-size: 16px;
@@ -54,14 +47,14 @@
     }
 
     button {
-      margin-top: 20px;
+      margin-top: 15px;
       width: 100%;
       padding: 12px;
       background-color: #FFD24C;
       color: #1F3B5C;
       border: none;
       border-radius: 30px;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
       cursor: pointer;
       transition: background 0.3s ease;
@@ -72,18 +65,19 @@
     }
 
     .mensaje {
-      margin-top: 20px;
-      text-align: center;
-      font-size: 16px;
+      margin-top: 15px;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Ingreso de Socio</h2>
-    <label for="licencia">Número de Licencia</label>
-    <input type="text" id="licencia" placeholder="Ingresa tu número de licencia" required>
-    <button onclick="verificarLicencia()">Verificar</button>
+    <h2>Socio Conductor</h2>
+    <p>¿Ya enviaste tu solicitud?</p>
+    <input type="text" id="licencia" placeholder="Ingresa tu número de licencia">
+    <button onclick="verificarLicencia()">Verificar estado</button>
+    <p style="margin-top: 20px;">¿Aún no te has registrado?</p>
+    <button onclick="window.location.href='/registro_socio'">Registrarme</button>
     <div class="mensaje" id="mensaje"></div>
   </div>
 
