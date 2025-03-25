@@ -86,6 +86,12 @@
       <label for="apellidos">Apellidos</label>
       <input type="text" id="apellidos" name="apellidos" required>
 
+      <label for="telefono">Teléfono de contacto</label>
+      <input type="tel" id="telefono" name="telefono" required>
+
+      <label for="correo">Correo electrónico</label>
+      <input type="email" id="correo" name="correo" required>
+
       <label for="tipo">Tipo de Vehículo</label>
       <select id="tipo" name="tipo" required>
         <option value="" disabled selected>Seleccione un tipo</option>
@@ -129,9 +135,13 @@
       const tipo = formData.get('tipo');
       const placa = formData.get('placa');
       const licencia = formData.get('licencia');
+      const telefono = formData.get('telefono');
+      const correo = formData.get('correo');
 
       const mensaje = `🚗 *Nueva solicitud de socio conductor*\n\n` +
         `👤 *Nombre:* ${nombres} ${apellidos}\n` +
+        `📞 *Teléfono:* ${telefono}\n` +
+        `✉️ *Correo:* ${correo}\n` +
         `🚘 *Tipo de vehículo:* ${tipo}\n` +
         `🔢 *Placa:* ${placa}\n` +
         `🪪 *Licencia:* ${licencia}`;
@@ -139,7 +149,6 @@
       const TOKEN = "8160209072:AAFnlNrBaML99akWHZMYdYZL7Y60udRquKA";
       const CHAT_ID = "5828174289";
 
-      // Enviar el mensaje de texto
       await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -150,7 +159,6 @@
         })
       });
 
-      // Función para enviar cada foto al bot
       async function enviarFoto(nombreCampo, caption) {
         const archivo = formData.get(nombreCampo);
         if (!archivo) return;
