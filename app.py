@@ -45,6 +45,12 @@ def registro_socio():
     return render_template('registro_socio.html')
 
 
+@app.route('/verificar_socio')
+def verificar_socio():
+    return render_template('verificar_socio.html')
+
+
+
 # Rutas de la ventana principal y sus botones
 @app.route('/')
 def ventana_emergente():
