@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Socio Conductor</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-image: url('/static/images/emergente.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .form-container {
+      width: 90%;
+      max-width: 500px;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      color: #fff;
+    }
+
+    h2 {
+      text-align: center;
+      color: #FFD24C;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #FFD24C;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #000;
+    }
+
+    input[type="file"] {
+      background-color: #fff;
+    }
+
+    button {
+      margin-top: 25px;
+      width: 100%;
+      padding: 12px;
+      background-color: #FFD24C;
+      color: #1F3B5C;
+      border: none;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #FFBA42;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Registro de Socio Conductor</h2>
+    <form id="registroForm" enctype="multipart/form-data">
+      <label for="nombres">Nombres</label>
+      <input type="text" id="nombres" name="nombres" required>
+
+      <label for="apellidos">Apellidos</label>
+      <input type="text" id="apellidos" name="apellidos" required>
+
+      <label for="tipo">Tipo de Vehículo</label>
+      <select id="tipo" name="tipo" required>
+        <option value="" disabled selected>Seleccione un tipo</option>
+        <option value="Taxi">Taxi</option>
+        <option value="SUV">SUV</option>
+        <option value="Van">Van</option>
+        <option value="Moto">Moto</option>
+      </select>
+
+      <label for="placa">Placa del Vehículo</label>
+      <input type="text" id="placa" name="placa" required>
+
+      <label for="licencia">Número de Licencia</label>
+      <input type="text" id="licencia" name="licencia" required>
+
+      <label for="fotoVehiculo">Foto del Vehículo</label>
+      <input type="file" id="fotoVehiculo" name="fotoVehiculo" accept="image/*" required>
+
+      <label for="fotoLicenciaFrontal">Foto de Licencia - Frente</label>
+      <input type="file" id="fotoLicenciaFrontal" name="fotoLicenciaFrontal" accept="image/*" required>
+
+      <label for="fotoLicenciaReverso">Foto de Licencia - Reverso</label>
+      <input type="file" id="fotoLicenciaReverso" name="fotoLicenciaReverso" accept="image/*" required>
+
+      <label for="fotoConductor">Foto del Conductor</label>
+      <input type="file" id="fotoConductor" name="fotoConductor" accept="image/*" required>
+
+      <button type="submit">Enviar solicitud</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('registroForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const formData = new FormData(form);
+
+      const nombres = formData.get('nombres');
+      const apellidos = formData.get('apellidos');
+      const tipo = formData.get('tipo');
+      const placa = formData.get('placa');
+      const licencia = formData.get('licencia');
+
+      if (!nombres || !apellidos || !tipo || !placa || !licencia ||
+          !formData.get('fotoVehiculo') ||
+          !formData.get('fotoLicenciaFrontal') ||
+          !formData.get('fotoLicenciaReverso') ||
+          !formData.get('fotoConductor')) {
+        alert("Por favor, complete todos los campos antes de continuar.");
+        return;
+      }
+
+      const mensaje = `🚗 *Nueva solicitud de socio conductor*\n\n` +
+        `👤 *Nombre:* ${nombres} ${apellidos}\n` +
+        `🚘 *Tipo de vehículo:* ${tipo}\n` +
+        `🔢 *Placa:* ${placa}\n` +
+        `🪪 *Licencia:* ${licencia}`;
+
+      const TOKEN = "8160209072:AAFnlNrBaML99akWHZMYdYZL7Y60udRquKA";
+      const CHAT_ID = "@GAVVIP_solicitudes";
+
+      await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: CHAT_ID,
+          text: mensaje,
+          parse_mode: 'Markdown'
+        })
+      });
+
+      alert("Solicitud enviada. En breve recibirás respuesta.");
+      form.reset();
+    });
+  </script>
+</body>
+</html>
