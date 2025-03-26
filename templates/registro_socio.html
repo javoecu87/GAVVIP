@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Socio Conductor</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
     body {
       margin: 0;
@@ -83,16 +81,16 @@
     <h2>Registro de Socio Conductor</h2>
     <form id="registroForm" enctype="multipart/form-data">
       <label for="nombres">Nombres</label>
-      <input type="text" id="nombres" name="nombres" required />
+      <input type="text" id="nombres" name="nombres" required>
 
       <label for="apellidos">Apellidos</label>
-      <input type="text" id="apellidos" name="apellidos" required />
+      <input type="text" id="apellidos" name="apellidos" required>
 
       <label for="telefono">Teléfono de contacto</label>
-      <input type="tel" id="telefono" name="telefono" required />
+      <input type="tel" id="telefono" name="telefono" required>
 
       <label for="correo">Correo electrónico</label>
-      <input type="email" id="correo" name="correo" required />
+      <input type="email" id="correo" name="correo" required>
 
       <label for="tipo">Tipo de Vehículo</label>
       <select id="tipo" name="tipo" required>
@@ -104,107 +102,81 @@
       </select>
 
       <label for="placa">Placa del Vehículo</label>
-      <input type="text" id="placa" name="placa" required />
+      <input type="text" id="placa" name="placa" required>
 
       <label for="licencia">Número de Licencia</label>
-      <input type="text" id="licencia" name="licencia" required />
+      <input type="text" id="licencia" name="licencia" required>
 
       <label for="fotoVehiculo">Foto del Vehículo</label>
-      <input type="file" id="fotoVehiculo" name="fotoVehiculo" accept="image/*" required />
+      <input type="file" id="fotoVehiculo" name="fotoVehiculo" accept="image/*" required>
 
       <label for="fotoLicenciaFrontal">Foto de Licencia - Frente</label>
-      <input type="file" id="fotoLicenciaFrontal" name="fotoLicenciaFrontal" accept="image/*" required />
+      <input type="file" id="fotoLicenciaFrontal" name="fotoLicenciaFrontal" accept="image/*" required>
 
       <label for="fotoLicenciaReverso">Foto de Licencia - Reverso</label>
-      <input type="file" id="fotoLicenciaReverso" name="fotoLicenciaReverso" accept="image/*" required />
+      <input type="file" id="fotoLicenciaReverso" name="fotoLicenciaReverso" accept="image/*" required>
 
       <label for="fotoConductor">Foto del Conductor</label>
-      <input type="file" id="fotoConductor" name="fotoConductor" accept="image/*" required />
+      <input type="file" id="fotoConductor" name="fotoConductor" accept="image/*" required>
 
       <button type="submit">Enviar solicitud</button>
     </form>
   </div>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCZNdViSZxd6ORwlP89bx-zX16ku4ZmFD0",
-      authDomain: "gavvip-b7039.firebaseapp.com",
-      databaseURL: "https://gavvip-b7039-default-rtdb.firebaseio.com",
-      projectId: "gavvip-b7039",
-      storageBucket: "gavvip-b7039.appspot.com",
-      messagingSenderId: "803660953782",
-      appId: "1:803660953782:web:39c00063caaaaa99c84e17"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    document.getElementById("registroForm").addEventListener("submit", async function (e) {
+    document.getElementById('registroForm').addEventListener('submit', async function(e) {
       e.preventDefault();
 
       const form = e.target;
       const formData = new FormData(form);
 
-      const nombres = formData.get("nombres");
-      const apellidos = formData.get("apellidos");
-      const tipo = formData.get("tipo");
-      const placa = formData.get("placa");
-      const licencia = formData.get("licencia");
-      const telefono = formData.get("telefono");
-      const correo = formData.get("correo");
+      const nombres = formData.get('nombres');
+      const apellidos = formData.get('apellidos');
+      const tipo = formData.get('tipo');
+      const placa = formData.get('placa');
+      const licencia = formData.get('licencia');
+      const telefono = formData.get('telefono');
+      const correo = formData.get('correo');
 
-      // Guardar en Firebase
-      const datos = {
-        nombre: nombres + " " + apellidos,
-        telefono,
-        correo,
-        tipo,
-        placa,
-        estado: "pendiente"
-      };
-
-      await db.ref("socios/" + licencia).set(datos);
-
-      const mensaje =
-        `🚗 *Nueva solicitud de socio conductor*\n\n` +
-        `👤 *Nombre:* ${nombres} ${apellidos}\n` +
-        `📞 *Teléfono:* ${telefono}\n` +
-        `✉️ *Correo:* ${correo}\n` +
-        `🚘 *Tipo de vehículo:* ${tipo}\n` +
-        `🔢 *Placa:* ${placa}\n` +
-        `🪪 *Licencia:* ${licencia}`;
+      const mensaje = 🚗 *Nueva solicitud de socio conductor*\n\n +
+        👤 *Nombre:* ${nombres} ${apellidos}\n +
+        📞 *Teléfono:* ${telefono}\n +
+        ✉️ *Correo:* ${correo}\n +
+        🚘 *Tipo de vehículo:* ${tipo}\n +
+        🔢 *Placa:* ${placa}\n +
+        🪪 *Licencia:* ${licencia};
 
       const TOKEN = "8160209072:AAFnlNrBaML99akWHZMYdYZL7Y60udRquKA";
       const CHAT_ID = "5828174289";
 
-      await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      await fetch(https://api.telegram.org/bot${TOKEN}/sendMessage, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chat_id: CHAT_ID,
           text: mensaje,
-          parse_mode: "Markdown",
-        }),
+          parse_mode: 'Markdown'
+        })
       });
 
       async function enviarFoto(nombreCampo, caption) {
         const archivo = formData.get(nombreCampo);
         if (!archivo) return;
         const data = new FormData();
-        data.append("chat_id", CHAT_ID);
-        data.append("caption", caption);
-        data.append("photo", archivo);
+        data.append('chat_id', CHAT_ID);
+        data.append('caption', caption);
+        data.append('photo', archivo);
 
-        await fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, {
-          method: "POST",
-          body: data,
+        await fetch(https://api.telegram.org/bot${TOKEN}/sendPhoto, {
+          method: 'POST',
+          body: data
         });
       }
 
-      await enviarFoto("fotoVehiculo", "📸 Foto del vehículo");
-      await enviarFoto("fotoLicenciaFrontal", "📄 Licencia - Frente");
-      await enviarFoto("fotoLicenciaReverso", "📄 Licencia - Reverso");
-      await enviarFoto("fotoConductor", "🤳 Foto del conductor");
+      await enviarFoto('fotoVehiculo', '📸 Foto del vehículo');
+      await enviarFoto('fotoLicenciaFrontal', '📄 Licencia - Frente');
+      await enviarFoto('fotoLicenciaReverso', '📄 Licencia - Reverso');
+      await enviarFoto('fotoConductor', '🤳 Foto del conductor');
 
       alert("Solicitud enviada. En breve recibirás respuesta.");
       form.reset();
