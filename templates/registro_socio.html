@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Socio Conductor</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
     body {
       margin: 0;
@@ -23,33 +21,13 @@
     }
 
     .form-container {
-      width: 100%;
+      width: 90%;
       max-width: 500px;
       background-color: rgba(0, 0, 0, 0.6);
       padding: 20px;
       border-radius: 20px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
       color: #fff;
-      overflow-y: auto;
-      max-height: 100vh;
-      position: relative;
-    }
-
-    .loading {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.7);
-      color: #FFD24C;
-      font-size: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 20px;
-      z-index: 10;
-      display: none;
     }
 
     h2 {
@@ -100,7 +78,6 @@
 </head>
 <body>
   <div class="form-container">
-    <div class="loading" id="loading">Enviando solicitud...</div>
     <h2>Registro de Socio Conductor</h2>
     <form id="registroForm" enctype="multipart/form-data">
       <label for="nombres">Nombres</label>
@@ -147,24 +124,8 @@
   </div>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCZNdViSZxd6ORwlP89bx-zX16ku4ZmFD0",
-      authDomain: "gavvip-b7039.firebaseapp.com",
-      databaseURL: "https://gavvip-b7039-default-rtdb.firebaseio.com",
-      projectId: "gavvip-b7039",
-      storageBucket: "gavvip-b7039.appspot.com",
-      messagingSenderId: "803660953782",
-      appId: "1:803660953782:web:39c00063caaaaa99c84e17"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
     document.getElementById('registroForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-
-      const loading = document.getElementById('loading');
-      loading.style.display = 'flex';
 
       const form = e.target;
       const formData = new FormData(form);
@@ -177,21 +138,16 @@
       const telefono = formData.get('telefono');
       const correo = formData.get('correo');
 
-      const datos = {
-        nombre: nombres + ' ' + apellidos,
-        telefono,
-        correo,
-        tipo,
-        placa,
-        estado: 'pendiente'
-      };
-
-      await db.ref('socios/' + licencia).set(datos);
+      const mensaje = `🚗 *Nueva solicitud de socio conductor*\n\n` +
+        `👤 *Nombre:* ${nombres} ${apellidos}\n` +
+        `📞 *Teléfono:* ${telefono}\n` +
+        `✉️ *Correo:* ${correo}\n` +
+        `🚘 *Tipo de vehículo:* ${tipo}\n` +
+        `🔢 *Placa:* ${placa}\n` +
+        `🪪 *Licencia:* ${licencia}`;
 
       const TOKEN = "8160209072:AAFnlNrBaML99akWHZMYdYZL7Y60udRquKA";
       const CHAT_ID = "5828174289";
-
-      const mensaje = `🚗 *Nueva solicitud de socio conductor*\n\n👤 *Nombre:* ${nombres} ${apellidos}\n📞 *Teléfono:* ${telefono}\n✉️ *Correo:* ${correo}\n🚘 *Tipo:* ${tipo}\n🔢 *Placa:* ${placa}\n🪪 *Licencia:* ${licencia}`;
 
       await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
         method: 'POST',
@@ -204,10 +160,8 @@
       });
 
       async function enviarFoto(nombreCampo, caption) {
-        const input = document.getElementById(nombreCampo);
-        const archivo = input.files[0];
+        const archivo = formData.get(nombreCampo);
         if (!archivo) return;
-
         const data = new FormData();
         data.append('chat_id', CHAT_ID);
         data.append('caption', caption);
@@ -224,8 +178,7 @@
       await enviarFoto('fotoLicenciaReverso', '📄 Licencia - Reverso');
       await enviarFoto('fotoConductor', '🤳 Foto del conductor');
 
-      loading.style.display = 'none';
-      alert("Solicitud enviada correctamente. En breve recibirás respuesta.");
+      alert("Solicitud enviada. En breve recibirás respuesta.");
       form.reset();
     });
   </script>
