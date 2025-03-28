@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ingreso de Socio</title>
+  <title>Verificación de Socio</title>
   <style>
     body {
       margin: 0;
@@ -81,41 +81,38 @@
     <div class="mensaje" id="mensaje"></div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCZNdViSZxd6ORwlP89bx-zX16ku4ZmFD0",
-      authDomain: "gavvip-b7039.firebaseapp.com",
-      databaseURL: "https://gavvip-b7039-default-rtdb.firebaseio.com",
-      projectId: "gavvip-b7039",
-      storageBucket: "gavvip-b7039.appspot.com",
-      messagingSenderId: "803660953782",
-      appId: "1:803660953782:web:39c00063caaaaa99c84e17"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    window.verificarLicencia = async function() {
+  <script>
+    async function verificarLicencia() {
       const licencia = document.getElementById("licencia").value.trim();
       const mensaje = document.getElementById("mensaje");
       if (!licencia) {
         mensaje.textContent = "Por favor, ingresa tu número de licencia.";
+        mensaje.style.color = "orange";
         return;
       }
 
-      const snapshot = await get(child(ref(db), `socios/${licencia}`));
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        if (data.estado === "aprobado") {
+      mensaje.textContent = "Verificando...";
+      mensaje.style.color = "#FFD24C";
+
+      try {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbzw2dpA4HxJ42cRRMltn-fRb3o-uU8YySoYU-fHn8Tzzu1X8OyVbguMeFJAZoNfOIbJPA/exec");
+        const data = await response.json();
+
+        const socio = data.find(item => item.licencia === licencia);
+
+        if (!socio) {
+          mensaje.textContent = "No encontramos una solicitud con ese número de licencia.";
+          mensaje.style.color = "red";
+        } else if (socio.aprobado.toLowerCase() === "sí") {
           window.location.href = "/socio";
         } else {
           mensaje.textContent = "Tu solicitud está en revisión. Por favor, espera la aprobación.";
+          mensaje.style.color = "orange";
         }
-      } else {
-        mensaje.textContent = "No encontramos una solicitud con ese número de licencia.";
+      } catch (error) {
+        mensaje.textContent = "Error al verificar. Intenta nuevamente más tarde.";
+        mensaje.style.color = "red";
+        console.error(error);
       }
     }
   </script>
