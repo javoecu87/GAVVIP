@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Verificación de Socio Conductor</title>
   <style>
     body {
@@ -111,7 +111,7 @@
           mensaje.textContent = 'Licencia no encontrada. Aún no has enviado solicitud o está en revisión.';
           mensaje.style.color = 'red';
         } else if (text.includes(`${licencia},sí`) || text.includes(`${licencia};sí`)) {
-          window.location.href = '/socio.html';
+          window.location.href = 'socio.html';
         } else {
           mensaje.textContent = 'Tu solicitud está pendiente de aprobación.';
           mensaje.style.color = 'orange';
@@ -124,7 +124,7 @@
     }
 
     function registrarSocio() {
-      window.location.href = '/registro_socio.html';
+      window.location.href = 'registro_socio.html';
     }
   </script>
 </body>
