@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Registro de Socio Conductor</title>
   <style>
     body {
@@ -81,16 +81,16 @@
     <h2>Registro de Socio Conductor</h2>
     <form id="registroForm" enctype="multipart/form-data">
       <label for="nombres">Nombres</label>
-      <input type="text" id="nombres" name="nombres" required>
+      <input type="text" id="nombres" name="nombres" required />
 
       <label for="apellidos">Apellidos</label>
-      <input type="text" id="apellidos" name="apellidos" required>
+      <input type="text" id="apellidos" name="apellidos" required />
 
       <label for="telefono">Teléfono de contacto</label>
-      <input type="tel" id="telefono" name="telefono" required>
+      <input type="tel" id="telefono" name="telefono" required />
 
       <label for="correo">Correo electrónico</label>
-      <input type="email" id="correo" name="correo" required>
+      <input type="email" id="correo" name="correo" required />
 
       <label for="tipo">Tipo de Vehículo</label>
       <select id="tipo" name="tipo" required>
@@ -102,81 +102,98 @@
       </select>
 
       <label for="placa">Placa del Vehículo</label>
-      <input type="text" id="placa" name="placa" required>
+      <input type="text" id="placa" name="placa" required />
 
       <label for="licencia">Número de Licencia</label>
-      <input type="text" id="licencia" name="licencia" required>
+      <input type="text" id="licencia" name="licencia" required />
 
       <label for="fotoVehiculo">Foto del Vehículo</label>
-      <input type="file" id="fotoVehiculo" name="fotoVehiculo" accept="image/*" required>
+      <input type="file" id="fotoVehiculo" name="fotoVehiculo" accept="image/*" required />
 
       <label for="fotoLicenciaFrontal">Foto de Licencia - Frente</label>
-      <input type="file" id="fotoLicenciaFrontal" name="fotoLicenciaFrontal" accept="image/*" required>
+      <input type="file" id="fotoLicenciaFrontal" name="fotoLicenciaFrontal" accept="image/*" required />
 
       <label for="fotoLicenciaReverso">Foto de Licencia - Reverso</label>
-      <input type="file" id="fotoLicenciaReverso" name="fotoLicenciaReverso" accept="image/*" required>
+      <input type="file" id="fotoLicenciaReverso" name="fotoLicenciaReverso" accept="image/*" required />
 
       <label for="fotoConductor">Foto del Conductor</label>
-      <input type="file" id="fotoConductor" name="fotoConductor" accept="image/*" required>
+      <input type="file" id="fotoConductor" name="fotoConductor" accept="image/*" required />
 
       <button type="submit">Enviar solicitud</button>
     </form>
   </div>
 
   <script>
-    document.getElementById('registroForm').addEventListener('submit', async function(e) {
+    document.getElementById("registroForm").addEventListener("submit", async function (e) {
       e.preventDefault();
 
       const form = e.target;
       const formData = new FormData(form);
 
-      const nombres = formData.get('nombres');
-      const apellidos = formData.get('apellidos');
-      const tipo = formData.get('tipo');
-      const placa = formData.get('placa');
-      const licencia = formData.get('licencia');
-      const telefono = formData.get('telefono');
-      const correo = formData.get('correo');
+      const nombres = formData.get("nombres");
+      const apellidos = formData.get("apellidos");
+      const tipo = formData.get("tipo");
+      const placa = formData.get("placa");
+      const licencia = formData.get("licencia");
+      const telefono = formData.get("telefono");
+      const correo = formData.get("correo");
 
-      const mensaje = 🚗 *Nueva solicitud de socio conductor*\n\n +
-        👤 *Nombre:* ${nombres} ${apellidos}\n +
-        📞 *Teléfono:* ${telefono}\n +
-        ✉️ *Correo:* ${correo}\n +
-        🚘 *Tipo de vehículo:* ${tipo}\n +
-        🔢 *Placa:* ${placa}\n +
-        🪪 *Licencia:* ${licencia};
+      // Enviar a Google Sheets
+      const datos = {
+        nombre: nombres + " " + apellidos,
+        telefono,
+        correo,
+        tipo,
+        placa,
+        licencia
+      };
+
+      await fetch("https://script.google.com/macros/s/AKfycbx3mMnR5-bWgJz8OA1n-D6-_77OgVEjrKmuvdLoL3pC-ja8rV4m350mvmDqwRjNDmjhRg/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos)
+      });
+
+      const mensaje =
+        `🚗 *Nueva solicitud de socio conductor*\n\n` +
+        `👤 *Nombre:* ${nombres} ${apellidos}\n` +
+        `📞 *Teléfono:* ${telefono}\n` +
+        `✉️ *Correo:* ${correo}\n` +
+        `🚘 *Tipo de vehículo:* ${tipo}\n` +
+        `🔢 *Placa:* ${placa}\n` +
+        `🪪 *Licencia:* ${licencia}`;
 
       const TOKEN = "8160209072:AAFnlNrBaML99akWHZMYdYZL7Y60udRquKA";
       const CHAT_ID = "5828174289";
 
-      await fetch(https://api.telegram.org/bot${TOKEN}/sendMessage, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: CHAT_ID,
           text: mensaje,
-          parse_mode: 'Markdown'
-        })
+          parse_mode: "Markdown",
+        }),
       });
 
       async function enviarFoto(nombreCampo, caption) {
         const archivo = formData.get(nombreCampo);
         if (!archivo) return;
         const data = new FormData();
-        data.append('chat_id', CHAT_ID);
-        data.append('caption', caption);
-        data.append('photo', archivo);
+        data.append("chat_id", CHAT_ID);
+        data.append("caption", caption);
+        data.append("photo", archivo);
 
-        await fetch(https://api.telegram.org/bot${TOKEN}/sendPhoto, {
-          method: 'POST',
-          body: data
+        await fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, {
+          method: "POST",
+          body: data,
         });
       }
 
-      await enviarFoto('fotoVehiculo', '📸 Foto del vehículo');
-      await enviarFoto('fotoLicenciaFrontal', '📄 Licencia - Frente');
-      await enviarFoto('fotoLicenciaReverso', '📄 Licencia - Reverso');
-      await enviarFoto('fotoConductor', '🤳 Foto del conductor');
+      await enviarFoto("fotoVehiculo", "📸 Foto del vehículo");
+      await enviarFoto("fotoLicenciaFrontal", "📄 Licencia - Frente");
+      await enviarFoto("fotoLicenciaReverso", "📄 Licencia - Reverso");
+      await enviarFoto("fotoConductor", "🤳 Foto del conductor");
 
       alert("Solicitud enviada. En breve recibirás respuesta.");
       form.reset();
