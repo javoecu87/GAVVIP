@@ -111,7 +111,7 @@
           mensaje.textContent = 'Licencia no encontrada. Aún no has enviado solicitud o está en revisión.';
           mensaje.style.color = 'red';
         } else if (text.includes(`${licencia},sí`) || text.includes(`${licencia};sí`)) {
-          window.location.href = '/socio.html';
+          window.location.href = 'socio.html';
         } else {
           mensaje.textContent = 'Tu solicitud está pendiente de aprobación.';
           mensaje.style.color = 'orange';
@@ -124,8 +124,9 @@
     }
 
     function registrarSocio() {
-      window.location.href = '/registro_socio.html';
-    }
+  window.location.href = '/registro-socio';
+}
   </script>
 </body>
 </html>
+
