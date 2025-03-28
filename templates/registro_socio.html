@@ -148,11 +148,17 @@
         licencia
       };
 
-      await fetch("https://script.google.com/macros/s/AKfycbx3mMnR5-bWgJz8OA1n-D6-_77OgVEjrKmuvdLoL3pC-ja8rV4m350mvmDqwRjNDmjhRg/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(datos)
-      });
+try {
+  await fetch("https://script.google.com/macros/s/AKfycbx3mMnR5-bWgJz8OA1n-D6-_77OgVEjrKmuvdLoL3pC-ja8rV4m350mvmDqwRjNDmjhRg/exec", {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(datos)
+  });
+  console.log("✅ Datos enviados a Google Sheets");
+} catch (error) {
+  console.error("❌ Error al enviar a Google Sheets:", error);
+}
 
       const mensaje =
         `🚗 *Nueva solicitud de socio conductor*\n\n` +
