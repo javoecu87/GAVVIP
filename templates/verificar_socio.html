@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verificación de Socio Conductor</title>
+  <title>Ingreso de Socio</title>
   <style>
     body {
       margin: 0;
@@ -18,27 +18,20 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      color: white;
     }
 
-    .form-container {
-      width: 90%;
-      max-width: 400px;
+    .container {
       background-color: rgba(0, 0, 0, 0.6);
-      padding: 20px;
+      padding: 30px;
       border-radius: 20px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-      color: #fff;
+      width: 90%;
+      max-width: 400px;
       text-align: center;
     }
 
     h2 {
-      color: #FFD24C;
-    }
-
-    label {
-      display: block;
-      margin-top: 20px;
-      font-weight: bold;
       color: #FFD24C;
     }
 
@@ -61,7 +54,7 @@
       color: #1F3B5C;
       border: none;
       border-radius: 30px;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
       cursor: pointer;
       transition: background 0.3s ease;
@@ -71,62 +64,60 @@
       background-color: #FFBA42;
     }
 
-    #mensaje {
+    .mensaje {
       margin-top: 15px;
-      font-size: 16px;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <div class="form-container">
-    <h2>Verificación de Socio Conductor</h2>
-
-    <label for="licencia">Número de Licencia</label>
-    <input type="text" id="licencia" placeholder="Ingresa tu número de licencia" required />
-
-    <button onclick="verificarSocio()">Verificar</button>
-    <button onclick="registrarSocio()">Registrarse</button>
-
-    <div id="mensaje"></div>
+  <div class="container">
+    <h2>Socio Conductor</h2>
+    <p>¿Ya enviaste tu solicitud?</p>
+    <input type="text" id="licencia" placeholder="Ingresa tu número de licencia">
+    <button onclick="verificarLicencia()">Verificar estado</button>
+    <p style="margin-top: 20px;">¿Aún no te has registrado?</p>
+    <button onclick="window.location.href='/registro_socio'">Registrarme</button>
+    <div class="mensaje" id="mensaje"></div>
   </div>
 
-  <script>
-    async function verificarSocio() {
-      const licencia = document.getElementById('licencia').value.trim();
-      const mensaje = document.getElementById('mensaje');
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZNdViSZxd6ORwlP89bx-zX16ku4ZmFD0",
+      authDomain: "gavvip-b7039.firebaseapp.com",
+      databaseURL: "https://gavvip-b7039-default-rtdb.firebaseio.com",
+      projectId: "gavvip-b7039",
+      storageBucket: "gavvip-b7039.appspot.com",
+      messagingSenderId: "803660953782",
+      appId: "1:803660953782:web:39c00063caaaaa99c84e17"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.verificarLicencia = async function() {
+      const licencia = document.getElementById("licencia").value.trim();
+      const mensaje = document.getElementById("mensaje");
       if (!licencia) {
-        mensaje.textContent = 'Por favor, ingresa tu número de licencia.';
-        mensaje.style.color = 'orange';
+        mensaje.textContent = "Por favor, ingresa tu número de licencia.";
         return;
       }
 
-      mensaje.textContent = 'Verificando...';
-      mensaje.style.color = '#FFD24C';
-
-      try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbx3mMnR5-bWgJz8OA1n-D6-_77OgVEjrKmuvdLoL3pC-ja8rV4m350mvmDqwRjNDmjhRg/exec");
-        const text = await response.text();
-        if (!text.includes(licencia)) {
-          mensaje.textContent = 'Licencia no encontrada. Aún no has enviado solicitud o está en revisión.';
-          mensaje.style.color = 'red';
-        } else if (text.includes(`${licencia},sí`) || text.includes(`${licencia};sí`)) {
-          window.location.href = 'socio.html';
+      const snapshot = await get(child(ref(db), `socios/${licencia}`));
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        if (data.estado === "aprobado") {
+          window.location.href = "/socio";
         } else {
-          mensaje.textContent = 'Tu solicitud está pendiente de aprobación.';
-          mensaje.style.color = 'orange';
+          mensaje.textContent = "Tu solicitud está en revisión. Por favor, espera la aprobación.";
         }
-      } catch (error) {
-        mensaje.textContent = 'Error al verificar. Intenta nuevamente más tarde.';
-        mensaje.style.color = 'red';
-        console.error(error);
+      } else {
+        mensaje.textContent = "No encontramos una solicitud con ese número de licencia.";
       }
     }
-
-    function registrarSocio() {
-  window.location.href = '/registro-socio';
-}
   </script>
 </body>
 </html>
-
