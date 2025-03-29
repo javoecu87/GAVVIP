@@ -95,7 +95,7 @@
       mensaje.style.color = "#FFD24C";
 
       try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbzw2dpA4HxJ42cRRMltn-fRb3o-uU8YySoYU-fHn8Tzzu1X8OyVbguMeFJAZoNfOIbJPA/exec");
+        const response = await fetch("https://script.google.com/macros/s/AKfycbyvdwGC2ts__LxjqosumUC3ebqp6E70kwaDgD0Y0mQOa4Nhke-byQKLYS5N6cUku39OBQ/exec");
         const data = await response.json();
 
         const socio = data.find(item => item.licencia === licencia);
