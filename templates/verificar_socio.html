@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verificación de Socio</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verificar Socio Conductor</title>
+  <script src="https://openfpcdn.io/fingerprintjs/v4"></script>
   <style>
     body {
       margin: 0;
@@ -20,7 +21,6 @@
       min-height: 100vh;
       color: white;
     }
-
     .container {
       background-color: rgba(0, 0, 0, 0.6);
       padding: 30px;
@@ -30,11 +30,9 @@
       max-width: 400px;
       text-align: center;
     }
-
     h2 {
       color: #FFD24C;
     }
-
     input {
       width: 100%;
       padding: 10px;
@@ -45,7 +43,6 @@
       background-color: rgba(255, 255, 255, 0.9);
       color: #000;
     }
-
     button {
       margin-top: 15px;
       width: 100%;
@@ -59,22 +56,37 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
-
     button:hover {
       background-color: #FFBA42;
     }
-
     .mensaje {
       margin-top: 15px;
       font-size: 14px;
     }
+    .top-buttons {
+      position: absolute;
+      top: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
   </style>
-  <script src="https://openfpcdn.io/fingerprintjs/v4"></script>
 </head>
 <body>
-  <button onclick="window.location.href='/'" style="position:absolute; top:20px; left:20px; background:none; border:none; color:#FFD24C; font-size:18px; cursor:pointer; font-weight:bold;">← Atrás</button>
 
-$1
+  <!-- Botones superiores -->
+  <div class="top-buttons">
+    <button onclick="window.location.href='/'" style="background:none; border:none; color:#FFD24C; font-size:18px; cursor:pointer; font-weight:bold;">
+      ← Atrás
+    </button>
+    <button onclick="cerrarSesion()" style="background-color:#FF4444; color:#fff; border:none; padding:10px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">
+      Cerrar sesión
+    </button>
+  </div>
+
+  <div class="container">
     <h2>Socio Conductor</h2>
     <p>¿Ya enviaste tu solicitud?</p>
     <input type="text" id="licencia" placeholder="Ingresa tu número de licencia">
@@ -108,12 +120,16 @@ $1
         const data = JSON.parse(texto);
 
         const socio = data.find(item => item.licencia === licencia);
+
         if (!socio) {
           mensaje.textContent = "No encontramos una solicitud con ese número de licencia.";
           mensaje.style.color = "red";
         } else if (socio.aprobado.toLowerCase() === "sí" && socio.fingerprint === fingerprint) {
           localStorage.setItem("acceso_socio", fingerprint);
           window.location.href = "/socio";
+        } else if (socio.aprobado.toLowerCase() === "sí") {
+          mensaje.textContent = "La licencia está aprobada, pero desde un dispositivo no autorizado.";
+          mensaje.style.color = "red";
         } else {
           mensaje.textContent = "Tu solicitud está en revisión. Por favor, espera la aprobación.";
           mensaje.style.color = "orange";
@@ -123,6 +139,11 @@ $1
         mensaje.style.color = "red";
         console.error(error);
       }
+    }
+
+    function cerrarSesion() {
+      localStorage.removeItem("acceso_socio");
+      window.location.href = "/verificar_socio";
     }
   </script>
 </body>
