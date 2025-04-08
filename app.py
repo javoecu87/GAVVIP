@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, send_from_directory
 import telegram
 import asyncio
 import logging
+import requests
+
 
 app = Flask(__name__)
 
@@ -43,6 +45,40 @@ def socio():
 @app.route('/registro_socio')
 def registro_socio():
     return render_template('registro_socio.html')
+
+
+@app.route('/registro-socio', methods=['POST'])
+def registro_socio_post():
+    try:
+        nombres = request.form.get('nombres')
+        apellidos = request.form.get('apellidos')
+        telefono = request.form.get('telefono')
+        correo = request.form.get('correo')
+        tipo = request.form.get('tipo')
+        placa = request.form.get('placa')
+        licencia = request.form.get('licencia')
+        fingerprint = request.form.get('fingerprint')
+
+        # Construye los datos para enviar a Google Sheets
+        datos = {
+            "nombre": f"{nombres} {apellidos}",
+            "telefono": telefono,
+            "correo": correo,
+            "tipo": tipo,
+            "placa": placa,
+            "licencia": licencia,
+            "fingerprint": fingerprint
+        }
+
+        # URL de tu Apps Script publicado como Web App (reemplaza por la tuya actual)
+        url_script = "https://script.google.com/macros/s/AKfycbzP_zTWiDokE6_UNLmMxiPZRtHDfLND7riLgdiJH9fPA-VUX3VIlZEe9Ndacu6xr6VZ6Q/exec"
+
+        requests.post(url_script, json=datos)
+
+        return render_template("success.html", mensaje="¡Registro enviado correctamente!")
+    except Exception as e:
+        app.logger.error(f"Error al registrar socio: {e}")
+        return "Ocurrió un error al enviar el registro.", 500
 
 
 @app.route('/verificar_socio')
