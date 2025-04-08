@@ -77,12 +77,9 @@
 <body>
 
   <!-- Botones superiores -->
-  <div class="top-buttons">
+  <div style="position: absolute; top: 20px; left: 20px;">
     <button onclick="window.location.href='/'" style="background:none; border:none; color:#FFD24C; font-size:18px; cursor:pointer; font-weight:bold;">
       ← Atrás
-    </button>
-    <button onclick="cerrarSesion()" style="background-color:#FF4444; color:#fff; border:none; padding:10px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">
-      Cerrar sesión
     </button>
   </div>
 
@@ -117,6 +114,7 @@
 
         const response = await fetch("https://script.google.com/macros/s/AKfycbzAWXXgpQuQXoHGgwbfItNKj0IDDXNOf0lP-83m69B98Tj9P8pt4ZskRlcEu01yNVPh_Q/exec");
         const texto = await response.text();
+        console.log("Respuesta del servidor:", texto);
         const data = JSON.parse(texto);
 
         const socio = data.find(item => item.licencia === licencia);
@@ -141,10 +139,7 @@
       }
     }
 
-    function cerrarSesion() {
-      localStorage.removeItem("acceso_socio");
-      window.location.href = "/verificar_socio";
-    }
+    
   </script>
 </body>
 </html>
