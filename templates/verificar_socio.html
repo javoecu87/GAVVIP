@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Verificar Socio Conductor</title>
-  <script src="https://openfpcdn.io/fingerprintjs/v4"></script>
+  <script type="module">
+  import FingerprintJS from 'https://openfpcdn.io/fingerprintjs/v4?esm';
+  window.FingerprintJS = FingerprintJS;
+</script>
   <style>
     body {
       margin: 0;
