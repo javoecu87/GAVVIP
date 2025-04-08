@@ -112,7 +112,7 @@
         const result = await fp.get();
         const fingerprint = result.visitorId;
 
-        const response = await fetch("https://script.google.com/macros/s/AKfycbzAWXXgpQuQXoHGgwbfItNKj0IDDXNOf0lP-83m69B98Tj9P8pt4ZskRlcEu01yNVPh_Q/exec");
+        const response = await fetch("https://script.google.com/macros/s/AKfycbwDMBooiRD3SdMuNc8aL0S_DcfLToZYaZypRIO8g2XFi4RYdC0S4VUcorPv5DldqeLRQQ/exec");
         const texto = await response.text();
         console.log("Respuesta del servidor:", texto);
         const data = JSON.parse(texto);
