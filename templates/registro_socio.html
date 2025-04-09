@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registro de Socio Conductor</title>
   <style>
     body {
@@ -28,6 +28,7 @@
       border-radius: 20px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
       color: #fff;
+      position: relative;
     }
 
     h2 {
@@ -74,17 +75,42 @@
     button:hover {
       background-color: #FFBA42;
     }
+
+    #estadoEnvio {
+      margin-top: 20px;
+      display: none;
+    }
+
+    .mensaje-envio {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.75);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #fff;
+      z-index: 10;
+    }
+
+    .mensaje-envio h3 {
+      color: #FFD24C;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
-  <!-- Botón Atrás -->
-  <div style="position: absolute; top: 20px; left: 20px;">
-    <button onclick="window.location.href='/'" style="background:none; border:none; color:#FFD24C; font-size:18px; cursor:pointer; font-weight:bold;">
-      ← Atrás
-    </button>
-  </div>
-
   <div class="form-container">
+    <div style="text-align: left; margin-bottom: 10px;">
+      <button onclick="window.location.href='/'" style="background:none; border:none; color:#FFD24C; font-size:18px; cursor:pointer; font-weight:bold;">
+        ← Atrás
+      </button>
+    </div>
     <h2>Registro de Socio Conductor</h2>
     <form id="registroForm" action="/registro-socio" method="POST" enctype="multipart/form-data">
       <label for="nombres">Nombres</label>
@@ -114,7 +140,7 @@
       <label for="licencia">Número de Licencia</label>
       <input type="text" id="licencia" name="licencia" required />
 
-      <label for="Contraseña">Ingresa Tu Contraseña</label>
+      <label for="contrasena">Contraseña</label>
       <input type="password" id="contrasena" name="contrasena" required />
 
       <label for="fotoVehiculo">Foto del Vehículo</label>
@@ -131,36 +157,88 @@
 
       <button type="submit">Enviar solicitud</button>
     </form>
-
-      <!-- Barra de estado del envío -->
-      <div id="estadoEnvio" style="margin-top: 20px; display: none;">
-        <div style="background-color: #fff; border-radius: 20px; overflow: hidden; height: 30px;">
-          <div id="barraEnvio" style="height: 100%; width: 0%; background: linear-gradient(to right, #FFD24C, #FFBA42); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #1F3B5C; transition: width 0.5s;">
-            🚖 Enviando...
-          </div>
+    <div id="estadoEnvio">
+      <div style="background-color: #fff; border-radius: 20px; overflow: hidden; height: 30px;">
+        <div id="barraEnvio" style="height: 100%; width: 0%; background: linear-gradient(to right, #FFD24C, #FFBA42); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #1F3B5C; transition: width 0.5s;">
+          🚖 Enviando...
         </div>
       </div>
+    </div>
+    <div id="mensajeConfirmacion" class="mensaje-envio" style="display: none;">
+      <h3>✅ Solicitud enviada</h3>
+      <p>En breve nos pondremos en contacto contigo.</p>
+      <button onclick="window.location.href='/'">Regresar a la página principal</button>
+    </div>
   </div>
 
-  <script type="module">
-    import FingerprintJS from 'https://openfpcdn.io/fingerprintjs/v4?esm';
-    const fpPromise = FingerprintJS.load();
+  <script>
+    document.getElementById("registroForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-    window.addEventListener("DOMContentLoaded", async () => {
-      const fp = await fpPromise;
-      const result = await fp.get();
-      console.log("Fingerprint eliminado, usamos contraseña ahora");
+      const form = e.target;
+      const formData = new FormData(form);
 
-    // Mostrar barra de estado antes de enviar el formulario
-    const form = document.getElementById("registroForm");
-    form.addEventListener("submit", () => {
+      const nombres = formData.get("nombres");
+      const apellidos = formData.get("apellidos");
+      const tipo = formData.get("tipo");
+      const placa = formData.get("placa");
+      const licencia = formData.get("licencia");
+      const telefono = formData.get("telefono");
+      const correo = formData.get("correo");
+
+      const mensaje =
+        `🚗 *Nueva solicitud de socio conductor*\n\n` +
+        `👤 *Nombre:* ${nombres} ${apellidos}\n` +
+        `📞 *Teléfono:* ${telefono}\n` +
+        `✉️ *Correo:* ${correo}\n` +
+        `🚘 *Tipo de vehículo:* ${tipo}\n` +
+        `🔢 *Placa:* ${placa}\n` +
+        `🪖 *Licencia:* ${licencia}`;
+
+      const TOKEN = "8160209072:AAFnlNrBaML99akWHZMYdYZL7Y60udRquKA";
+      const CHAT_ID = "5828174289";
+
       const estadoEnvio = document.getElementById("estadoEnvio");
       const barra = document.getElementById("barraEnvio");
       estadoEnvio.style.display = "block";
       barra.style.width = "40%";
       setTimeout(() => barra.style.width = "70%", 1000);
-      setTimeout(() => barra.style.width = "100%", 2000);
-    });
+
+      await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: CHAT_ID,
+          text: mensaje,
+          parse_mode: "Markdown",
+        })
+      });
+
+      async function enviarFoto(nombreCampo, caption) {
+        const archivo = formData.get(nombreCampo);
+        if (!archivo) return;
+        const data = new FormData();
+        data.append("chat_id", CHAT_ID);
+        data.append("caption", caption);
+        data.append("photo", archivo);
+
+        await fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, {
+          method: "POST",
+          body: data,
+        });
+      }
+
+      await enviarFoto("fotoVehiculo", "📸 Foto del vehículo");
+      await enviarFoto("fotoLicenciaFrontal", "📄 Licencia - Frente");
+      await enviarFoto("fotoLicenciaReverso", "📄 Licencia - Reverso");
+      await enviarFoto("fotoConductor", "🤛 Foto del conductor");
+
+      barra.style.width = "100%";
+      setTimeout(() => {
+        estadoEnvio.style.display = "none";
+        document.getElementById("mensajeConfirmacion").style.display = "flex";
+        form.reset();
+      }, 800);
     });
   </script>
 </body>
