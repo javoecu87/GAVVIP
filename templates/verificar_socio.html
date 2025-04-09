@@ -68,59 +68,70 @@
       margin-top: 15px;
       font-size: 14px;
     }
+
+    .atras {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 18px;
+      color: #FFD24C;
+      cursor: pointer;
+      font-weight: bold;
+      background: none;
+      border: none;
+    }
   </style>
 </head>
 <body>
-  <!-- Botón Atrás -->
-  <div style="position: absolute; top: 20px; left: 20px;">
-    <button onclick="window.location.href='/'" style="background:none; border:none; color:#FFD24C; font-size:18px; cursor:pointer; font-weight:bold;">
-      ← Atrás
-    </button>
-  </div>
-
+  <button class="atras" onclick="window.location.href='/'">← Atrás</button>
   <div class="container">
     <h2>Socio Conductor</h2>
     <p>¿Ya enviaste tu solicitud?</p>
     <input type="text" id="licencia" placeholder="Número de licencia">
     <input type="password" id="contrasena" placeholder="Contraseña">
-    <button onclick="verificarSocio()">Ingresar</button>
+    <button onclick="verificarLicencia()">Ingresar</button>
     <p style="margin-top: 20px;">¿Aún no te has registrado?</p>
     <button onclick="window.location.href='/registro_socio'">Registrarme</button>
     <div class="mensaje" id="mensaje"></div>
   </div>
 
-  <script>
-    async function verificarSocio() {
+  <script type="module">
+    const url = "https://script.google.com/macros/s/AKfycbzP_zTWiDokE6_UNLmMxiPZRtHDfLND7riLgdiJH9fPA-VUX3VIlZEe9Ndacu6xr6VZ6Q/exec";
+
+    window.verificarLicencia = async function () {
       const licencia = document.getElementById("licencia").value.trim();
       const contrasena = document.getElementById("contrasena").value.trim();
       const mensaje = document.getElementById("mensaje");
-      mensaje.textContent = "";
 
       if (!licencia || !contrasena) {
-        mensaje.textContent = "Por favor, ingresa tu licencia y contraseña.";
+        mensaje.textContent = "Por favor ingresa todos los campos.";
         return;
       }
 
       try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbzP_zTWiDokE6_UNLmMxiPZRtHDfLND7riLgdiJH9fPA-VUX3VIlZEe9Ndacu6xr6VZ6Q/exec");
-        const data = await response.json();
+        const response = await fetch(url);
+        const texto = await response.text();
+        const data = JSON.parse(texto);
 
         const socio = data.find(item => item.licencia === licencia);
 
         if (!socio) {
-          mensaje.textContent = "No encontramos una solicitud con esa licencia.";
-        } else if (socio.aprobado.toLowerCase() !== "sí") {
-          mensaje.textContent = "Tu solicitud aún no ha sido aprobada.";
-        } else if (socio.contrasena !== contrasena) {
-          mensaje.textContent = "Contraseña incorrecta.";
-        } else {
-          window.location.href = "/socio";
+          mensaje.textContent = "No encontramos una solicitud con ese número de licencia.";
+          return;
         }
-      } catch (err) {
-        console.error(err);
+
+        if (socio.aprobado.toLowerCase() === "sí" && socio.contrasena === contrasena) {
+          window.location.href = "/socio";
+        } else if (socio.aprobado.toLowerCase() !== "sí") {
+          mensaje.textContent = "Tu solicitud está en revisión. Por favor, espera la aprobación.";
+        } else {
+          mensaje.textContent = "Contraseña incorrecta.";
+        }
+      } catch (error) {
+        console.error(error);
         mensaje.textContent = "Error al verificar. Intenta nuevamente más tarde.";
       }
-    }
+    };
   </script>
 </body>
 </html>
