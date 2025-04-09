@@ -57,9 +57,8 @@ def registro_socio_post():
         tipo = request.form.get('tipo')
         placa = request.form.get('placa')
         licencia = request.form.get('licencia')
-        fingerprint = request.form.get('fingerprint')
+        contrasena = request.form.get('contrasena')
 
-        # Construye los datos para enviar a Google Sheets
         datos = {
             "nombre": f"{nombres} {apellidos}",
             "telefono": telefono,
@@ -67,19 +66,16 @@ def registro_socio_post():
             "tipo": tipo,
             "placa": placa,
             "licencia": licencia,
-            "fingerprint": fingerprint
+            "contrasena": contrasena
         }
 
-        # URL de tu Apps Script publicado como Web App (reemplaza por la tuya actual)
         url_script = "https://script.google.com/macros/s/AKfycbzP_zTWiDokE6_UNLmMxiPZRtHDfLND7riLgdiJH9fPA-VUX3VIlZEe9Ndacu6xr6VZ6Q/exec"
-
         requests.post(url_script, json=datos)
 
         return render_template("success.html", mensaje="¡Registro enviado correctamente!")
     except Exception as e:
         app.logger.error(f"Error al registrar socio: {e}")
         return "Ocurrió un error al enviar el registro.", 500
-
 
 @app.route('/verificar_socio')
 def verificar_socio():

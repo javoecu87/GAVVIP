@@ -114,6 +114,9 @@
       <label for="licencia">Número de Licencia</label>
       <input type="text" id="licencia" name="licencia" required />
 
+      <label for="Contraseña">Ingresa Tu Contraseña</label>
+      <input type="password" id="contrasena" name="contrasena" required />
+
       <label for="fotoVehiculo">Foto del Vehículo</label>
       <input type="file" id="fotoVehiculo" name="fotoVehiculo" accept="image/*" required />
 
@@ -146,15 +149,7 @@
     window.addEventListener("DOMContentLoaded", async () => {
       const fp = await fpPromise;
       const result = await fp.get();
-      const fingerprint = result.visitorId;
-
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = "fingerprint";
-      input.value = fingerprint;
-      document.getElementById("registroForm").appendChild(input);
-
-      console.log("Fingerprint capturado:", fingerprint);
+      console.log("Fingerprint eliminado, usamos contraseña ahora");
 
     // Mostrar barra de estado antes de enviar el formulario
     const form = document.getElementById("registroForm");
