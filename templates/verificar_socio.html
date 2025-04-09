@@ -120,9 +120,9 @@
           return;
         }
 
-        if (socio.aprobado.toLowerCase() === "sí" && socio.contrasena === contrasena) {
+        if (socio.aprobado === "sí" && socio.contrasena === contrasena) {
           window.location.href = "/socio";
-        } else if (socio.aprobado.toLowerCase() !== "sí") {
+        } else if (socio.aprobado !== "sí") {
           mensaje.textContent = "Tu solicitud está en revisión. Por favor, espera la aprobación.";
         } else {
           mensaje.textContent = "Contraseña incorrecta.";
