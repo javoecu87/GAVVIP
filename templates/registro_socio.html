@@ -231,7 +231,30 @@
       await enviarFoto("fotoVehiculo", "📸 Foto del vehículo");
       await enviarFoto("fotoLicenciaFrontal", "📄 Licencia - Frente");
       await enviarFoto("fotoLicenciaReverso", "📄 Licencia - Reverso");
-      await enviarFoto("fotoConductor", "🤛 Foto del conductor");
+      await enviarFoto("fotoConductor", "🤳 Foto del conductor");
+
+      // 🔄 Enviar datos a Google Sheets
+      const datos = {
+        nombre: `${nombres} ${apellidos}`,
+        telefono,
+        correo,
+        tipo,
+        placa,
+        licencia,
+        contrasena: formData.get("contrasena")
+      };
+
+      try {
+        await fetch("https://script.google.com/macros/s/AKfycbzP_zTWiDokE6_UNLmMxiPZRtHDfLND7riLgdiJH9fPA-VUX3VIlZEe9Ndacu6xr6VZ6Q/exec", {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(datos)
+        });
+        console.log("✅ Datos enviados a Google Sheets");
+      } catch (error) {
+        console.error("❌ Error al enviar a Google Sheets:", error);
+      }
 
       barra.style.width = "100%";
       setTimeout(() => {
