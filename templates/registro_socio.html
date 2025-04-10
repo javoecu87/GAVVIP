@@ -187,14 +187,12 @@
       const TOKEN = "8160209072:AAFnlNrBaML99akWHZMYdYZL7Y60udRquKA";
       const CHAT_ID = "5828174289";
 
-      // Enviar mensaje principal
       await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ chat_id: CHAT_ID, text: mensaje, parse_mode: "Markdown" })
       });
 
-      // Enviar fotos
       async function enviarFoto(nombreCampo, caption) {
         const archivo = formData.get(nombreCampo);
         if (!archivo) return;
@@ -214,7 +212,6 @@
       await enviarFoto("fotoLicenciaReverso", "📄 Licencia - Reverso");
       await enviarFoto("fotoConductor", "🧳 Foto del conductor");
 
-      // Enviar datos a Google Sheets
       const datos = {
         nombre: `${nombres} ${apellidos}`,
         telefono,
@@ -226,7 +223,7 @@
       };
 
       try {
-        await fetch("https://script.google.com/macros/s/AKfycbzP_zTWiDokE6_UNLmMxiPZRtHDfLND7riLgdiJH9fPA-VUX3VIlZEe9Ndacu6xr6VZ6Q/exec", {
+        await fetch("https://script.google.com/macros/s/AKfycbxuyit0BwkEAgH1ZXjQOafECdgIsIulsa-qkTzUDHIgF9lhQ0njqi_JHlyBarp5Mf8B4A/exec", {
           method: "POST",
           mode: "no-cors",
           headers: { "Content-Type": "application/json" },
