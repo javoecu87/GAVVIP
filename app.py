@@ -42,6 +42,12 @@ def socio():
     return render_template('socio.html')
 
 
+@app.route('/registro_usuario')
+def registro_usuario():
+    return render_template('registro_usuario.html')
+
+
+
 @app.route('/registro_socio')
 def registro_socio():
     return render_template('registro_socio.html')
