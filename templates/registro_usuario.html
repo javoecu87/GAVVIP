@@ -18,6 +18,7 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      overflow: auto;
     }
 
     .form-container {
@@ -110,10 +111,17 @@
   <script>
     window.Telegram.WebApp.ready();
 
-    const telegramID = window.Telegram.WebApp.initDataUnsafe.user?.id || "sin_id";
+    const telegramUser = window.Telegram.WebApp.initDataUnsafe.user || {};
+    const telegramID = telegramUser.id || "sin_id";
+
+    // Autocompletar nombre si es posible
+    if (telegramUser.first_name) {
+      const fullName = telegramUser.first_name + (telegramUser.last_name ? ' ' + telegramUser.last_name : '');
+      document.getElementById("nombre").value = fullName;
+    }
 
     // Verificar si ya está registrado
-    fetch("https://script.google.com/macros/s/AKfycbxDhw9EFuMWC53iYRm6lJaj8XKAmZMrNSq8sAjcHqfZ_mPZEFkdzbc3m2sNVGTihh9/exec")
+    fetch("https://script.google.com/macros/s/AKfycbxv0JJVfxleqa0nJbHyWA814XCvbYbg62LizSQY4hzSYtSX-u6tYBinQTtbC_cCz8Mx/exec")
       .then(res => res.text())
       .then(text => JSON.parse(text))
       .then(data => {
@@ -139,7 +147,7 @@
       };
 
       try {
-        await fetch("https://script.google.com/macros/s/AKfycbxDhw9EFuMWC53iYRm6lJaj8XKAmZMrNSq8sAjcHqfZ_mPZEFkdzbc3m2sNVGTihh9/exec", {
+        await fetch("https://script.google.com/macros/s/AKfycbxv0JJVfxleqa0nJbHyWA814XCvbYbg62LizSQY4hzSYtSX-u6tYBinQTtbC_cCz8Mx/exec", {
           method: "POST",
           mode: "no-cors",
           headers: { "Content-Type": "application/json" },
