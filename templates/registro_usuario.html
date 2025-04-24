@@ -103,65 +103,92 @@
       <label for="correo">Correo electrónico</label>
       <input type="email" id="correo" name="correo" required>
 
+      <input type="hidden" id="username" name="username">
+
       <button type="submit">Registrarse</button>
       <div class="mensaje-exito" id="mensajeExito">✅ Registro exitoso</div>
     </form>
   </div>
 
   <script>
-    window.Telegram.WebApp.ready();
+    document.addEventListener("DOMContentLoaded", function () {
+      window.Telegram.WebApp.ready();
 
-    const telegramUser = window.Telegram.WebApp.initDataUnsafe.user || {};
-    const telegramID = telegramUser.id || "sin_id";
+      const telegramUser = window.Telegram.WebApp.initDataUnsafe.user || {};
+      const telegramID = telegramUser.id || "sin_id";
 
-    // Autocompletar nombre si es posible
-    if (telegramUser.first_name) {
-      const fullName = telegramUser.first_name + (telegramUser.last_name ? ' ' + telegramUser.last_name : '');
-      document.getElementById("nombre").value = fullName;
-    }
-
-    // Verificar si ya está registrado
-    fetch("https://script.google.com/macros/s/AKfycbxv0JJVfxleqa0nJbHyWA814XCvbYbg62LizSQY4hzSYtSX-u6tYBinQTtbC_cCz8Mx/exec")
-      .then(res => res.text())
-      .then(text => JSON.parse(text))
-      .then(data => {
-        const existe = data.find(u => u.telegramID === telegramID);
-        if (existe) {
-          window.location.href = "/principal";
-        }
-      })
-      .catch(err => console.error("Error al verificar usuario registrado", err));
-
-    document.getElementById("registroForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
-
-      const nombre = document.getElementById("nombre").value;
-      const telefono = document.getElementById("telefono").value;
-      const correo = document.getElementById("correo").value;
-
-      const datos = {
-        nombre,
-        telefono,
-        correo,
-        telegramID
-      };
-
-      try {
-        await fetch("https://script.google.com/macros/s/AKfycbxv0JJVfxleqa0nJbHyWA814XCvbYbg62LizSQY4hzSYtSX-u6tYBinQTtbC_cCz8Mx/exec", {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(datos)
-        });
-
-        document.getElementById("mensajeExito").style.display = "block";
-        setTimeout(() => {
-          window.location.href = "/principal";
-        }, 1200);
-      } catch (error) {
-        alert("Error al registrar usuario");
-        console.error(error);
+      // Autocompletar nombre
+      if (telegramUser.first_name) {
+        const fullName = telegramUser.first_name + (telegramUser.last_name ? ' ' + telegramUser.last_name : '');
+        document.getElementById("nombre").value = fullName;
       }
+
+      // Guardar username si existe
+      if (telegramUser.username) {
+        document.getElementById("username").value = telegramUser.username;
+      }
+
+      // Verificar si ya está registrado
+      fetch("https://script.google.com/macros/s/AKfycbxv0JJVfxleqa0nJbHyWA814XCvbYbg62LizSQY4hzSYtSX-u6tYBinQTtbC_cCz8Mx/exec")
+        .then(res => res.text())
+        .then(text => JSON.parse(text))
+        .then(data => {
+          const existe = data.find(u => u.telegramID === telegramID);
+          if (existe) {
+            window.location.href = "/principal";
+          }
+        })
+        .catch(err => console.error("Error al verificar usuario registrado", err));
+
+      document.getElementById("registroForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+
+        const nombre = document.getElementById("nombre").value;
+        const telefono = document.getElementById("telefono").value;
+        const correo = document.getElementById("correo").value;
+        const username = document.getElementById("username").value;
+
+        const datos = {
+          nombre,
+          telefono,
+          correo,
+          telegramID,
+          username
+        };
+
+        try {
+          await fetch("https://script.google.com/macros/s/AKfycbxv0JJVfxleqa0nJbHyWA814XCvbYbg62LizSQY4hzSYtSX-u6tYBinQTtbC_cCz8Mx/exec", {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(datos)
+          });
+
+          await fetch("https://script.google.com/macros/s/AKfycbwfYsSyoQGZvvS-6SBZ1sax6l_SuEPB1OHxFNGa7OFsqrJvU5AZKfTR4RB_p03FxXDuiQ/exec", {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              nombre,
+              telefono,
+              correo,
+              telegramID,
+              servicio: "Registro inicial",
+              origen: "-",
+              destino: "-",
+              detalles: "Registro de usuario desde app"
+            })
+          });
+
+          document.getElementById("mensajeExito").style.display = "block";
+          setTimeout(() => {
+            window.location.href = "/principal";
+          }, 1200);
+        } catch (error) {
+          alert("Error al registrar usuario");
+          console.error(error);
+        }
+      });
     });
   </script>
 </body>
