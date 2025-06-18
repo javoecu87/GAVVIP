@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GAVVIP Socio Conductor</title>
-  <script src="https://openfpcdn.io/fingerprintjs/v4"></script>
+  <script src="https://openfpcdn.io/fingerprintjs/v4" async onerror="alert('Error al cargar FingerprintJS');"></script>
   <style>
     html, body {
       margin: 0;
@@ -58,6 +58,7 @@
 
   <script>
     async function validarAcceso() {
+      if (!window.FingerprintJS) throw new Error("FingerprintJS no está disponible");
       const fpPromise = FingerprintJS.load();
       const fp = await fpPromise;
       const result = await fp.get();
@@ -70,38 +71,48 @@
     }
 
     async function initMap() {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        const pos = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        };
+      if (!navigator.geolocation) {
+        alert("Geolocalización no está disponible en este navegador.");
+        return;
+      }
 
-        const map = new google.maps.Map(document.getElementById('map'), {
-          center: pos,
-          zoom: 15
-        });
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          const pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
 
-        const marker = new google.maps.Marker({
-          position: pos,
-          map: map,
-          title: "Mi ubicación",
-          icon: {
-            url: "/static/images/icono-taxi.png",
-            scaledSize: new google.maps.Size(40, 40)
-          }
-        });
-
-        setInterval(() => {
-          navigator.geolocation.getCurrentPosition(function(p) {
-            const nuevaPos = {
-              lat: p.coords.latitude,
-              lng: p.coords.longitude
-            };
-            marker.setPosition(nuevaPos);
-            map.setCenter(nuevaPos);
+          const map = new google.maps.Map(document.getElementById('map'), {
+            center: pos,
+            zoom: 15
           });
-        }, 30000);
-      });
+
+          const marker = new google.maps.Marker({
+            position: pos,
+            map: map,
+            title: "Mi ubicación",
+            icon: {
+              url: "/static/images/icono-taxi.png",
+              scaledSize: new google.maps.Size(40, 40)
+            }
+          });
+
+          setInterval(() => {
+            navigator.geolocation.getCurrentPosition(function(p) {
+              const nuevaPos = {
+                lat: p.coords.latitude,
+                lng: p.coords.longitude
+              };
+              marker.setPosition(nuevaPos);
+              map.setCenter(nuevaPos);
+            });
+          }, 30000);
+        },
+        function(error) {
+          alert("Error obteniendo la ubicación: " + error.message);
+        }
+      );
     }
 
     function toggleEstado() {
@@ -112,8 +123,12 @@
     }
 
     window.onload = async () => {
-      await validarAcceso();
-      initMap();
+      try {
+        await validarAcceso();
+        initMap();
+      } catch (e) {
+        alert("Error de acceso o carga: " + e.message);
+      }
     };
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w"></script>
