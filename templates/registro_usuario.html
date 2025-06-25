@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registro de Usuario</title>
   <style>
     body {
@@ -18,46 +18,26 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      overflow: auto;
     }
-
     .form-container {
       width: 90%;
-      max-width: 400px;
+      max-width: 500px;
       background-color: rgba(0, 0, 0, 0.6);
       padding: 20px;
       border-radius: 20px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
       color: #fff;
-      text-align: center;
-      position: relative;
     }
-
-    .btn-atras {
-      position: absolute;
-      top: 10px;
-      left: 15px;
-      background: none;
-      border: none;
-      color: #FFD24C;
-      font-size: 18px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
     h2 {
+      text-align: center;
       color: #FFD24C;
-      margin-top: 40px;
     }
-
     label {
       display: block;
       margin-top: 15px;
       font-weight: bold;
       color: #FFD24C;
-      text-align: left;
     }
-
     input {
       width: 100%;
       padding: 10px;
@@ -68,8 +48,7 @@
       background-color: rgba(255, 255, 255, 0.9);
       color: #000;
     }
-
-    button[type="submit"] {
+    button {
       margin-top: 25px;
       width: 100%;
       padding: 12px;
@@ -80,21 +59,18 @@
       font-size: 18px;
       font-weight: bold;
       cursor: pointer;
+      transition: background 0.3s ease;
     }
-
-    .mensaje-exito {
-      margin-top: 20px;
-      color: #00FF99;
-      display: none;
+    button:hover {
+      background-color: #FFBA42;
     }
   </style>
 </head>
 <body>
   <div class="form-container">
-    <button class="btn-atras" onclick="window.location.href='/'">← Atrás</button>
     <h2>Registro de Usuario</h2>
-    <form id="registroForm">
-      <label for="nombre">Nombre</label>
+    <form id="registroUsuarioForm">
+      <label for="nombre">Nombre completo</label>
       <input type="text" id="nombre" name="nombre" required>
 
       <label for="telefono">Teléfono</label>
@@ -103,93 +79,64 @@
       <label for="correo">Correo electrónico</label>
       <input type="email" id="correo" name="correo" required>
 
-      <input type="hidden" id="username" name="username">
+      <label for="direccion">Dirección</label>
+      <input type="text" id="direccion" name="direccion">
 
       <button type="submit">Registrarse</button>
-      <div class="mensaje-exito" id="mensajeExito">✅ Registro exitoso</div>
     </form>
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      window.Telegram.WebApp.ready();
+    const urlSheet = "https://script.google.com/macros/s/AKfycbxv0JJVfxleqa0nJbHyWA814XCvbYbg62LizSQY4hzSYtSX-u6tYBinQTtbC_cCz8Mx/exec";
 
-      const telegramUser = window.Telegram.WebApp.initDataUnsafe.user || {};
-      const telegramID = telegramUser.id || "sin_id";
-
-      // Autocompletar nombre
-      if (telegramUser.first_name) {
-        const fullName = telegramUser.first_name + (telegramUser.last_name ? ' ' + telegramUser.last_name : '');
-        document.getElementById("nombre").value = fullName;
+    async function obtenerTelegramID() {
+      try {
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        const id = tg.initDataUnsafe.user?.id || "";
+        return id;
+      } catch (err) {
+        return "";
       }
+    }
 
-      // Guardar username si existe
-      if (telegramUser.username) {
-        document.getElementById("username").value = telegramUser.username;
+    document.getElementById("registroUsuarioForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const telegramId = await obtenerTelegramID();
+
+      const datos = {
+        nombre: document.getElementById("nombre").value,
+        telefono: document.getElementById("telefono").value,
+        correo: document.getElementById("correo").value,
+        direccion: document.getElementById("direccion").value,
+        telegram_id: telegramId
+      };
+
+      try {
+        await fetch(urlSheet, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(datos)
+        });
+        localStorage.setItem("usuario_registrado", JSON.stringify(datos));
+        window.location.href = "/ventana_principal";
+      } catch (err) {
+        alert("Error al registrar. Intenta de nuevo.");
       }
-
-      // Verificar si ya está registrado
-      fetch("https://script.google.com/macros/s/AKfycbxv0JJVfxleqa0nJbHyWA814XCvbYbg62LizSQY4hzSYtSX-u6tYBinQTtbC_cCz8Mx/exec")
-        .then(res => res.text())
-        .then(text => JSON.parse(text))
-        .then(data => {
-          const existe = data.find(u => u.telegramID === telegramID);
-          if (existe) {
-            window.location.href = "/principal";
-          }
-        })
-        .catch(err => console.error("Error al verificar usuario registrado", err));
-
-      document.getElementById("registroForm").addEventListener("submit", async function(e) {
-        e.preventDefault();
-
-        const nombre = document.getElementById("nombre").value;
-        const telefono = document.getElementById("telefono").value;
-        const correo = document.getElementById("correo").value;
-        const username = document.getElementById("username").value;
-
-        const datos = {
-          nombre,
-          telefono,
-          correo,
-          telegramID,
-          username
-        };
-
-        try {
-          await fetch("https://script.google.com/macros/s/AKfycbxv0JJVfxleqa0nJbHyWA814XCvbYbg62LizSQY4hzSYtSX-u6tYBinQTtbC_cCz8Mx/exec", {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(datos)
-          });
-
-          await fetch("https://script.google.com/macros/s/AKfycbwfYsSyoQGZvvS-6SBZ1sax6l_SuEPB1OHxFNGa7OFsqrJvU5AZKfTR4RB_p03FxXDuiQ/exec", {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              nombre,
-              telefono,
-              correo,
-              telegramID,
-              servicio: "Registro inicial",
-              origen: "-",
-              destino: "-",
-              detalles: "Registro de usuario desde app"
-            })
-          });
-
-          document.getElementById("mensajeExito").style.display = "block";
-          setTimeout(() => {
-            window.location.href = "/principal";
-          }, 1200);
-        } catch (error) {
-          alert("Error al registrar usuario");
-          console.error(error);
-        }
-      });
     });
+
+    // Autocompletar si ya está registrado
+    window.onload = () => {
+      const datos = localStorage.getItem("usuario_registrado");
+      if (datos) {
+        const usuario = JSON.parse(datos);
+        document.getElementById("nombre").value = usuario.nombre || "";
+        document.getElementById("telefono").value = usuario.telefono || "";
+        document.getElementById("correo").value = usuario.correo || "";
+        document.getElementById("direccion").value = usuario.direccion || "";
+      }
+    };
   </script>
 </body>
 </html>
