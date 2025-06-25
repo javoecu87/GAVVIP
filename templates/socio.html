@@ -58,61 +58,90 @@
 
   <script>
     async function validarAcceso() {
-      if (!window.FingerprintJS) throw new Error("FingerprintJS no está disponible");
-      const fpPromise = FingerprintJS.load();
-      const fp = await fpPromise;
-      const result = await fp.get();
-      const fingerprint = result.visitorId;
-      const acceso = localStorage.getItem("acceso_socio");
-      if (acceso !== fingerprint) {
-        alert("Acceso denegado. Debes verificar tu identidad primero.");
-        window.location.href = "/verificar_socio";
+      try {
+        const fpPromise = FingerprintJS.load();
+        const fp = await fpPromise;
+        const result = await fp.get();
+        const fingerprint = result.visitorId;
+        const acceso = localStorage.getItem("acceso_socio");
+        if (acceso !== fingerprint) {
+          alert("Acceso denegado. Debes verificar tu identidad primero.");
+          window.location.href = "/verificar_socio";
+        }
+      } catch (error) {
+        alert("FingerprintJS no está disponible: " + error.message);
       }
     }
 
-    async function initMap() {
-      if (!navigator.geolocation) {
-        alert("Geolocalización no está disponible en este navegador.");
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        function(position) {
-          const pos = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-
-          const map = new google.maps.Map(document.getElementById('map'), {
-            center: pos,
-            zoom: 15
-          });
-
-          const marker = new google.maps.Marker({
-            position: pos,
-            map: map,
-            title: "Mi ubicación",
-            icon: {
-              url: "/static/images/icono-taxi.png",
-              scaledSize: new google.maps.Size(40, 40)
-            }
-          });
-
-          setInterval(() => {
-            navigator.geolocation.getCurrentPosition(function(p) {
-              const nuevaPos = {
-                lat: p.coords.latitude,
-                lng: p.coords.longitude
-              };
-              marker.setPosition(nuevaPos);
-              map.setCenter(nuevaPos);
-            });
-          }, 30000);
-        },
-        function(error) {
-          alert("Error obteniendo la ubicación: " + error.message);
+    async function solicitarPermisoUbicacion() {
+      return new Promise((resolve, reject) => {
+        const permiso = confirm("Para continuar, necesitamos acceder a tu ubicación actual.");
+        if (permiso) {
+          resolve();
+        } else {
+          alert("Debes aceptar el permiso para usar esta funcionalidad.");
+          reject();
         }
-      );
+      });
+    }
+
+    async function initMap() {
+      try {
+        await solicitarPermisoUbicacion();
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            const pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+
+            const map = new google.maps.Map(document.getElementById('map'), {
+              center: pos,
+              zoom: 15
+            });
+
+            const marker = new google.maps.Marker({
+              position: pos,
+              map: map,
+              title: "Mi ubicación",
+              icon: {
+                url: "/static/images/icono-taxi.png",
+                scaledSize: new google.maps.Size(40, 40)
+              }
+            });
+
+            setInterval(() => {
+              navigator.geolocation.getCurrentPosition(function(p) {
+                const nuevaPos = {
+                  lat: p.coords.latitude,
+                  lng: p.coords.longitude
+                };
+                marker.setPosition(nuevaPos);
+                map.setCenter(nuevaPos);
+              });
+            }, 30000);
+          },
+          function(error) {
+            let mensaje = "Error obteniendo la ubicación.";
+            switch (error.code) {
+              case error.PERMISSION_DENIED:
+                mensaje = "Permiso de ubicación denegado.";
+                break;
+              case error.POSITION_UNAVAILABLE:
+                mensaje = "Ubicación no disponible.";
+                break;
+              case error.TIMEOUT:
+                mensaje = "Tiempo de espera agotado al obtener ubicación.";
+                break;
+              default:
+                mensaje += " " + error.message;
+            }
+            alert(mensaje);
+          }
+        );
+      } catch {
+        console.log("Permiso no otorgado");
+      }
     }
 
     function toggleEstado() {
@@ -123,22 +152,8 @@
     }
 
     window.onload = async () => {
-      try {
-        const waitForFingerprint = () =>
-          new Promise((resolve, reject) => {
-            const check = () => {
-              if (window.FingerprintJS) resolve();
-              else setTimeout(check, 100);
-            };
-            check();
-          });
-
-        await waitForFingerprint();
-        await validarAcceso();
-        initMap();
-      } catch (e) {
-        alert("Error de acceso o carga: " + e.message);
-      }
+      await validarAcceso();
+      initMap();
     };
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w"></script>
