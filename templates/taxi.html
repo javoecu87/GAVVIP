@@ -5,81 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solicitar Taxi</title>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&libraries=places"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCZNdViSZxd6ORwlP89bx-zX16ku4ZmFD0",
-            authDomain: "gavvip-b7039.firebaseapp.com",
-            databaseURL: "https://gavvip-b7039-default-rtdb.firebaseio.com",
-            projectId: "gavvip-b7039",
-            storageBucket: "gavvip-b7039.firebasestorage.app",
-            messagingSenderId: "803660953782",
-            appId: "1:803660953782:web:39c00063caaaaa99c84e17",
-            measurementId: "G-FDLVXG8BS3"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        let map;
-        const markers = [];
-
-        function loadConductores() {
-            const refConductores = ref(db, 'conductores');
-            onValue(refConductores, snapshot => {
-                const data = snapshot.val();
-                if (!data) return;
-
-                // Limpiar marcadores anteriores
-                markers.forEach(marker => marker.setMap(null));
-                markers.length = 0;
-
-                for (const key in data) {
-                    const conductor = data[key];
-                    const pos = { lat: conductor.latitud, lng: conductor.longitud };
-
-                    const marker = new google.maps.Marker({
-                        position: pos,
-                        map: map,
-                        icon: {
-                            url: "/static/images/icono-taxi.png",
-                            scaledSize: new google.maps.Size(40, 40)
-                        },
-                        title: `${conductor.nombre} (${conductor.tipo})`
-                    });
-
-                    markers.push(marker);
-                }
-            });
-        }
-
-        window.initMap = function () {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                const userLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                map = new google.maps.Map(document.getElementById("map"), {
-                    center: userLocation,
-                    zoom: 14
-                });
-
-                // Cargar conductores cercanos
-                loadConductores();
-            }, function () {
-                const fallback = { lat: -0.180653, lng: -78.467834 };
-                map = new google.maps.Map(document.getElementById("map"), {
-                    center: fallback,
-                    zoom: 14
-                });
-                loadConductores();
-            });
-        };
-    </script>
     <style>
-        /* Estilos generales */
         body {
             margin: 0;
             padding: 0;
@@ -200,23 +126,67 @@
     </div>
 
     <script>
+        async function solicitarPermisoUbicacion() {
+          return new Promise((resolve, reject) => {
+            const permiso = confirm("Para continuar, necesitamos acceder a tu ubicación actual.");
+            if (permiso) resolve();
+            else {
+              alert("Debes aceptar el permiso para usar esta funcionalidad.");
+              reject();
+            }
+          });
+        }
+
+        async function initMap() {
+          try {
+            await solicitarPermisoUbicacion();
+            navigator.geolocation.getCurrentPosition(
+              function(position) {
+                const userLocation = {
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude
+                };
+                const map = new google.maps.Map(document.getElementById("map"), {
+                  center: userLocation,
+                  zoom: 15
+                });
+                const marker = new google.maps.Marker({
+                  position: userLocation,
+                  map: map,
+                  title: "Mi ubicación",
+                  icon: {
+                    url: "/static/images/icono-taxi.png",
+                    scaledSize: new google.maps.Size(40, 40)
+                  }
+                });
+                document.getElementById("origen").value = `${userLocation.lat.toFixed(6)}, ${userLocation.lng.toFixed(6)}`;
+              },
+              function(error) {
+                alert("Error obteniendo ubicación: " + error.message);
+              }
+            );
+          } catch (err) {
+            console.log("Permiso no otorgado o error: ", err);
+          }
+        }
+
         function seleccionarServicio(servicio) {
-            document.getElementById("selectionBox").style.display = "none";
-            document.getElementById("destinationBox").style.display = "block";
+          document.getElementById("selectionBox").style.display = "none";
+          document.getElementById("destinationBox").style.display = "block";
         }
 
         function agregarDestino() {
-            alert("Funcionalidad de múltiples destinos aún no implementada.");
+          alert("Funcionalidad de múltiples destinos aún no implementada.");
         }
 
         function solicitarTaxi() {
-            alert("Solicitud enviada. Esta función se conectará con backend más adelante.");
+          alert("Solicitud enviada. Esta función se conectará con backend más adelante.");
         }
 
-        window.onload = function () {
-            document.getElementById("selectionBox").style.display = "flex";
+        window.onload = () => {
+          initMap();
+          document.getElementById("selectionBox").style.display = "flex";
         };
     </script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&callback=initMap"></script>
 </body>
 </html>
