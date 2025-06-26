@@ -191,15 +191,28 @@
                 return;
             }
 
-            const datosUsuario = JSON.parse(localStorage.getItem("usuario_gavvip") || "{}");
+            let nombre = "";
+            let telefono = "";
+            let correo = "";
+
+            try {
+                const usuario = JSON.parse(localStorage.getItem("usuario_gavvip"));
+                if (usuario) {
+                    nombre = usuario.nombre || "";
+                    telefono = usuario.telefono || "";
+                    correo = usuario.correo || "";
+                }
+            } catch (e) {
+                console.warn("No se pudo leer el usuario desde localStorage", e);
+            }
 
             const datos = {
-                nombre: datosUsuario.nombre || "",
-                telefono: datosUsuario.telefono || "",
-                correo: datosUsuario.correo || "",
+                nombre,
+                telefono,
+                correo,
                 servicio: servicioSeleccionado,
-                origen: origen,
-                destino: destino,
+                origen,
+                destino,
                 fecha: new Date().toLocaleString()
             };
 
