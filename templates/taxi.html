@@ -191,7 +191,14 @@
                 return;
             }
 
+            const nombre = localStorage.getItem("nombre") || "";
+            const telefono = localStorage.getItem("telefono") || "";
+            const correo = localStorage.getItem("correo") || "";
+
             const datos = {
+                nombre,
+                telefono,
+                correo,
                 servicio: servicioSeleccionado,
                 origen: origen,
                 destino: destino,
