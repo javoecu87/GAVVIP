@@ -191,14 +191,12 @@
                 return;
             }
 
-            const nombre = localStorage.getItem("nombre") || "";
-            const telefono = localStorage.getItem("telefono") || "";
-            const correo = localStorage.getItem("correo") || "";
+            const datosUsuario = JSON.parse(localStorage.getItem("usuario_gavvip") || "{}");
 
             const datos = {
-                nombre,
-                telefono,
-                correo,
+                nombre: datosUsuario.nombre || "",
+                telefono: datosUsuario.telefono || "",
+                correo: datosUsuario.correo || "",
                 servicio: servicioSeleccionado,
                 origen: origen,
                 destino: destino,
