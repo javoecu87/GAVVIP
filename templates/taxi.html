@@ -196,11 +196,11 @@
             let correo = "";
 
             try {
-                const usuario = JSON.parse(localStorage.getItem("registro_usuario"));
-                if (usuario) {
-                    nombre = usuario.nombre || "";
-                    telefono = usuario.telefono || "";
-                    correo = usuario.correo || "";
+                const registro = JSON.parse(localStorage.getItem("registro_usuario"));
+                if (registro) {
+                    nombre = registro.nombre || "";
+                    telefono = registro.telefono || "";
+                    correo = registro.correo || "";
                 }
             } catch (e) {
                 console.warn("No se pudo leer el usuario desde localStorage", e);
