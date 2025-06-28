@@ -182,6 +182,18 @@
             alert("Funcionalidad de múltiples destinos aún no implementada.");
         }
 
+        async function obtenerDatosUsuario() {
+            const fingerprint = localStorage.getItem("fingerprint");
+            if (!fingerprint) return {};
+            try {
+                const respuesta = await fetch("https://script.google.com/macros/s/AKfycbxv0JJVfxleqa0nJbHyWA814XCvbYbg62LizSQY4hzSYtSX-u6tYBinQTtbC_cCz8Mx/exec?fingerprint=" + fingerprint);
+                return await respuesta.json();
+            } catch (error) {
+                console.error("Error al obtener datos del usuario:", error);
+                return {};
+            }
+        }
+
         async function solicitarTaxi() {
             const origen = document.getElementById("origen").value.trim();
             const destino = document.getElementById("destino1").value.trim();
@@ -191,25 +203,12 @@
                 return;
             }
 
-            let nombre = "";
-            let telefono = "";
-            let correo = "";
-
-            try {
-                const registro = JSON.parse(localStorage.getItem("registro_usuario"));
-                if (registro) {
-                    nombre = registro.nombre || "";
-                    telefono = registro.telefono || "";
-                    correo = registro.correo || "";
-                }
-            } catch (e) {
-                console.warn("No se pudo leer el usuario desde localStorage", e);
-            }
+            const usuario = await obtenerDatosUsuario();
 
             const datos = {
-                nombre,
-                telefono,
-                correo,
+                nombre: usuario.nombre || "",
+                telefono: usuario.telefono || "",
+                correo: usuario.correo || "",
                 servicio: servicioSeleccionado,
                 origen,
                 destino,
