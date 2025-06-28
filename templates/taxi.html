@@ -185,6 +185,11 @@
         function obtenerDatosUsuarioLocal() {
             try {
                 const datos = JSON.parse(localStorage.getItem("registro_usuario"));
+                if (datos) {
+                    alert(`🧾 Registro local:\nNombre: ${datos.nombre}\nTeléfono: ${datos.telefono}\nCorreo: ${datos.correo}`);
+                } else {
+                    alert("⚠️ No se encontró información del usuario en este dispositivo.");
+                }
                 return datos || {};
             } catch (e) {
                 return {};
@@ -233,21 +238,5 @@
             document.getElementById("selectionBox").style.display = "flex";
         };
     </script>
-
-<script>
-window.onload = () => {
-    initMap();
-    document.getElementById("selectionBox").style.display = "flex";
-
-    // 🔍 Verificar si Telegram ID está disponible
-    if (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) {
-        console.log("Telegram ID:", Telegram.WebApp.initDataUnsafe.user.id);
-        console.log("Nombre:", Telegram.WebApp.initDataUnsafe.user.first_name);
-    } else {
-        console.warn("⚠️ No se encontró información del usuario de Telegram.");
-    }
-};
-</script>
-
 </body>
 </html>
