@@ -233,5 +233,21 @@
             document.getElementById("selectionBox").style.display = "flex";
         };
     </script>
+
+<script>
+window.onload = () => {
+    initMap();
+    document.getElementById("selectionBox").style.display = "flex";
+
+    // 🔍 Verificar si Telegram ID está disponible
+    if (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) {
+        console.log("Telegram ID:", Telegram.WebApp.initDataUnsafe.user.id);
+        console.log("Nombre:", Telegram.WebApp.initDataUnsafe.user.first_name);
+    } else {
+        console.warn("⚠️ No se encontró información del usuario de Telegram.");
+    }
+};
+</script>
+
 </body>
 </html>
