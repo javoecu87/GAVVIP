@@ -182,14 +182,11 @@
             alert("Funcionalidad de múltiples destinos aún no implementada.");
         }
 
-        async function obtenerDatosUsuario() {
-            const fingerprint = localStorage.getItem("fingerprint");
-            if (!fingerprint) return {};
+        function obtenerDatosUsuarioLocal() {
             try {
-                const respuesta = await fetch("https://script.google.com/macros/s/AKfycbxv0JJVfxleqa0nJbHyWA814XCvbYbg62LizSQY4hzSYtSX-u6tYBinQTtbC_cCz8Mx/exec?fingerprint=" + fingerprint);
-                return await respuesta.json();
-            } catch (error) {
-                console.error("Error al obtener datos del usuario:", error);
+                const datos = JSON.parse(localStorage.getItem("registro_usuario"));
+                return datos || {};
+            } catch (e) {
                 return {};
             }
         }
@@ -203,7 +200,7 @@
                 return;
             }
 
-            const usuario = await obtenerDatosUsuario();
+            const usuario = obtenerDatosUsuarioLocal();
 
             const datos = {
                 nombre: usuario.nombre || "",
