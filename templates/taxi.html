@@ -122,6 +122,8 @@
     <div class="destination-container" id="destinationBox">
         <input type="text" id="origen" placeholder="Ingrese Punto de Partida" readonly>
         <input type="text" id="destino1" placeholder="Destino">
+        <input type="text" id="nombre_usuario" placeholder="Tu nombre">
+        <input type="text" id="telefono_usuario" placeholder="Tu teléfono">
         <button class="btn-yellow" onclick="agregarDestino()">+ Agregar otro destino</button>
         <button class="btn-gray" onclick="solicitarTaxi()">Solicitar</button>
     </div>
@@ -186,32 +188,18 @@
         async function solicitarTaxi() {
             const origen = document.getElementById("origen").value.trim();
             const destino = document.getElementById("destino1").value.trim();
-            if (!destino) {
-                alert("Por favor, ingresa un destino.");
+            const nombre = document.getElementById("nombre_usuario").value.trim();
+            const telefono = document.getElementById("telefono_usuario").value.trim();
+
+            if (!destino || !nombre || !telefono) {
+                alert("Por favor, completa todos los campos.");
                 return;
-            }
-
-            let nombre = "";
-            let telefono = "";
-            let correo = "";
-
-            const usuario = JSON.parse(localStorage.getItem("usuario_gavvip"));
-            if (usuario && usuario.telefono) {
-                telefono = usuario.telefono;
-                try {
-                    const res = await fetch(`https://script.google.com/macros/s/AKfycbxv0JJVfxleqa0nJbHyWA814XCvbYbg62LizSQY4hzSYtSX-u6tYBinQTtbC_cCz8Mx/exec?telefono=${telefono}`);
-                    const data = await res.json();
-                    nombre = data.nombre || "";
-                    correo = data.correo || "";
-                } catch (err) {
-                    console.error("Error al obtener datos del usuario:", err);
-                }
             }
 
             const datos = {
                 nombre,
                 telefono,
-                correo,
+                correo: "",
                 servicio: servicioSeleccionado,
                 origen,
                 destino,
