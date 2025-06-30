@@ -183,30 +183,6 @@
             alert("Funcionalidad de múltiples destinos aún no implementada.");
         }
 
-        function obtenerDatosUsuarioLocal() {
-            let datos = {};
-            try {
-                const local = localStorage.getItem("registro_usuario");
-                if (local) {
-                    datos = JSON.parse(local);
-                    console.log("✅ Datos cargados desde localStorage:", datos);
-                } else {
-                    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
-                    if (tgUser) {
-                        datos.nombre = tgUser.first_name + (tgUser.last_name ? ` ${tgUser.last_name}` : "");
-                        datos.telefono = "";
-                        datos.correo = tgUser.username || "";
-                        console.log("ℹ️ Datos extraídos desde Telegram:", datos);
-                    } else {
-                        alert("⚠️ No se encontró información del usuario en este dispositivo.");
-                    }
-                }
-            } catch (e) {
-                console.warn("⚠️ Error al obtener datos del usuario:", e);
-            }
-            return datos;
-        }
-
         async function solicitarTaxi() {
             const origen = document.getElementById("origen").value.trim();
             const destino = document.getElementById("destino1").value.trim();
@@ -215,19 +191,32 @@
                 return;
             }
 
-            const usuario = obtenerDatosUsuarioLocal();
+            let nombre = "";
+            let telefono = "";
+            let correo = "";
+
+            const usuario = JSON.parse(localStorage.getItem("usuario_gavvip"));
+            if (usuario && usuario.telefono) {
+                telefono = usuario.telefono;
+                try {
+                    const res = await fetch(`https://script.google.com/macros/s/AKfycbxv0JJVfxleqa0nJbHyWA814XCvbYbg62LizSQY4hzSYtSX-u6tYBinQTtbC_cCz8Mx/exec?telefono=${telefono}`);
+                    const data = await res.json();
+                    nombre = data.nombre || "";
+                    correo = data.correo || "";
+                } catch (err) {
+                    console.error("Error al obtener datos del usuario:", err);
+                }
+            }
 
             const datos = {
-                nombre: usuario.nombre || "",
-                telefono: usuario.telefono || "",
-                correo: usuario.correo || "",
+                nombre,
+                telefono,
+                correo,
                 servicio: servicioSeleccionado,
                 origen,
                 destino,
                 fecha: new Date().toLocaleString()
             };
-
-            console.table(datos);
 
             try {
                 await fetch("https://script.google.com/macros/s/AKfycbwfYsSyoQGZvvS-6SBZ1sax6l_SuEPB1OHxFNGa7OFsqrJvU5AZKfTR4RB_p03FxXDuiQ/exec", {
@@ -236,7 +225,6 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(datos)
                 });
-
                 alert("✅ Solicitud enviada exitosamente.");
                 window.location.href = "/gracias";
             } catch (err) {
