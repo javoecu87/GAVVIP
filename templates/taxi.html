@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solicitar Taxi</title>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&libraries=places"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             margin: 0;
@@ -184,12 +185,19 @@
 
         function obtenerDatosUsuarioLocal() {
             try {
-                const datos = JSON.parse(localStorage.getItem("registro_usuario"));
-                if (datos) {
-                    alert(`🧾 Registro local:\nNombre: ${datos.nombre}\nTeléfono: ${datos.telefono}\nCorreo: ${datos.correo}`);
-                } else {
-                    alert("⚠️ No se encontró información del usuario en este dispositivo.");
+                let datos = JSON.parse(localStorage.getItem("registro_usuario"));
+                if (!datos || !datos.nombre || !datos.telefono) {
+                    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+                    if (tgUser) {
+                        datos = {
+                            nombre: tgUser.first_name + (tgUser.last_name ? ` ${tgUser.last_name}` : ""),
+                            telefono: "",
+                            correo: tgUser.username || ""
+                        };
+                        console.log("Datos obtenidos desde Telegram");
+                    }
                 }
+                if (!datos) alert("⚠️ No se encontró información del usuario en este dispositivo.");
                 return datos || {};
             } catch (e) {
                 return {};
