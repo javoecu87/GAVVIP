@@ -184,30 +184,32 @@
         }
 
         function obtenerDatosUsuarioLocal() {
+            let datos = {};
             try {
-                let datos = JSON.parse(localStorage.getItem("registro_usuario"));
-                if (!datos || !datos.nombre || !datos.telefono) {
+                const local = localStorage.getItem("registro_usuario");
+                if (local) {
+                    datos = JSON.parse(local);
+                    console.log("✅ Datos cargados desde localStorage:", datos);
+                } else {
                     const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
                     if (tgUser) {
-                        datos = {
-                            nombre: tgUser.first_name + (tgUser.last_name ? ` ${tgUser.last_name}` : ""),
-                            telefono: "",
-                            correo: tgUser.username || ""
-                        };
-                        console.log("Datos obtenidos desde Telegram");
+                        datos.nombre = tgUser.first_name + (tgUser.last_name ? ` ${tgUser.last_name}` : "");
+                        datos.telefono = "";
+                        datos.correo = tgUser.username || "";
+                        console.log("ℹ️ Datos extraídos desde Telegram:", datos);
+                    } else {
+                        alert("⚠️ No se encontró información del usuario en este dispositivo.");
                     }
                 }
-                if (!datos) alert("⚠️ No se encontró información del usuario en este dispositivo.");
-                return datos || {};
             } catch (e) {
-                return {};
+                console.warn("⚠️ Error al obtener datos del usuario:", e);
             }
+            return datos;
         }
 
         async function solicitarTaxi() {
             const origen = document.getElementById("origen").value.trim();
             const destino = document.getElementById("destino1").value.trim();
-
             if (!destino) {
                 alert("Por favor, ingresa un destino.");
                 return;
@@ -225,6 +227,8 @@
                 fecha: new Date().toLocaleString()
             };
 
+            console.table(datos);
+
             try {
                 await fetch("https://script.google.com/macros/s/AKfycbwfYsSyoQGZvvS-6SBZ1sax6l_SuEPB1OHxFNGa7OFsqrJvU5AZKfTR4RB_p03FxXDuiQ/exec", {
                     method: "POST",
@@ -233,10 +237,10 @@
                     body: JSON.stringify(datos)
                 });
 
-                alert("Solicitud enviada exitosamente.");
+                alert("✅ Solicitud enviada exitosamente.");
                 window.location.href = "/gracias";
             } catch (err) {
-                console.error("Error al enviar solicitud:", err);
+                console.error("❌ Error al enviar solicitud:", err);
                 alert("Hubo un error al enviar la solicitud.");
             }
         }
