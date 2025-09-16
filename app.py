@@ -5,7 +5,7 @@ from datetime import datetime
 
 import pytz
 import requests
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory, redirect
 from flask_cors import CORS
 
 import gspread
@@ -105,16 +105,28 @@ def now_local_strings():
 
 
 # =========================
-# Rutas básicas
+# PÁGINAS (UI)
+# =========================
+@app.get("/")
+def root():
+    # Redirige a la UI principal
+    return redirect("/taxi")
+
+@app.get("/taxi")
+def taxi_page():
+    return send_from_directory(app.static_folder, "taxi.html")
+
+@app.get("/turismo")
+def turismo_page():
+    return send_from_directory(app.static_folder, "turismo.html")
+
+
+# =========================
+# Salud
 # =========================
 @app.get("/ping")
 def ping():
     return "pong", 200
-
-
-@app.get("/")
-def root():
-    return "GAVVIP backend OK", 200
 
 
 # =========================
