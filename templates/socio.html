@@ -4,285 +4,158 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GAVVIP Socio Conductor</title>
-
-  <!-- FingerprintJS -->
   <script src="https://openfpcdn.io/fingerprintjs/v4"></script>
-
-  <!-- Google Maps -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w"></script>
-
-  <!-- Firebase (compat para exponer firebase global) -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-
   <style>
-    html, body { margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif; }
-    #map { width: 100%; height: 100%; }
-    .panel-solicitudes { position: absolute; bottom: 0; left: 0; width: 100%; max-height: 45%;
-      background-color: rgba(0, 0, 0, 0.7); color: white; padding: 15px; overflow-y: auto;
-      box-shadow: 0 -4px 10px rgba(0,0,0,0.4); border-radius: 20px 20px 0 0; z-index: 2; }
-    .solicitud { background-color: rgba(255, 255, 255, 0.1); margin-bottom: 10px; padding: 10px; border-radius: 10px; }
-    .solicitud h4 { margin: 0 0 6px 0; color: #FFD24C; }
-    .solicitud small { opacity: 0.8; }
-    .solicitud .acciones { margin-top: 8px; display: flex; gap: 8px; }
-    .btn { border: none; border-radius: 10px; padding: 8px 12px; cursor: pointer; font-weight: bold; }
-    .btn-aceptar { background: #FFD24C; color: #1F3B5C; }
-    .btn-rechazar { background: #444; color: #fff; }
-    .estado { position: absolute; top: 10px; right: 10px; background-color: #FFD24C; color: #1F3B5C;
-      padding: 10px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; z-index: 2; }
-
-    /* Overlay de perfil conductor */
-    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 3; }
-    .card { width: 92%; max-width: 420px; background: rgba(0,0,0,0.8); color: #fff; padding: 18px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.35); }
-    .card h3 { margin-top: 0; color: #FFD24C; text-align: center; }
-    .card label { display: block; margin-top: 10px; color: #FFD24C; font-weight: bold; }
-    .card input, .card select { width: 100%; margin-top: 6px; padding: 10px; border-radius: 8px; border: none; }
-    .card .row { display: flex; gap: 10px; }
-    .card .row > * { flex: 1; }
-    .card .actions { margin-top: 14px; display: flex; gap: 10px; }
-    .card .actions .btn { flex: 1; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+    .panel-solicitudes {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      max-height: 40%;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 15px;
+      overflow-y: auto;
+      box-shadow: 0px -4px 10px rgba(0,0,0,0.4);
+      border-radius: 20px 20px 0 0;
+    }
+    .solicitud {
+      background-color: rgba(255, 255, 255, 0.1);
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .estado {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #FFD24C;
+      color: #1F3B5C;
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <div id="map"></div>
-  <div class="estado" id="estadoBtn" onclick="toggleEstado()">Disponible</div>
-
-  <!-- Panel pedidos -->
+  <div class="estado" onclick="toggleEstado()">Disponible</div>
   <div class="panel-solicitudes" id="panelSolicitudes">
     <h3>Solicitudes activas</h3>
     <div class="solicitud">No hay solicitudes aún.</div>
   </div>
 
-  <!-- Overlay para completar perfil del conductor (una vez) -->
-  <div class="overlay" id="driverOverlay">
-    <div class="card">
-      <h3>Completa tus datos</h3>
-      <div class="row">
-        <div>
-          <label>Nombre</label>
-          <input type="text" id="driverNombre" placeholder="Tu nombre" />
-        </div>
-        <div>
-          <label>ID Conductor</label>
-          <input type="text" id="driverId" placeholder="Licencia / ID" />
-        </div>
-      </div>
-      <label>Placa</label>
-      <input type="text" id="driverPlaca" placeholder="ABC-1234" />
-      <label>Tipo de vehículo</label>
-      <select id="driverTipo">
-        <option value="Taxi">Taxi</option>
-        <option value="SUV">SUV</option>
-        <option value="Van">Van</option>
-        <option value="Moto">Moto</option>
-      </select>
-      <div class="actions">
-        <button class="btn btn-rechazar" onclick="cancelarOverlay()">Cancelar</button>
-        <button class="btn btn-aceptar" onclick="guardarPerfilConductor()">Guardar</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // --- Inicializar Firebase (compat) ---
-    (function initFirebaseSafely(){
-      function init(){
-        if (!window.firebase) return;
-        const cfg = {
-          apiKey: "AIzaSyCZNdViSZxd6ORwlP89bx-zX16ku4ZmFD0",
-          authDomain: "gavvip-b7039.firebaseapp.com",
-          databaseURL: "https://gavvip-b7039-default-rtdb.firebaseio.com",
-          projectId: "gavvip-b7039",
-          storageBucket: "gavvip-b7039.appspot.com",
-          messagingSenderId: "803660953782",
-          appId: "1:803660953782:web:39c00063caaaaa99c84e17"
-        };
-        if (!firebase.apps.length) {
-          window._gavvipFirebaseApp = firebase.initializeApp(cfg);
-        } else {
-          window._gavvipFirebaseApp = firebase.apps[0];
-        }
-        window._gavvipDB = firebase.database();
-      }
-      if (window.firebase) init(); else window.addEventListener('load', init);
-    })();
-
-    // --- Estado y mapa ---
-    let map, marker;
-    let disponible = true;
-    let ubicacionActual = null;
-    let locationTimer = null;
-
-    function getPerfil(){
-      try { return JSON.parse(localStorage.getItem('gavvip_driver_profile')||'null'); } catch { return null; }
-    }
-    function setPerfil(p){ localStorage.setItem('gavvip_driver_profile', JSON.stringify(p)); }
-
-    function mostrarOverlaySiFaltaPerfil(){
-      const p = getPerfil();
-      const ov = document.getElementById('driverOverlay');
-      if (!p || !p.driverId || !p.nombre || !p.placa || !p.tipo) {
-        ov.style.display = 'flex';
-      } else {
-        ov.style.display = 'none';
-      }
-    }
-    function cancelarOverlay(){ document.getElementById('driverOverlay').style.display = 'none'; }
-    function guardarPerfilConductor(){
-      const nombre = document.getElementById('driverNombre').value.trim();
-      const driverId = document.getElementById('driverId').value.trim();
-      const placa = document.getElementById('driverPlaca').value.trim();
-      const tipo = document.getElementById('driverTipo').value;
-      if (!nombre || !driverId || !placa || !tipo) { alert('Completa todos los datos.'); return; }
-      setPerfil({ nombre, driverId, placa, tipo });
-      document.getElementById('driverOverlay').style.display = 'none';
-      if (ubicacionActual) startLocationUpdates();
-    }
-
     async function validarAcceso() {
       try {
         const fpPromise = FingerprintJS.load();
-        const fp = await fpPromise; const result = await fp.get();
+        const fp = await fpPromise;
+        const result = await fp.get();
         const fingerprint = result.visitorId;
-        const acceso = localStorage.getItem('acceso_socio');
+        const acceso = localStorage.getItem("acceso_socio");
         if (acceso !== fingerprint) {
-          alert('Acceso denegado. Debes verificar tu identidad primero.');
-          window.location.href = '/verificar_socio';
+          alert("Acceso denegado. Debes verificar tu identidad primero.");
+          window.location.href = "/verificar_socio";
         }
       } catch (error) {
-        alert('FingerprintJS no está disponible: ' + error.message);
+        alert("FingerprintJS no está disponible: " + error.message);
       }
     }
 
-    function initMap() {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        const pos = { lat: position.coords.latitude, lng: position.coords.longitude };
-        ubicacionActual = pos;
-        map = new google.maps.Map(document.getElementById('map'), { center: pos, zoom: 15 });
-        marker = new google.maps.Marker({
-          position: pos, map: map, title: 'Mi ubicación',
-          icon: { url: '/static/images/icono-taxi.png', scaledSize: new google.maps.Size(40, 40) }
-        });
-
-        // Actualizar marcador cada 10s
-        setInterval(() => {
-          navigator.geolocation.getCurrentPosition(function(p) {
-            const nuevaPos = { lat: p.coords.latitude, lng: p.coords.longitude };
-            ubicacionActual = nuevaPos;
-            marker.setPosition(nuevaPos);
-            map.setCenter(nuevaPos);
-          });
-        }, 10000);
-
-        const perfil = getPerfil();
-        if (perfil) startLocationUpdates();
+    async function solicitarPermisoUbicacion() {
+      return new Promise((resolve, reject) => {
+        const permiso = confirm("Para continuar, necesitamos acceder a tu ubicación actual.");
+        if (permiso) {
+          resolve();
+        } else {
+          alert("Debes aceptar el permiso para usar esta funcionalidad.");
+          reject();
+        }
       });
+    }
+
+    async function initMap() {
+      try {
+        await solicitarPermisoUbicacion();
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            const pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+
+            const map = new google.maps.Map(document.getElementById('map'), {
+              center: pos,
+              zoom: 15
+            });
+
+            const marker = new google.maps.Marker({
+              position: pos,
+              map: map,
+              title: "Mi ubicación",
+              icon: {
+                url: "/static/images/icono-taxi.png",
+                scaledSize: new google.maps.Size(40, 40)
+              }
+            });
+
+            setInterval(() => {
+              navigator.geolocation.getCurrentPosition(function(p) {
+                const nuevaPos = {
+                  lat: p.coords.latitude,
+                  lng: p.coords.longitude
+                };
+                marker.setPosition(nuevaPos);
+                map.setCenter(nuevaPos);
+              });
+            }, 30000);
+          },
+          function(error) {
+            let mensaje = "Error obteniendo la ubicación.";
+            switch (error.code) {
+              case error.PERMISSION_DENIED:
+                mensaje = "Permiso de ubicación denegado.";
+                break;
+              case error.POSITION_UNAVAILABLE:
+                mensaje = "Ubicación no disponible.";
+                break;
+              case error.TIMEOUT:
+                mensaje = "Tiempo de espera agotado al obtener ubicación.";
+                break;
+              default:
+                mensaje += " " + error.message;
+            }
+            alert(mensaje);
+          }
+        );
+      } catch {
+        console.log("Permiso no otorgado");
+      }
     }
 
     function toggleEstado() {
-      disponible = !disponible;
-      const estado = document.getElementById('estadoBtn');
-      estado.textContent = disponible ? 'Disponible' : 'Ocupado';
-      estado.style.backgroundColor = disponible ? '#FFD24C' : '#999';
+      const estado = document.querySelector('.estado');
+      const disponible = estado.textContent === 'Disponible';
+      estado.textContent = disponible ? 'Ocupado' : 'Disponible';
+      estado.style.backgroundColor = disponible ? '#999' : '#FFD24C';
     }
 
-    // Subir ubicación del conductor cada 10s
-    function startLocationUpdates(){
-      const db = window._gavvipDB; if (!db) return;
-      const perfil = getPerfil(); if (!perfil || !perfil.driverId) return;
-      if (locationTimer) clearInterval(locationTimer);
-
-      const write = () => {
-        if (!ubicacionActual) return;
-        db.ref('conductores/'+perfil.driverId).set({
-          lat: ubicacionActual.lat,
-          lng: ubicacionActual.lng,
-          estado: disponible ? 'disponible' : 'ocupado',
-          nombreConductor: perfil.nombre,
-          placa: perfil.placa,
-          tipoVehiculo: perfil.tipo,
-          updatedAt: Date.now()
-        }).catch(err=>console.error('Error subiendo ubicación:', err));
-      };
-      write();
-      locationTimer = setInterval(write, 10000);
-    }
-
-    // Render de pedidos
-    function renderPedidos(lista){
-      const cont = document.getElementById('panelSolicitudes');
-      cont.innerHTML = '<h3>Solicitudes activas</h3>';
-      if (!lista || !lista.length){
-        const empty = document.createElement('div'); empty.className='solicitud'; empty.textContent='No hay solicitudes aún.'; cont.appendChild(empty); return;
-      }
-      lista.forEach(p=>{
-        const el = document.createElement('div'); el.className='solicitud';
-        el.innerHTML = `
-          <h4>${p.servicio || 'TAXI'} — ${p.cliente?.nombre || 'Cliente'}</h4>
-          <div><small>Tel: ${p.cliente?.telefono || '-'}</small></div>
-          <div><small>Origen: ${p.origen?.lat?.toFixed ? p.origen.lat.toFixed(5) : '-'}, ${p.origen?.lng?.toFixed ? p.origen.lng.toFixed(5) : '-'}</small></div>
-          <div><small>Destino: ${p.destinoTexto || '-'}</small></div>
-          <div class="acciones">
-            <button class="btn btn-aceptar">Aceptar</button>
-            <button class="btn btn-rechazar">Rechazar</button>
-          </div>
-        `;
-        el.querySelector('.btn-aceptar').onclick = ()=> aceptarPedido(p.id, p);
-        el.querySelector('.btn-rechazar').onclick = ()=> rechazarPedido(p.id);
-        cont.appendChild(el);
-      });
-    }
-
-    // Escuchar pendientes
-    function escucharPedidosPendientes(){
-      const db = window._gavvipDB; if (!db) return;
-      const ref = db.ref('pedidos/pendientes');
-      ref.on('value', snap=>{
-        const val = snap.val();
-        const lista = [];
-        if (val){ Object.keys(val).forEach(k=>{ lista.push(Object.assign({id:k}, val[k])); }); }
-        renderPedidos(lista);
-      }, err => console.error('[SOCIO] Error pendientes:', err));
-    }
-
-    // Aceptar / rechazar
-    function aceptarPedido(pedidoId, pedido){
-      const db = window._gavvipDB; if (!db) return;
-      const perfil = getPerfil(); if (!perfil) { alert('Completa tus datos de conductor.'); mostrarOverlaySiFaltaPerfil(); return; }
-
-      const asignadoRef = db.ref('pedidos/asignados/'+pedidoId);
-      asignadoRef.transaction(current=>{
-        if (current) return; // ya tomado
-        return {
-          id: pedidoId,
-          estado: 'asignado',
-          cliente: pedido.cliente || null,
-          servicio: pedido.servicio || 'TAXI',
-          origen: pedido.origen || null,
-          destinoTexto: pedido.destinoTexto || '',
-          timestamp: pedido.timestamp || Date.now(),
-          conductorId: perfil.driverId,
-          nombreConductor: perfil.nombre,
-          placa: perfil.placa,
-          tipoVehiculo: perfil.tipo
-        };
-      }, (error, committed) => {
-        if (error) { console.error('Error al asignar:', error); return; }
-        if (!committed) { alert('Este pedido ya fue tomado por otro conductor.'); return; }
-        db.ref('pedidos/pendientes/'+pedidoId).remove().catch(()=>{});
-        disponible = false; toggleEstado();
-        alert('Pedido aceptado. Dirígete al punto de recogida.');
-      });
-    }
-    function rechazarPedido(pedidoId){ alert('Pedido rechazado.'); }
-
-    // Boot
     window.onload = async () => {
       await validarAcceso();
-      mostrarOverlaySiFaltaPerfil();
       initMap();
-      escucharPedidosPendientes();
     };
   </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w"></script>
 </body>
 </html>
