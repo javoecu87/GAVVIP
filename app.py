@@ -8,6 +8,8 @@ app = Flask(__name__)
 # Tokens de los bots para los formularios
 BOT_TOKEN_TAXI = '8146583492:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
 BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
+BOT_TOKEN_TURISMO = '8590651604:AAFXhSpGmtjNy89FBQGQ3xvXVB0t5cakZ8g'
+
 CHAT_ID = '5828174289'  # Reemplaza con el chat ID correcto
 
 # Configuración de logging
@@ -127,6 +129,36 @@ def solicitar_fletes_mudanzas():
     except Exception as e:
         app.logger.error(f"Error en /solicitar-fletes-mudanzas: {e}")
         return "Error al procesar la solicitud de Fletes y Mudanzas.", 500
+
+@app.route('/solicitar-turismo', methods=['POST'])
+def solicitar_turismo():
+    try:
+        nombre = request.form.get('nombre')
+        telefono = request.form.get('telefono')
+        origen = request.form.get('origen')
+        destino = request.form.get('destino')
+        fecha = request.form.get('fecha')
+
+        mensaje = (
+            "*Solicitud de Turismo Local y Nacional*\n\n"
+            f"👤 Nombre: {nombre}\n"
+            f"📞 Teléfono: {telefono}\n"
+            f"📍 Origen: {origen}\n"
+            f"🎯 Destino: {destino}\n"
+            f"📅 Fecha: {fecha}"
+        )
+
+        # Enviar mensaje usando el nuevo bot de Turismo
+        enviar_mensaje(mensaje, BOT_TOKEN_TURISMO)
+
+        return render_template(
+            'success.html',
+            mensaje="¡Gracias! Tu solicitud de Turismo ha sido enviada."
+        )
+    except Exception as e:
+        app.logger.error(f"Error en /solicitar-turismo: {e}")
+        return "Error al procesar la solicitud de Turismo.", 500
+
 
 @app.route('/solicitar-taxi', methods=['POST'])
 def solicitar_taxi():
