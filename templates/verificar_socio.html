@@ -68,56 +68,70 @@
       margin-top: 15px;
       font-size: 14px;
     }
+
+    .atras {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 18px;
+      color: #FFD24C;
+      cursor: pointer;
+      font-weight: bold;
+      background: none;
+      border: none;
+    }
   </style>
 </head>
 <body>
+  <button class="atras" onclick="window.location.href='/'">← Atrás</button>
   <div class="container">
     <h2>Socio Conductor</h2>
     <p>¿Ya enviaste tu solicitud?</p>
-    <input type="text" id="licencia" placeholder="Ingresa tu número de licencia">
-    <button onclick="verificarLicencia()">Verificar estado</button>
+    <input type="text" id="licencia" placeholder="Número de licencia">
+    <input type="password" id="contrasena" placeholder="Contraseña">
+    <button onclick="verificarLicencia()">Ingresar</button>
     <p style="margin-top: 20px;">¿Aún no te has registrado?</p>
     <button onclick="window.location.href='/registro_socio'">Registrarme</button>
     <div class="mensaje" id="mensaje"></div>
   </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    const url = "https://script.google.com/macros/s/AKfycbxuyit0BwkEAgH1ZXjQOafECdgIsIulsa-qkTzUDHIgF9lhQ0njqi_JHlyBarp5Mf8B4A/exec";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCZNdViSZxd6ORwlP89bx-zX16ku4ZmFD0",
-      authDomain: "gavvip-b7039.firebaseapp.com",
-      databaseURL: "https://gavvip-b7039-default-rtdb.firebaseio.com",
-      projectId: "gavvip-b7039",
-      storageBucket: "gavvip-b7039.appspot.com",
-      messagingSenderId: "803660953782",
-      appId: "1:803660953782:web:39c00063caaaaa99c84e17"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    window.verificarLicencia = async function() {
+    window.verificarLicencia = async function () {
       const licencia = document.getElementById("licencia").value.trim();
+      const contrasena = document.getElementById("contrasena").value.trim();
       const mensaje = document.getElementById("mensaje");
-      if (!licencia) {
-        mensaje.textContent = "Por favor, ingresa tu número de licencia.";
+
+      if (!licencia || !contrasena) {
+        mensaje.textContent = "Por favor ingresa todos los campos.";
         return;
       }
 
-      const snapshot = await get(child(ref(db), `socios/${licencia}`));
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        if (data.estado === "aprobado") {
-          window.location.href = "/socio";
-        } else {
-          mensaje.textContent = "Tu solicitud está en revisión. Por favor, espera la aprobación.";
+      try {
+        const response = await fetch(url);
+        const texto = await response.text();
+        const data = JSON.parse(texto);
+
+        const socio = data.find(item => item.licencia === licencia);
+
+        if (!socio) {
+          mensaje.textContent = "No encontramos una solicitud con ese número de licencia.";
+          return;
         }
-      } else {
-        mensaje.textContent = "No encontramos una solicitud con ese número de licencia.";
+
+        if (socio.aprobado === "sí" && socio.contrasena === contrasena) {
+          window.location.href = "/socio";
+        } else if (socio.aprobado !== "sí") {
+          mensaje.textContent = "Tu solicitud está en revisión. Por favor, espera la aprobación.";
+        } else {
+          mensaje.textContent = "Contraseña incorrecta.";
+        }
+      } catch (error) {
+        console.error(error);
+        mensaje.textContent = "Error al verificar. Intenta nuevamente más tarde.";
       }
-    }
+    };
   </script>
 </body>
 </html>
