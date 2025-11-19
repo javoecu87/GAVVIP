@@ -4,55 +4,105 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Turismo Ecuador</title>
+
     <style>
         body {
-            background-color: #001f3f; /* Fondo oscuro */
-            color: #FFD24C; /* Color dorado */
-            font-family: Arial, sans-serif;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
             text-align: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Video de fondo */
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        /* Caja de contenido estilo vidrio */
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(3px);
+            color: #FFD700;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
         }
 
         h1 {
-            font-size: 2em;
-            margin-bottom: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 15px;
         }
 
-        /* Estilo para el video */
-        video {
-            width: 80%;
-            max-width: 600px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        button {
-            background-color: #FFD24C;
-            color: #1F3B5C;
+        .btn {
+            width: 100%;
+            display: block;
+            margin-top: 15px;
+            padding: 14px;
             font-size: 18px;
-            padding: 15px 30px;
-            border-radius: 10px;
-            cursor: pointer;
-            border: none;
-            margin-top: 20px;
-            transition: background-color 0.3s;
+            font-weight: bold;
+            border-radius: 12px;
+            text-decoration: none;
+            text-align: center;
+            transition: .3s;
         }
 
-        button:hover {
-            background-color: #FFBA42;
+        .btn-primary {
+            background-color: #FFD700;
+            color: #001f3f;
         }
+
+        .btn-primary:hover {
+            background-color: #E6B400;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: rgba(255, 255, 255, 0.3);
+            color: #FFD700;
+            border: 2px solid #FFD700;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
     </style>
+
 </head>
 <body>
-    <h1>Explora el Turismo en Ecuador</h1>
-    
-    <!-- Video relacionado con el turismo en Ecuador -->
-    <video autoplay muted loop>
-        <source src="video-ecuador.mp4" type="video/mp4">
-        Tu navegador no soporta la etiqueta de video.
+
+    <!-- Fondo de video -->
+    <video autoplay muted loop class="video-bg">
+        <source src="/static/video/paisaje.mp4" type="video/mp4">
     </video>
-    
-    <!-- Botón para solicitar más información -->
-    <a href="/solicitar-turismo-ecuador"><button>Solicitar más Información</button></a>
+
+    <!-- Contenido -->
+    <div class="container">
+        <h1>Turismo en Ecuador 🇪🇨</h1>
+        <p>Explora lugares increíbles con experiencias únicas</p>
+
+        <!-- Botón solicitar -->
+        <a href="/turismo" class="btn btn-primary">Solicitar más Información</a>
+
+        <!-- Botón volver -->
+        <a href="/principal" class="btn btn-secondary">Volver a la Página Principal</a>
+    </div>
+
 </body>
 </html>
