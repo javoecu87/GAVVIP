@@ -3,9 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitar Taxi - GAVVIP</title>
+    <title>Solicitar Taxi</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&libraries=places"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
-    <!-- Estilos -->
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZNdViSZxd6ORwlP89bx-zX16ku4ZmFD0",
+            authDomain: "gavvip-b7039.firebaseapp.com",
+            databaseURL: "https://gavvip-b7039-default-rtdb.firebaseio.com",
+            projectId: "gavvip-b7039",
+            storageBucket: "gavvip-b7039.firebasestorage.app",
+            messagingSenderId: "803660953782",
+            appId: "1:803660953782:web:39c00063caaaaa99c84e17",
+            measurementId: "G-FDLVXG8BS3"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let map;
+        const markers = [];
+
+        function loadConductores() {
+            const refConductores = ref(db, 'conductores');
+            onValue(refConductores, snapshot => {
+                const data = snapshot.val();
+                if (!data) return;
+
+                // Limpiar marcadores anteriores
+                markers.forEach(marker => marker.setMap(null));
+                markers.length = 0;
+
+                for (const key in data) {
+                    const conductor = data[key];
+                    const pos = { lat: conductor.latitud, lng: conductor.longitud };
+
+                    const marker = new google.maps.Marker({
+                        position: pos,
+                        map: map,
+                        icon: {
+                            url: "/static/images/icono-taxi.png",
+                            scaledSize: new google.maps.Size(40, 40)
+                        },
+                        title: `${conductor.nombre} (${conductor.tipo})`
+                    });
+
+                    markers.push(marker);
+                }
+            });
+        }
+
+        window.initMap = function () {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                const userLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                map = new google.maps.Map(document.getElementById("map"), {
+                    center: userLocation,
+                    zoom: 14
+                });
+
+                // Cargar conductores cercanos
+                loadConductores();
+            }, function () {
+                const fallback = { lat: -0.180653, lng: -78.467834 };
+                map = new google.maps.Map(document.getElementById("map"), {
+                    center: fallback,
+                    zoom: 14
+                });
+                loadConductores();
+            });
+        };
+    </script>
     <style>
         /* Estilos generales */
         body {
@@ -16,10 +88,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #001f3f; /* respaldo si el mapa no carga */
+            background-color: #366E73;
             color: #FFE786;
             position: relative;
-            overflow: hidden;
         }
 
         #map {
@@ -28,16 +99,15 @@
             position: absolute;
             top: 0;
             left: 0;
-            z-index: 0;
+            z-index: 1;
         }
 
-        /* Contenedor de opciones (burbujas) */
         .options-container {
             position: absolute;
             bottom: 0;
             width: 100%;
             height: 40%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.6);
             padding: 20px;
             border-radius: 20px 20px 0 0;
             text-align: center;
@@ -62,135 +132,54 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
         }
 
-        .btn-bubble:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 10px rgba(255, 210, 76, 0.8);
-        }
+        .btn-yellow { background-color: #FFD24C; color: #1F3B5C; }
+        .btn-yellow:hover { background-color: #FFBA42; transform: scale(1.1); }
 
-        .btn-yellow {
-            background: linear-gradient(135deg, #FFD24C, #FFBA42);
-            color: #001f3f;
-        }
-
-        .btn-gray {
-            background-color: #222222;
-            color: #FFFFFF;
-            padding: 10px 18px;
-            border-radius: 20px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
-        .btn-gray:hover {
-            opacity: 0.9;
-        }
+        .btn-gray { background-color: #444; color: white; width: 140px; height: 50px; border-radius: 10px; }
+        .btn-gray:hover { background-color: #333; }
 
         .note {
             font-size: 12px;
-            margin-top: 5px;
-            color: #FFE786;
+            color: white;
             text-align: center;
         }
 
-        /* Contenedor del formulario (destino) */
         .destination-container {
             display: none;
             position: absolute;
             bottom: 20px;
             width: 90%;
-            max-width: 420px;
-            background: rgba(0, 0, 0, 0.78);
+            max-width: 400px;
+            background: rgba(0, 0, 0, 0.6);
             padding: 15px;
-            border-radius: 15px;
+            border-radius: 10px;
             text-align: center;
             z-index: 2;
-            left: 50%;
-            transform: translateX(-50%);
         }
 
-        .destination-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #FFD24C;
-        }
-
-        .destination-subtitle {
-            font-size: 13px;
-            margin-bottom: 10px;
-            color: #FFE786;
-        }
-
-        input, select, textarea {
+        input {
             width: 100%;
-            padding: 9px;
-            margin-top: 8px;
-            border-radius: 6px;
-            border: none;
-            font-size: 14px;
-            text-align: left;
-            color: #FFFFFF;
-            background-color: rgba(255, 255, 255, 0.12);
-            box-sizing: border-box;
-        }
-
-        input::placeholder,
-        textarea::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 50px;
-            max-height: 90px;
-        }
-
-        .btn-full {
-            width: 100%;
-            margin-top: 12px;
-        }
-
-        .form-footer {
+            padding: 10px;
             margin-top: 10px;
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+            text-align: center;
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
-        .small-text {
-            font-size: 11px;
-            opacity: 0.9;
-            margin-top: 6px;
-        }
-
-        @media (max-width: 480px) {
-            .options-container {
-                height: 45%;
-                padding: 15px;
-            }
-
-            .btn-bubble {
-                width: 75px;
-                height: 75px;
-                font-size: 12px;
-            }
-
-            .destination-container {
-                width: 92%;
-            }
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
         }
     </style>
 </head>
 <body>
-    <!-- Mapa -->
     <div id="map"></div>
 
-    <!-- Selección de tipo de servicio -->
     <div class="options-container" id="selectionBox">
         <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('TAXI')">TAXI</button>
         <button class="btn-bubble btn-yellow" onclick="seleccionarServicio('SUV')">SUV</button>
@@ -203,127 +192,31 @@
         <button class="btn-gray" onclick="window.location.href='/principal'">Regresar</button>
     </div>
 
-    <!-- Formulario de solicitud -->
     <div class="destination-container" id="destinationBox">
-        <div class="destination-title">Solicitud de servicio</div>
-        <div class="destination-subtitle">
-            Servicio seleccionado: <span id="servicioSeleccionado" style="font-weight:bold;"></span>
-        </div>
-
-        <form id="taxiForm" method="POST" action="/enviar_taxi">
-            <!-- Tipo de servicio (oculto) -->
-            <input type="hidden" name="tipo_servicio" id="tipo_servicio">
-
-            <!-- Datos del usuario -->
-            <input type="text" name="nombre" id="nombre" placeholder="Nombre completo" required>
-            <input type="tel" name="telefono" id="telefono" placeholder="Número de teléfono" required>
-
-            <!-- Datos del viaje -->
-            <input type="text" name="origen" id="origen" placeholder="Punto de partida" required>
-            <input type="text" name="destino" id="destino" placeholder="Destino" required>
-            <input type="number" name="pasajeros" id="pasajeros" placeholder="Número de pasajeros" min="1">
-
-            <select name="metodo_pago" id="metodo_pago" required>
-                <option value="" disabled selected>Método de pago</option>
-                <option value="efectivo">Efectivo</option>
-                <option value="transferencia">Transferencia</option>
-                <option value="tarjeta">Tarjeta (próximamente)</option>
-            </select>
-
-            <textarea name="comentarios" id="comentarios" placeholder="Referencia adicional o comentarios (opcional)"></textarea>
-
-            <button type="submit" class="btn-bubble btn-yellow btn-full" style="border-radius: 30px;">
-                SOLICITAR
-            </button>
-
-            <div class="form-footer">
-                <button type="button" class="btn-gray" style="width: 50%;" onclick="cancelarSolicitud()">
-                    Volver
-                </button>
-                <button type="button" class="btn-gray" style="width: 50%;" onclick="window.location.href='/principal'">
-                    Inicio
-                </button>
-            </div>
-
-            <div class="small-text">
-                Al enviar la solicitud, un operador GAVVIP recibirá tus datos y confirmará tu servicio.
-            </div>
-        </form>
+        <input type="text" id="origen" placeholder="Ingrese Punto de Partida" readonly>
+        <input type="text" id="destino1" placeholder="Destino">
+        <button class="btn-yellow" onclick="agregarDestino()">+ Agregar otro destino</button>
+        <button class="btn-gray" onclick="solicitarTaxi()">Solicitar</button>
     </div>
 
-    <!-- Lógica de mapa y UI -->
     <script>
-        let map;
-
-        function initMap() {
-            const defaultCenter = { lat: -0.1807, lng: -78.4678 }; // Quito como respaldo
-
-            map = new google.maps.Map(document.getElementById("map"), {
-                center: defaultCenter,
-                zoom: 13,
-                disableDefaultUI: false,
-            });
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function (position) {
-                        const userLocation = {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude
-                        };
-
-                        map.setCenter(userLocation);
-
-                        new google.maps.Marker({
-                            position: userLocation,
-                            map: map,
-                            title: "Tu ubicación"
-                        });
-
-                        // Opcional: sugerir origen
-                        const origenInput = document.getElementById("origen");
-                        if (origenInput && !origenInput.value) {
-                            origenInput.placeholder = "Punto de partida (ej: Mi ubicación actual)";
-                        }
-                    },
-                    function (error) {
-                        console.warn("No se pudo obtener la ubicación:", error.message);
-                    }
-                );
-            }
-        }
-
         function seleccionarServicio(servicio) {
-            // Ocultar selección, mostrar formulario
             document.getElementById("selectionBox").style.display = "none";
             document.getElementById("destinationBox").style.display = "block";
-
-            // Guardar el tipo de servicio en el campo oculto y mostrar en texto
-            const tipoServicioInput = document.getElementById("tipo_servicio");
-            const servicioLabel = document.getElementById("servicioSeleccionado");
-
-            if (tipoServicioInput) tipoServicioInput.value = servicio;
-            if (servicioLabel) servicioLabel.textContent = servicio;
         }
 
-        function cancelarSolicitud() {
-            // Limpiar campos
-            const form = document.getElementById("taxiForm");
-            if (form) form.reset();
+        function agregarDestino() {
+            alert("Funcionalidad de múltiples destinos aún no implementada.");
+        }
 
-            // Volver a la selección de servicio
-            document.getElementById("destinationBox").style.display = "none";
-            document.getElementById("selectionBox").style.display = "flex";
+        function solicitarTaxi() {
+            alert("Solicitud enviada. Esta función se conectará con backend más adelante.");
         }
 
         window.onload = function () {
-            // Mostrar burbujas al cargar
-            const selectionBox = document.getElementById("selectionBox");
-            if (selectionBox) selectionBox.style.display = "flex";
+            document.getElementById("selectionBox").style.display = "flex";
         };
     </script>
-
-    <!-- Google Maps (reemplaza TU_API_KEY con tu key real) -->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&callback=initMap"></script>
 </body>
 </html>
