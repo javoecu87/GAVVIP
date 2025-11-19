@@ -4,58 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solicitud Enviada</title>
+
     <style>
         body {
-            background-color: #366E73; /* Fondo general */
-            color: #FFE786; /* Color del texto */
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('/static/images/emergente.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            color: #FFD700;
             text-align: center;
         }
 
         .container {
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #1F3B5C;
-            width: 80%;
+            padding: 30px;
             max-width: 600px;
+            width: 85%;
+            background-color: rgba(0, 0, 0, 0.45);
+            border-radius: 20px;
+            backdrop-filter: blur(3px);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
         }
 
         h1 {
-            font-size: 2em;
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #FFD700;
         }
 
         p {
-            font-size: 1.2em;
-        }
-
-        button {
-            background-color: #FFD24C;
-            color: #1F3B5C;
             font-size: 18px;
-            padding: 15px 30px;
-            border-radius: 10px;
-            cursor: pointer;
-            border: none;
-            margin-top: 20px;
-            transition: background-color 0.3s;
+            color: #FFFFFF;
         }
 
-        button:hover {
-            background-color: #FFBA42;
+        .btn-volver {
+            display: inline-block;
+            margin-top: 20px;
+            width: 100%;
+            padding: 14px;
+            background-color: #FFD700;
+            color: #001f3f;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .btn-volver:hover {
+            background-color: #E6B400;
+            transform: translateY(-2px);
         }
     </style>
+
 </head>
 <body>
+
     <div class="container">
         <h1>{{ mensaje }}</h1>
-        <p>¡Gracias por tu solicitud! Nos pondremos en contacto contigo pronto.</p>
-        
-        <!-- Botón para regresar a la página principal -->
-        <a href="/principal"><button>Regresar a la Página Principal</button></a>
+        <p>¡Gracias! Hemos recibido tu solicitud con éxito.</p>
+
+        <a href="/principal" class="btn-volver">Volver a la Página Principal</a>
     </div>
+
 </body>
 </html>
