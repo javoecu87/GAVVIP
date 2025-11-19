@@ -72,6 +72,11 @@ def turismo_subventana():
 def turismo_ecuador():
     return render_template('turismo-ecuador.html')
 
+@app.route('/turismo')
+def turismo():
+    return render_template('turismo.html')
+
+
 @app.route('/ecuador-420')
 def ecuador_420():
     return render_template('ecuador-420.html')
