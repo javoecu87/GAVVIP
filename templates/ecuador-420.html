@@ -4,55 +4,147 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ecuador 420</title>
+
     <style>
         body {
-            background-color: #001f3f; /* Fondo oscuro */
-            color: #FFD24C; /* Color dorado */
-            font-family: Arial, sans-serif;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
             text-align: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Video de fondo */
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            max-width: 600px;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+            color: #FFD700;
+            box-shadow: 0 0 15px rgba(0,0,0,0.7);
         }
 
         h1 {
-            font-size: 2em;
-            margin-bottom: 20px;
+            font-size: 26px;
+            margin-bottom: 10px;
+            font-weight: bold;
         }
 
-        /* Estilo para el video */
-        video {
-            width: 80%;
-            max-width: 600px;
-            border-radius: 10px;
-            margin-top: 20px;
+        p {
+            font-size: 16px;
+            color: #ffffff;
+            margin-bottom: 15px;
         }
 
-        button {
-            background-color: #FFD24C;
-            color: #1F3B5C;
-            font-size: 18px;
-            padding: 15px 30px;
+        label {
+            display: block;
+            text-align: left;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ffffff;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
             border-radius: 10px;
-            cursor: pointer;
             border: none;
-            margin-top: 20px;
-            transition: background-color 0.3s;
+            font-size: 15px;
+            background: rgba(255,255,255,0.85);
         }
 
-        button:hover {
-            background-color: #FFBA42;
+        textarea {
+            min-height: 70px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            margin-top: 15px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .btn-primary {
+            background-color: #FFD700;
+            color: #001f3f;
+        }
+
+        .btn-primary:hover {
+            background-color: #E6B400;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: rgba(255,255,255,0.25);
+            color: #FFD700;
+            border: 2px solid #FFD700;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
-    <h1>Explora Ecuador 420</h1>
-    
-    <!-- Video relacionado con Ecuador 420 -->
-    <video autoplay muted loop>
-        <source src="ecuador-420-video.mp4" type="video/mp4">
+
+    <!-- Video de fondo -->
+    <video autoplay muted loop class="video-bg">
+        <source src="/static/images/420.mp4" type="video/mp4">
         Tu navegador no soporta la etiqueta de video.
     </video>
-    
-    <!-- Botón para solicitar más información -->
-    <a href="/solicitar-ecuador-420"><button>Solicitar más Información</button></a>
+
+    <div class="container">
+        <h1>Ecuador 420</h1>
+        <p>Experiencias especiales en destinos seleccionados de Ecuador.</p>
+
+        <form action="/solicitar-ecuador-420" method="POST">
+            <label for="nombre">Nombre completo</label>
+            <input type="text" id="nombre" name="nombre" required>
+
+            <label for="telefono">Teléfono</label>
+            <input type="tel" id="telefono" name="telefono" required>
+
+            <label for="ciudad">Ciudad / Provincia</label>
+            <input type="text" id="ciudad" name="ciudad" required>
+
+            <label for="fecha">Fecha tentativa</label>
+            <input type="date" id="fecha" name="fecha" required>
+
+            <label for="detalles">Detalles de la experiencia que buscas</label>
+            <textarea id="detalles" name="detalles"></textarea>
+
+            <button type="submit" class="btn btn-primary">Enviar Solicitud Ecuador 420</button>
+        </form>
+
+        <a href="/principal" class="btn btn-secondary">Volver a la Página Principal</a>
+    </div>
+
 </body>
 </html>

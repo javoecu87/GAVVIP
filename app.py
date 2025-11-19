@@ -216,24 +216,29 @@ def solicitar_ecuador_420():
     try:
         nombre = request.form.get('nombre')
         telefono = request.form.get('telefono')
-        origen = request.form.get('origen')
-        destino = request.form.get('destino')
+        ciudad = request.form.get('ciudad')
         fecha = request.form.get('fecha')
+        detalles = request.form.get('detalles')
 
         mensaje = (
-            "*Solicitud de Ecuador 420*\n\n"
+            "*Solicitud Ecuador 420*\n\n"
             f"👤 Nombre: {nombre}\n"
             f"📞 Teléfono: {telefono}\n"
-            f"📍 Origen: {origen}\n"
-            f"🎯 Destino: {destino}\n"
-            f"📅 Fecha: {fecha}"
+            f"📍 Ciudad / Provincia: {ciudad}\n"
+            f"📅 Fecha tentativa: {fecha}\n"
+            f"📋 Detalles: {detalles}"
         )
 
-        enviar_mensaje(mensaje, BOT_TOKEN_TAXI, CHAT_ID)
-        return render_template('success.html', mensaje="¡Gracias! Tu solicitud de Ecuador 420 ha sido enviada.")
+        # Mismo bot que Turismo
+        enviar_mensaje(mensaje, BOT_TOKEN_TURISMO)
+
+        return render_template(
+            'success.html',
+            mensaje="¡Gracias! Tu solicitud Ecuador 420 ha sido enviada."
+        )
     except Exception as e:
         app.logger.error(f"Error en /solicitar-ecuador-420: {e}")
-        return "Error al procesar la solicitud de Ecuador 420.", 500
+        return "Error al procesar la solicitud Ecuador 420.", 500
 
 
 @app.route('/procesar_solicitud_alta_gama', methods=['POST'])
