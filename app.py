@@ -85,6 +85,13 @@ def alta_gama():
     vehiculos = ['SUV', 'Van', 'Sedan']
     return render_template('alta_gama.html', vehiculos=vehiculos)
 
+@app.route('/alta-gama/formulario')
+def formulario_alta_gama():
+    # Tomamos el vehículo desde la URL ?vehiculo=SUV
+    vehiculo = request.args.get('vehiculo', 'No especificado')
+    return render_template('formulario_alta_gama.html', vehiculo=vehiculo)
+
+
 @app.route('/apoyo-hoteles')
 def apoyo_hoteles():
     return render_template('apoyo_hoteles.html')
@@ -190,6 +197,39 @@ def solicitar_ecuador_420():
     except Exception as e:
         app.logger.error(f"Error en /solicitar-ecuador-420: {e}")
         return "Error al procesar la solicitud de Ecuador 420.", 500
+
+
+@app.route('/procesar_solicitud_alta_gama', methods=['POST'])
+def procesar_solicitud_alta_gama():
+    try:
+        nombre = request.form.get('nombre')
+        telefono = request.form.get('telefono')
+        vehiculo = request.form.get('tipo_vehiculo')
+        fecha = request.form.get('fecha')
+        hora = request.form.get('hora')
+        detalles = request.form.get('detalles')
+
+        mensaje = (
+            "*Solicitud de Alta Gama*\n\n"
+            f"👤 Nombre: {nombre}\n"
+            f"📞 Teléfono: {telefono}\n"
+            f"🚗 Vehículo: {vehiculo}\n"
+            f"📅 Fecha: {fecha}\n"
+            f"⏰ Hora: {hora}\n"
+            f"📋 Detalles: {detalles}"
+        )
+
+        # Usamos el bot VIP para este servicio
+        enviar_mensaje(mensaje, BOT_TOKEN_VIP)
+
+        return render_template(
+            'success.html',
+            mensaje="¡Gracias! Tu solicitud de Alta Gama ha sido enviada."
+        )
+    except Exception as e:
+        app.logger.error(f"Error en /procesar_solicitud_alta_gama: {e}")
+        return "Error al procesar la solicitud de Alta Gama.", 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
