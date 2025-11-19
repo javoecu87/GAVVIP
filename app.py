@@ -160,27 +160,41 @@ def solicitar_turismo():
         return "Error al procesar la solicitud de Turismo.", 500
 
 
-@app.route('/solicitar-taxi', methods=['POST'])
-def solicitar_taxi():
+@app.route('/enviar_taxi', methods=['POST'])
+def enviar_taxi():
     try:
         nombre = request.form.get('nombre')
         telefono = request.form.get('telefono')
         origen = request.form.get('origen')
         destino = request.form.get('destino')
+        pasajeros = request.form.get('pasajeros')
+        metodo_pago = request.form.get('metodo_pago')
+        comentarios = request.form.get('comentarios')
+        tipo_servicio = request.form.get('tipo_servicio')
 
         mensaje = (
-            "*Solicitud de Taxi*\n\n"
+            "*🚕 SOLICITUD DE TAXI*\n\n"
             f"👤 Nombre: {nombre}\n"
             f"📞 Teléfono: {telefono}\n"
             f"📍 Origen: {origen}\n"
-            f"🎯 Destino: {destino}"
+            f"🎯 Destino: {destino}\n"
+            f"👥 Pasajeros: {pasajeros}\n"
+            f"💳 Pago: {metodo_pago}\n"
+            f"🚗 Servicio: {tipo_servicio}\n"
+            f"📝 Comentarios: {comentarios if comentarios else 'Ninguno'}"
         )
 
-        enviar_mensaje(mensaje, BOT_TOKEN_TAXI, CHAT_ID)
-        return render_template('success.html', mensaje="¡Gracias! Tu solicitud de taxi ha sido enviada.")
+        # Enviar mensaje al bot TAXI
+        enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
+
+        return render_template(
+            'success.html',
+            mensaje="¡Gracias! Tu solicitud de Taxi ha sido enviada con éxito."
+        )
     except Exception as e:
-        app.logger.error(f"Error en /solicitar-taxi: {e}")
+        app.logger.error(f"Error en /enviar_taxi: {e}")
         return "Error al procesar la solicitud de taxi.", 500
+
 
 @app.route('/conductor')
 def conductor():
