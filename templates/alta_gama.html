@@ -4,38 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Selección de Vehículo Alta Gama</title>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            text-align: center;
-            background-color: #001f3f;
-            color: #FFD700;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            margin: 50px auto;
-            max-width: 600px;
-            padding: 20px;
-            background-color: rgba(0, 0, 0, 0.8);
-            border-radius: 10px;
-        }
-        .vehiculo-button {
-            width: 100%;
-            margin: 10px 0;
-            padding: 15px;
-            font-size: 20px;
-            border: 1px solid #FFD700;
-            border-radius: 5px;
-            color: #FFD700;
-            background-color: transparent;
-            cursor: pointer;
-        }
-        .vehiculo-button:hover {
-            background-color: #FFD700;
-            color: #001f3f;
-        }
-    </style>
+ <style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        background-image: url('/static/images/emergente.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        color: #FFD700;
+    }
+
+    .container {
+        margin: 50px auto;
+        max-width: 600px;
+        padding: 20px;
+        background-color: rgba(0, 0, 0, 0.45);  /* 🔥 Transparencia */
+        border-radius: 20px;
+        backdrop-filter: blur(2px);  /* 🔥 Efecto vidrio elegante */
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.6); /* 🔥 Mejor contraste */
+    }
+
+    h1 {
+        color: #FFD700;
+        font-size: 26px;
+        font-weight: bold;
+    }
+
+    .vehiculo-button {
+        width: 100%;
+        margin: 10px 0;
+        padding: 15px;
+        font-size: 20px;
+        border: 2px solid #FFD700;
+        border-radius: 8px;
+        color: #FFD700;
+        background-color: transparent;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .vehiculo-button:hover {
+        background-color: #FFD700;
+        color: #001f3f;
+        transform: translateY(-2px);
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    .btn-volver {
+        display: inline-block;
+        margin-top: 15px;
+        padding: 12px 20px;
+        background-color: #FFD700;
+        color: #001f3f;
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .btn-volver:hover {
+        background-color: #E6B400;
+        transform: translateY(-2px);
+    }
+</style>
+
 </head>
 <body>
     <div class="container">
@@ -53,3 +93,5 @@
     </div>
 </body>
 </html>
+<a href="/principal" class="btn-volver">Volver a la Página Principal</a>
+
