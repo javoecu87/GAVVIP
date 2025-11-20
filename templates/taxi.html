@@ -23,20 +23,30 @@
                         zoom: 14
                     });
 
-                    // Marcador en tu ubicación
+                    // Marcador en tu ubicación, ahora DRAGGABLE
                     userMarker = new google.maps.Marker({
                         position: userLocation,
                         map: map,
-                        title: "Tu ubicación"
+                        title: "Punto de partida",
+                        draggable: true
                     });
 
-                    // Opcional: sugerir en el campo origen
-                    const origenInput = document.getElementById("origen");
-                    if (origenInput && !origenInput.value) {
-                        origenInput.placeholder = "Mi ubicación actual o escribe otra dirección";
-                    }
+                    // Permitir mover el marcador haciendo clic en el mapa
+                    map.addListener("click", function (event) {
+                        const pos = event.latLng;
+                        if (userMarker) {
+                            userMarker.setPosition(pos);
+                        } else {
+                            userMarker = new google.maps.Marker({
+                                position: pos,
+                                map: map,
+                                title: "Punto de partida",
+                                draggable: true
+                            });
+                        }
+                    });
 
-                    // Activar Autocomplete
+                    // Activar Autocomplete después de tener el mapa listo
                     activarAutocomplete();
                 },
                 function (error) {
@@ -46,6 +56,21 @@
                     map = new google.maps.Map(document.getElementById("map"), {
                         center: fallback,
                         zoom: 12
+                    });
+
+                    // Permitir mover el marcador haciendo clic en el mapa aunque no haya geolocalización
+                    map.addListener("click", function (event) {
+                        const pos = event.latLng;
+                        if (userMarker) {
+                            userMarker.setPosition(pos);
+                        } else {
+                            userMarker = new google.maps.Marker({
+                                position: pos,
+                                map: map,
+                                title: "Punto de partida",
+                                draggable: true
+                            });
+                        }
                     });
 
                     activarAutocomplete();
@@ -60,6 +85,20 @@
                 zoom: 12
             });
 
+            map.addListener("click", function (event) {
+                const pos = event.latLng;
+                if (userMarker) {
+                    userMarker.setPosition(pos);
+                } else {
+                    userMarker = new google.maps.Marker({
+                        position: pos,
+                        map: map,
+                        title: "Punto de partida",
+                        draggable: true
+                    });
+                }
+            });
+
             activarAutocomplete();
         }
     };
@@ -68,9 +107,31 @@
         const origenInput = document.getElementById("origen");
         const destinoInput = document.getElementById("destino1");
 
+        // Autocomplete para ORIGEN: mueve el marcador a la dirección elegida
         if (origenInput && google.maps.places) {
-            new google.maps.places.Autocomplete(origenInput);
+            const acOrigen = new google.maps.places.Autocomplete(origenInput);
+            acOrigen.addListener("place_changed", function () {
+                const place = acOrigen.getPlace();
+                if (!place.geometry || !place.geometry.location) return;
+                if (!map) return;
+
+                map.setCenter(place.geometry.location);
+                map.setZoom(15);
+
+                if (userMarker) {
+                    userMarker.setPosition(place.geometry.location);
+                } else {
+                    userMarker = new google.maps.Marker({
+                        position: place.geometry.location,
+                        map: map,
+                        title: "Punto de partida",
+                        draggable: true
+                    });
+                }
+            });
         }
+
+        // Autocomplete para DESTINO (solo sugerencias, sin mover marcador)
         if (destinoInput && google.maps.places) {
             new google.maps.places.Autocomplete(destinoInput);
         }
