@@ -276,6 +276,9 @@
     </div>
 
 <div class="destination-container" id="destinationBox">
+
+<button class="btn-gray" onclick="regresarAlInicio()">⟵ Regresar</button>
+
     <input type="text" id="origen" placeholder="Ingrese Punto de Partida">
     <input type="text" id="destino1" placeholder="Destino">
     <button class="btn-yellow" onclick="agregarDestino()">+ Agregar otro destino</button>
@@ -458,6 +461,15 @@
     window.onload = function () {
         document.getElementById("selectionBox").style.display = "flex";
     };
+
+function regresarAlInicio() {
+    document.getElementById("destinationBox").style.display = "none";
+    document.getElementById("selectionBox").style.display = "flex";
+    servicioSeleccionado = null;
+    actualizarTarifaUI(null, null);
+    document.getElementById("destino1").value = "";
+}
+
 </script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&libraries=places&callback=initMap">
 </script>
