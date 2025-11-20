@@ -4,80 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solicitar Taxi</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&libraries=places"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+<script>
+    let map;
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCZNdViSZxd6ORwlP89bx-zX16ku4ZmFD0",
-            authDomain: "gavvip-b7039.firebaseapp.com",
-            databaseURL: "https://gavvip-b7039-default-rtdb.firebaseio.com",
-            projectId: "gavvip-b7039",
-            storageBucket: "gavvip-b7039.firebasestorage.app",
-            messagingSenderId: "803660953782",
-            appId: "1:803660953782:web:39c00063caaaaa99c84e17",
-            measurementId: "G-FDLVXG8BS3"
-        };
+    window.initMap = function () {
+        // Intentar usar la ubicación del usuario
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    const userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        let map;
-        const markers = [];
-
-        function loadConductores() {
-            const refConductores = ref(db, 'conductores');
-            onValue(refConductores, snapshot => {
-                const data = snapshot.val();
-                if (!data) return;
-
-                // Limpiar marcadores anteriores
-                markers.forEach(marker => marker.setMap(null));
-                markers.length = 0;
-
-                for (const key in data) {
-                    const conductor = data[key];
-                    const pos = { lat: conductor.latitud, lng: conductor.longitud };
-
-                    const marker = new google.maps.Marker({
-                        position: pos,
-                        map: map,
-                        icon: {
-                            url: "/static/images/icono-taxi.png",
-                            scaledSize: new google.maps.Size(40, 40)
-                        },
-                        title: `${conductor.nombre} (${conductor.tipo})`
+                    map = new google.maps.Map(document.getElementById("map"), {
+                        center: userLocation,
+                        zoom: 14
                     });
+                },
+                function (error) {
+                    // Si falla geolocalización, centramos en un punto por defecto (ejemplo Quito)
+                    const fallback = { lat: -0.1807, lng: -78.4678 };
 
-                    markers.push(marker);
+                    map = new google.maps.Map(document.getElementById("map"), {
+                        center: fallback,
+                        zoom: 12
+                    });
                 }
+            );
+        } else {
+            // Navegador sin geolocalización
+            const fallback = { lat: -0.1807, lng: -78.4678 };
+
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: fallback,
+                zoom: 12
             });
         }
-
-        window.initMap = function () {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                const userLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                map = new google.maps.Map(document.getElementById("map"), {
-                    center: userLocation,
-                    zoom: 14
-                });
-
-                // Cargar conductores cercanos
-                loadConductores();
-            }, function () {
-                const fallback = { lat: -0.180653, lng: -78.467834 };
-                map = new google.maps.Map(document.getElementById("map"), {
-                    center: fallback,
-                    zoom: 14
-                });
-                loadConductores();
-            });
-        };
-    </script>
+    };
+</script>
     <style>
         /* Estilos generales */
         body {
@@ -199,24 +164,77 @@
         <button class="btn-gray" onclick="solicitarTaxi()">Solicitar</button>
     </div>
 
-    <script>
-        function seleccionarServicio(servicio) {
-            document.getElementById("selectionBox").style.display = "none";
-            document.getElementById("destinationBox").style.display = "block";
+<script>
+    // Guardamos el tipo de servicio elegido (TAXI, SUV, VAN, MOTO, ENTREGAS)
+    let servicioSeleccionado = null;
+
+    function seleccionarServicio(servicio) {
+        servicioSeleccionado = servicio;
+        document.getElementById("selectionBox").style.display = "none";
+        document.getElementById("destinationBox").style.display = "block";
+    }
+
+    function agregarDestino() {
+        alert("Funcionalidad de múltiples destinos aún no implementada.");
+    }
+
+    async function solicitarTaxi() {
+        const origen = document.getElementById("origen").value || "";
+        const destino = document.getElementById("destino1").value || "";
+
+        if (!servicioSeleccionado) {
+            alert("Selecciona un tipo de servicio primero.");
+            return;
         }
 
-        function agregarDestino() {
-            alert("Funcionalidad de múltiples destinos aún no implementada.");
+        if (!destino) {
+            alert("Ingresa un destino.");
+            return;
         }
 
-        function solicitarTaxi() {
-            alert("Solicitud enviada. Esta función se conectará con backend más adelante.");
-        }
-
-        window.onload = function () {
-            document.getElementById("selectionBox").style.display = "flex";
+        // Más adelante aquí calculamos distancia_km y precio.
+        // Por ahora los enviamos en null.
+        const payload = {
+            tipo_servicio: servicioSeleccionado,
+            origen: origen,
+            destino: destino,
+            distancia_km: null,
+            precio: null,
+            timestamp: new Date().toISOString()
         };
-    </script>
+
+        try {
+            const respuesta = await fetch("/api/solicitudes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await respuesta.json();
+
+            if (data.ok) {
+                alert("✅ Solicitud enviada. Esperando socio disponible.");
+
+                // Limpiar y volver a la selección
+                document.getElementById("destino1").value = "";
+                document.getElementById("destinationBox").style.display = "none";
+                document.getElementById("selectionBox").style.display = "flex";
+                servicioSeleccionado = null;
+            } else {
+                alert("⚠️ Hubo un problema al enviar la solicitud.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("⚠️ Error de conexión con el servidor.");
+        }
+    }
+
+    window.onload = function () {
+        document.getElementById("selectionBox").style.display = "flex";
+    };
+</script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQldjdCRIWhdXc_gz81TPr1xGyK6K5z1w&callback=initMap"></script>
 </body>
 </html>
