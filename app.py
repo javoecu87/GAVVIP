@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_from_directory
+from flask import Flask, render_template, request, send_from_directory, jsonify
 import telegram
 import asyncio
 import logging
@@ -11,6 +11,38 @@ BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
 BOT_TOKEN_TURISMO = '8590651604:AAFXhSpGmtjNy89FBQGQ3xvXVB0t5cakZ8g'
 
 CHAT_ID = '5828174289'  # Reemplaza con el chat ID correcto
+
+
+# -----------------------------
+# Bandeja de solicitudes TAXI
+# -----------------------------
+SOLICITUDES = []     # Aquí guardamos las solicitudes en memoria (versión 1.0)
+NEXT_ID = 1          # Contador simple de IDs
+
+
+def crear_solicitud(data):
+    """
+    Crea una solicitud con la estructura estándar:
+    id, tipo_servicio, origen, destino, distancia_km, precio, estado, socio_asignado, timestamp
+    """
+    global NEXT_ID
+
+    solicitud = {
+        "id": NEXT_ID,
+        "tipo_servicio": data.get("tipo_servicio"),
+        "origen": data.get("origen"),
+        "destino": data.get("destino"),
+        "distancia_km": data.get("distancia_km"),
+        "precio": data.get("precio"),
+        "estado": "pendiente",
+        "socio_asignado": None,
+        "timestamp": data.get("timestamp"),
+    }
+
+    SOLICITUDES.append(solicitud)
+    NEXT_ID += 1
+    return solicitud
+
 
 # Configuración de logging
 logging.basicConfig(
@@ -65,6 +97,8 @@ def principal():
 @app.route('/taxi-service')
 def taxi_service():
     return render_template('taxi.html')
+
+
 
 @app.route('/turismo-subventana')
 def turismo_subventana():
@@ -176,7 +210,7 @@ def solicitar_taxi():
             f"🎯 Destino: {destino}"
         )
 
-        enviar_mensaje(mensaje, BOT_TOKEN_TAXI, CHAT_ID)
+        enviar_mensaje(mensaje, BOT_TOKEN_TAXI,)
         return render_template('success.html', mensaje="¡Gracias! Tu solicitud de taxi ha sido enviada.")
     except Exception as e:
         app.logger.error(f"Error en /solicitar-taxi: {e}")
@@ -205,7 +239,7 @@ def solicitar_turismo_ecuador():
             f"📅 Fecha: {fecha}"
         )
 
-        enviar_mensaje(mensaje, BOT_TOKEN_TAXI, CHAT_ID)
+        enviar_mensaje(mensaje, BOT_TOKEN_TAXI,)
         return render_template('success.html', mensaje="¡Gracias! Tu solicitud de Turismo Ecuador ha sido enviada.")
     except Exception as e:
         app.logger.error(f"Error en /solicitar-turismo-ecuador: {e}")
@@ -271,6 +305,130 @@ def procesar_solicitud_alta_gama():
     except Exception as e:
         app.logger.error(f"Error en /procesar_solicitud_alta_gama: {e}")
         return "Error al procesar la solicitud de Alta Gama.", 500
+
+
+# ===================== API PARA SOLICITUDES DEL BOTÓN TAXI =====================
+
+@app.route('/api/solicitudes', methods=['POST'])
+def api_crear_solicitud():
+    """
+    Recibe una solicitud desde taxi.html en formato JSON
+    y la guarda en memoria.
+    """
+    from datetime import datetime
+    global NEXT_ID, SOLICITUDES
+
+    data = request.get_json(silent=True) or {}
+
+    tipo_servicio = data.get('tipo_servicio')
+    origen = data.get('origen')
+    destino = data.get('destino')
+    distancia_km = data.get('distancia_km')
+    precio = data.get('precio')
+    timestamp = data.get('timestamp') or datetime.utcnow().isoformat()
+
+    if not tipo_servicio or not destino:
+        return jsonify({
+            "ok": False,
+            "error": "Faltan datos obligatorios (tipo_servicio o destino)."
+        }), 400
+
+    solicitud = {
+        "id": NEXT_ID,
+        "tipo_servicio": tipo_servicio,
+        "origen": origen,
+        "destino": destino,
+        "distancia_km": distancia_km,
+        "precio": precio,
+        "timestamp": timestamp,
+        "estado": "pendiente"
+    }
+    NEXT_ID += 1
+    SOLICITUDES.append(solicitud)
+
+    # Opcional: avisar por Telegram mientras no hay lógica de socio.html
+    try:
+        mensaje = (
+            "*Nueva solicitud desde botón TAXI*\n\n"
+            f"🚖 Servicio: {tipo_servicio}\n"
+            f"📍 Origen: {origen or 'No especificado'}\n"
+            f"🎯 Destino: {destino}\n"
+        )
+        enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
+    except Exception as e:
+        app.logger.error(f"Error enviando aviso de solicitud a Telegram: {e}")
+
+    return jsonify({"ok": True, "solicitud": solicitud}), 200
+
+
+# ===================== API PARA SOLICITUDES DEL BOTÓN TAXI =====================
+
+@app.route('/api/solicitudes', methods=['POST'])
+def api_crear_solicitud():
+    """
+    Recibe una solicitud desde taxi.html en formato JSON
+    y la guarda en memoria.
+    """
+    from datetime import datetime
+    global NEXT_ID, SOLICITUDES
+
+    data = request.get_json(silent=True) or {}
+
+    tipo_servicio = data.get('tipo_servicio')
+    origen = data.get('origen')
+    destino = data.get('destino')
+    distancia_km = data.get('distancia_km')
+    precio = data.get('precio')
+    timestamp = data.get('timestamp') or datetime.utcnow().isoformat()
+
+    # Validación mínima
+    if not tipo_servicio or not destino:
+        return jsonify({
+            "ok": False,
+            "error": "Faltan datos obligatorios (tipo_servicio o destino)."
+        }), 400
+
+    solicitud = {
+        "id": NEXT_ID,
+        "tipo_servicio": tipo_servicio,
+        "origen": origen,
+        "destino": destino,
+        "distancia_km": distancia_km,
+        "precio": precio,
+        "timestamp": timestamp,
+        "estado": "pendiente"
+    }
+    NEXT_ID += 1
+    SOLICITUDES.append(solicitud)
+
+    # Aviso opcional a Telegram mientras tanto
+    try:
+        mensaje = (
+            "*Nueva solicitud desde botón TAXI*\n\n"
+            f"🚖 Servicio: {tipo_servicio}\n"
+            f"📍 Origen: {origen or 'No especificado'}\n"
+            f"🎯 Destino: {destino}\n"
+            f"📏 Distancia: {distancia_km or 'N/D'} km\n"
+            f"💵 Valor estimado: {precio or 'N/D'}"
+        )
+        # OJO: enviar_mensaje acepta (mensaje, token) en tu código
+        enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
+    except Exception as e:
+        app.logger.error(f"Error enviando aviso de solicitud a Telegram: {e}")
+
+    return jsonify({"ok": True, "solicitud": solicitud}), 200
+
+
+@app.route('/api/solicitudes', methods=['GET'])
+def api_listar_solicitudes():
+    """
+    Devuelve todas las solicitudes almacenadas.
+    En el futuro socio.html consultará aquí.
+    """
+    return jsonify({
+        "ok": True,
+        "solicitudes": SOLICITUDES
+    }), 200
 
 
 if __name__ == '__main__':

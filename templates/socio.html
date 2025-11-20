@@ -81,65 +81,123 @@
     <div class="solicitud">No hay solicitudes aún.</div>
   </div>
 
-  <script>
-    let map, marker;
-    let disponible = true;
+<script>
+  let map, marker;
+  let disponible = true;
+  let solicitudesInterval = null;
 
-    function iniciarMapa() {
-      document.getElementById('btnIniciar').style.display = 'none';
-      document.getElementById('map').style.display = 'block';
-      document.querySelector('.estado').style.display = 'block';
-      document.getElementById('panelSolicitudes').style.display = 'block';
+  function iniciarMapa() {
+    // Mostrar mapa y panel
+    document.getElementById('btnIniciar').style.display = 'none';
+    document.getElementById('map').style.display = 'block';
+    document.querySelector('.estado').style.display = 'block';
+    document.getElementById('panelSolicitudes').style.display = 'block';
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-          const pos = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        const pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
 
-          map = new google.maps.Map(document.getElementById('map'), {
-            center: pos,
-            zoom: 15
-          });
-
-          marker = new google.maps.Marker({
-            position: pos,
-            map: map,
-            title: "Mi ubicación",
-            icon: {
-              url: "/static/images/icono-taxi.png",
-              scaledSize: new google.maps.Size(40, 40)
-            }
-          });
-
-          // Actualizar ubicación cada 30 segundos
-          setInterval(() => {
-            navigator.geolocation.getCurrentPosition(function(p) {
-              const nuevaPos = {
-                lat: p.coords.latitude,
-                lng: p.coords.longitude
-              };
-              marker.setPosition(nuevaPos);
-              map.setCenter(nuevaPos);
-              // Aquí puedes enviar la nueva ubicación a Firebase
-            });
-          }, 30000);
-        }, function(error) {
-          alert("Error al obtener la ubicación: " + error.message);
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: pos,
+          zoom: 15
         });
-      } else {
-        alert("Tu navegador no soporta geolocalización");
-      }
+
+        marker = new google.maps.Marker({
+          position: pos,
+          map: map,
+          title: "Mi ubicación",
+          icon: {
+            url: "/static/images/icono-taxi.png",
+            scaledSize: new google.maps.Size(40, 40)
+          }
+        });
+
+        // Actualizar ubicación cada 30 segundos
+        setInterval(() => {
+          navigator.geolocation.getCurrentPosition(function (p) {
+            const nuevaPos = {
+              lat: p.coords.latitude,
+              lng: p.coords.longitude
+            };
+            marker.setPosition(nuevaPos);
+            map.setCenter(nuevaPos);
+            // Aquí en el futuro se puede enviar ubicación al backend
+          });
+        }, 30000);
+
+        // Empezar a cargar solicitudes periódicamente
+        cargarSolicitudes();
+        if (!solicitudesInterval) {
+          solicitudesInterval = setInterval(cargarSolicitudes, 5000);
+        }
+      }, function (error) {
+        alert("Error al obtener la ubicación: " + error.message);
+      });
+    } else {
+      alert("Tu navegador no soporta geolocalización");
+    }
+  }
+
+  function cargarSolicitudes() {
+    if (!disponible) {
+      // Si el socio está ocupado, no mostramos nuevas solicitudes
+      return;
     }
 
-    function toggleEstado() {
-      disponible = !disponible;
-      const estado = document.querySelector('.estado');
-      estado.textContent = disponible ? 'Disponible' : 'Ocupado';
-      estado.style.backgroundColor = disponible ? '#FFD24C' : '#999';
-      // También puedes actualizar el estado en Firebase aquí
-    }
-  </script>
+    fetch('/api/solicitudes')
+      .then(res => res.json())
+      .then(data => {
+        const panel = document.getElementById('panelSolicitudes');
+        if (!panel) return;
+
+        // Mantener el título <h3>
+        const titulo = panel.querySelector('h3');
+        panel.innerHTML = '';
+        if (titulo) panel.appendChild(titulo);
+
+        if (!data.ok || !data.solicitudes || data.solicitudes.length === 0) {
+          const vacio = document.createElement('div');
+          vacio.className = 'solicitud';
+          vacio.textContent = 'No hay solicitudes aún.';
+          panel.appendChild(vacio);
+          return;
+        }
+
+        data.solicitudes.forEach(s => {
+          const div = document.createElement('div');
+          div.className = 'solicitud';
+
+          const tipo = s.tipo_servicio || 'TAXI';
+          const origen = s.origen || 'No especificado';
+          const destino = s.destino || 'No especificado';
+          const distancia = s.distancia_km ? s.distancia_km + ' km' : 'N/D';
+          const precio = (s.precio != null) ? s.precio.toFixed(2) + ' USD' : 'N/D';
+
+          div.innerHTML = `
+            <strong>${tipo}</strong><br>
+            Origen: ${origen}<br>
+            Destino: ${destino}<br>
+            Distancia: ${distancia}<br>
+            Valor estimado: ${precio}
+          `;
+
+          panel.appendChild(div);
+        });
+      })
+      .catch(err => {
+        console.error('Error cargando solicitudes', err);
+      });
+  }
+
+  function toggleEstado() {
+    disponible = !disponible;
+    const estado = document.querySelector('.estado');
+    estado.textContent = disponible ? 'Disponible' : 'Ocupado';
+    estado.style.backgroundColor = disponible ? '#FFD24C' : '#999';
+  }
+</script>
 </body>
 </html>
