@@ -275,12 +275,20 @@
         <button class="btn-gray" onclick="window.location.href='/principal'">Regresar</button>
     </div>
 
-    <div class="destination-container" id="destinationBox">
-        <input type="text" id="origen" placeholder="Ingrese Punto de Partida">
-        <input type="text" id="destino1" placeholder="Destino">
-        <button class="btn-yellow" onclick="agregarDestino()">+ Agregar otro destino</button>
-        <button class="btn-gray" onclick="solicitarTaxi()">Solicitar</button>
+<div class="destination-container" id="destinationBox">
+    <input type="text" id="origen" placeholder="Ingrese Punto de Partida">
+    <input type="text" id="destino1" placeholder="Destino">
+    <button class="btn-yellow" onclick="agregarDestino()">+ Agregar otro destino</button>
+
+    <!-- Bloque visible de tarifa -->
+    <div id="tarifaBox" style="margin-top:10px; font-size:14px; color:#FFE786;">
+        <div>Distancia aprox: <span id="tarifaDistancia">--</span> km</div>
+        <div>Valor estimado: <span id="tarifaValor">--</span> USD</div>
     </div>
+
+    <!-- Botón claro de enviar solicitud -->
+    <button class="btn-gray" onclick="solicitarTaxi()">Enviar solicitud</button>
+</div>
 
 <script>
     // Guardamos el tipo de servicio elegido (TAXI, SUV, VAN, MOTO, ENTREGAS)
@@ -294,6 +302,88 @@
 
     function agregarDestino() {
         alert("Funcionalidad de múltiples destinos aún no implementada.");
+    }
+
+    // Calcula el precio según km y tipo de servicio (valores provisionales, luego ajustamos con tu tabla)
+    function calcularPrecio(km, tipoServicio) {
+        if (!km || km <= 0) return null;
+
+        let base = 1.5;   // bajada de bandera
+        let porKm = 0.5;  // valor por km
+
+        switch (tipoServicio) {
+            case "SUV":
+                base = 2.0; porKm = 0.7;
+                break;
+            case "VAN":
+                base = 2.5; porKm = 0.8;
+                break;
+            case "MOTO":
+                base = 1.0; porKm = 0.4;
+                break;
+            case "ENTREGAS":
+                base = 1.5; porKm = 0.6;
+                break;
+        }
+
+        const valor = base + km * porKm;
+        return Math.round(valor * 100) / 100; // 2 decimales
+    }
+
+    function actualizarTarifaUI(km, precio) {
+        const d = document.getElementById("tarifaDistancia");
+        const v = document.getElementById("tarifaValor");
+
+        if (km && precio != null) {
+            if (d) d.textContent = km.toFixed(1);
+            if (v) v.textContent = precio.toFixed(2);
+        } else {
+            if (d) d.textContent = "--";
+            if (v) v.textContent = "--";
+        }
+    }
+
+    // Usa Google Distance Matrix para calcular distancia entre origen y destino
+    async function calcularDistanciaYTarifa(origen, destino, tipoServicio) {
+        if (!origen || !destino || !window.google || !google.maps) {
+            actualizarTarifaUI(null, null);
+            return { km: null, precio: null };
+        }
+
+        return new Promise((resolve) => {
+            const service = new google.maps.DistanceMatrixService();
+
+            service.getDistanceMatrix(
+                {
+                    origins: [origen],
+                    destinations: [destino],
+                    travelMode: google.maps.TravelMode.DRIVING,
+                    unitSystem: google.maps.UnitSystem.METRIC
+                },
+                (response, status) => {
+                    if (
+                        status !== "OK" ||
+                        !response.rows ||
+                        !response.rows[0] ||
+                        !response.rows[0].elements ||
+                        !response.rows[0].elements[0] ||
+                        response.rows[0].elements[0].status !== "OK"
+                    ) {
+                        actualizarTarifaUI(null, null);
+                        resolve({ km: null, precio: null });
+                        return;
+                    }
+
+                    const metros = response.rows[0].elements[0].distance.value;
+                    let km = metros / 1000;
+                    km = Math.round(km * 10) / 10; // 1 decimal
+
+                    const precio = calcularPrecio(km, tipoServicio);
+                    actualizarTarifaUI(km, precio);
+                    resolve({ km, precio });
+                }
+            );
+        });
     }
 
     async function solicitarTaxi() {
@@ -310,14 +400,29 @@
             return;
         }
 
-        // Más adelante aquí calculamos distancia_km y precio.
-        // Por ahora los enviamos en null.
+        // 1) Calculamos distancia + valor y lo mostramos en pantalla
+        const { km, precio } = await calcularDistanciaYTarifa(
+            origen || "Mi ubicación actual",
+            destino,
+            servicioSeleccionado
+        );
+
+        if (!km || precio == null) {
+            const continuar = confirm(
+                "No se pudo calcular la distancia/valor automáticamente.\n¿Quieres enviar la solicitud de todas formas?"
+            );
+            if (!continuar) {
+                return;
+            }
+        }
+
+        // 2) Armamos el paquete para el backend
         const payload = {
             tipo_servicio: servicioSeleccionado,
             origen: origen,
             destino: destino,
-            distancia_km: null,
-            precio: null,
+            distancia_km: km,
+            precio: precio,
             timestamp: new Date().toISOString()
         };
 
@@ -340,6 +445,7 @@
                 document.getElementById("destinationBox").style.display = "none";
                 document.getElementById("selectionBox").style.display = "flex";
                 servicioSeleccionado = null;
+                actualizarTarifaUI(null, null);
             } else {
                 alert("⚠️ Hubo un problema al enviar la solicitud.");
             }
