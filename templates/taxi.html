@@ -7,8 +7,12 @@
 <script>
     let map;
     let userMarker = null;
+    let geocoder = null;
+    let campoActivo = "origen"; // por defecto
 
     window.initMap = function () {
+        geocoder = new google.maps.Geocoder();
+
         // Intentar usar la ubicación del usuario
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -23,7 +27,7 @@
                         zoom: 14
                     });
 
-                    // Marcador en tu ubicación, ahora DRAGGABLE
+                    // Marcador en tu ubicación, arrastrable
                     userMarker = new google.maps.Marker({
                         position: userLocation,
                         map: map,
@@ -31,26 +35,19 @@
                         draggable: true
                     });
 
-                    // Permitir mover el marcador haciendo clic en el mapa
+                    // Al hacer click en el mapa, mover marcador y actualizar dirección
                     map.addListener("click", function (event) {
-                        const pos = event.latLng;
-                        if (userMarker) {
-                            userMarker.setPosition(pos);
-                        } else {
-                            userMarker = new google.maps.Marker({
-                                position: pos,
-                                map: map,
-                                title: "Punto de partida",
-                                draggable: true
-                            });
-                        }
+                        moverMarcadorYActualizar(event.latLng);
                     });
 
-                    // Activar Autocomplete después de tener el mapa listo
+                    // Al soltar el marcador después de arrastrarlo
+                    userMarker.addListener("dragend", function (event) {
+                        moverMarcadorYActualizar(event.latLng);
+                    });
+
                     activarAutocomplete();
                 },
                 function (error) {
-                    // Si falla geolocalización, centramos en un punto por defecto (ejemplo Quito)
                     const fallback = { lat: -0.1807, lng: -78.4678 };
 
                     map = new google.maps.Map(document.getElementById("map"), {
@@ -58,26 +55,14 @@
                         zoom: 12
                     });
 
-                    // Permitir mover el marcador haciendo clic en el mapa aunque no haya geolocalización
                     map.addListener("click", function (event) {
-                        const pos = event.latLng;
-                        if (userMarker) {
-                            userMarker.setPosition(pos);
-                        } else {
-                            userMarker = new google.maps.Marker({
-                                position: pos,
-                                map: map,
-                                title: "Punto de partida",
-                                draggable: true
-                            });
-                        }
+                        moverMarcadorYActualizar(event.latLng);
                     });
 
                     activarAutocomplete();
                 }
             );
         } else {
-            // Navegador sin geolocalización
             const fallback = { lat: -0.1807, lng: -78.4678 };
 
             map = new google.maps.Map(document.getElementById("map"), {
@@ -86,54 +71,93 @@
             });
 
             map.addListener("click", function (event) {
-                const pos = event.latLng;
-                if (userMarker) {
-                    userMarker.setPosition(pos);
-                } else {
-                    userMarker = new google.maps.Marker({
-                        position: pos,
-                        map: map,
-                        title: "Punto de partida",
-                        draggable: true
-                    });
-                }
+                moverMarcadorYActualizar(event.latLng);
             });
 
             activarAutocomplete();
         }
     };
 
+    // Mueve el marcador a una posición y actualiza el campo de texto (origen/destino)
+    function moverMarcadorYActualizar(latLng) {
+        if (!map) return;
+
+        if (userMarker) {
+            userMarker.setPosition(latLng);
+        } else {
+            userMarker = new google.maps.Marker({
+                position: latLng,
+                map: map,
+                title: "Punto de partida",
+                draggable: true
+            });
+
+            userMarker.addListener("dragend", function (event) {
+                moverMarcadorYActualizar(event.latLng);
+            });
+        }
+
+        if (!geocoder) return;
+
+        geocoder.geocode({ location: latLng }, function (results, status) {
+            if (status === "OK" && results && results[0]) {
+                const origenInput = document.getElementById("origen");
+                const destinoInput = document.getElementById("destino1");
+
+                // Decidimos qué campo llenar según cuál estuvo activo
+                if (campoActivo === "destino" && destinoInput) {
+                    destinoInput.value = results[0].formatted_address;
+                } else if (origenInput) {
+                    origenInput.value = results[0].formatted_address;
+                }
+            }
+        });
+    }
+
     function activarAutocomplete() {
         const origenInput = document.getElementById("origen");
         const destinoInput = document.getElementById("destino1");
 
-        // Autocomplete para ORIGEN: mueve el marcador a la dirección elegida
+        // Guardamos qué campo está activo
+        if (origenInput) {
+            origenInput.addEventListener("focus", function () {
+                campoActivo = "origen";
+            });
+        }
+        if (destinoInput) {
+            destinoInput.addEventListener("focus", function () {
+                campoActivo = "destino";
+            });
+        }
+
+        // Autocomplete para ORIGEN
         if (origenInput && google.maps.places) {
             const acOrigen = new google.maps.places.Autocomplete(origenInput);
             acOrigen.addListener("place_changed", function () {
                 const place = acOrigen.getPlace();
                 if (!place.geometry || !place.geometry.location) return;
-                if (!map) return;
 
                 map.setCenter(place.geometry.location);
                 map.setZoom(15);
 
-                if (userMarker) {
-                    userMarker.setPosition(place.geometry.location);
-                } else {
-                    userMarker = new google.maps.Marker({
-                        position: place.geometry.location,
-                        map: map,
-                        title: "Punto de partida",
-                        draggable: true
-                    });
-                }
+                moverMarcadorYActualizar(place.geometry.location);
+                campoActivo = "origen";
             });
         }
 
-        // Autocomplete para DESTINO (solo sugerencias, sin mover marcador)
+        // Autocomplete para DESTINO
         if (destinoInput && google.maps.places) {
-            new google.maps.places.Autocomplete(destinoInput);
+            const acDestino = new google.maps.places.Autocomplete(destinoInput);
+            acDestino.addListener("place_changed", function () {
+                const place = acDestino.getPlace();
+                if (!place.geometry || !place.geometry.location) return;
+
+                map.setCenter(place.geometry.location);
+                map.setZoom(15);
+
+                // Para destino SOLO centramos mapa; el texto ya lo pone el Autocomplete
+                campoActivo = "destino";
+            });
         }
     }
 </script>
