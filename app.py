@@ -361,63 +361,6 @@ def api_crear_solicitud():
     return jsonify({"ok": True, "solicitud": solicitud}), 200
 
 
-# ===================== API PARA SOLICITUDES DEL BOTÓN TAXI =====================
-
-@app.route('/api/solicitudes', methods=['POST'])
-def api_crear_solicitud():
-    """
-    Recibe una solicitud desde taxi.html en formato JSON
-    y la guarda en memoria.
-    """
-    from datetime import datetime
-    global NEXT_ID, SOLICITUDES
-
-    data = request.get_json(silent=True) or {}
-
-    tipo_servicio = data.get('tipo_servicio')
-    origen = data.get('origen')
-    destino = data.get('destino')
-    distancia_km = data.get('distancia_km')
-    precio = data.get('precio')
-    timestamp = data.get('timestamp') or datetime.utcnow().isoformat()
-
-    # Validación mínima
-    if not tipo_servicio or not destino:
-        return jsonify({
-            "ok": False,
-            "error": "Faltan datos obligatorios (tipo_servicio o destino)."
-        }), 400
-
-    solicitud = {
-        "id": NEXT_ID,
-        "tipo_servicio": tipo_servicio,
-        "origen": origen,
-        "destino": destino,
-        "distancia_km": distancia_km,
-        "precio": precio,
-        "timestamp": timestamp,
-        "estado": "pendiente"
-    }
-    NEXT_ID += 1
-    SOLICITUDES.append(solicitud)
-
-    # Aviso opcional a Telegram mientras tanto
-    try:
-        mensaje = (
-            "*Nueva solicitud desde botón TAXI*\n\n"
-            f"🚖 Servicio: {tipo_servicio}\n"
-            f"📍 Origen: {origen or 'No especificado'}\n"
-            f"🎯 Destino: {destino}\n"
-            f"📏 Distancia: {distancia_km or 'N/D'} km\n"
-            f"💵 Valor estimado: {precio or 'N/D'}"
-        )
-        # OJO: enviar_mensaje acepta (mensaje, token) en tu código
-        enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
-    except Exception as e:
-        app.logger.error(f"Error enviando aviso de solicitud a Telegram: {e}")
-
-    return jsonify({"ok": True, "solicitud": solicitud}), 200
-
 
 @app.route('/api/solicitudes', methods=['GET'])
 def api_listar_solicitudes():
