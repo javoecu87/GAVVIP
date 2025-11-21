@@ -6,7 +6,7 @@ import logging
 app = Flask(__name__)
 
 # Tokens de los bots para los formularios
-BOT_TOKEN_TAXI = '8146583492:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
+BOT_TOKEN_TAXI = '8146583492:AAFP-9CTNvmNR13aFxvJB6Q1WS0eBbZhAc0'
 BOT_TOKEN_VIP = '7557496462:AAG5pa4rkbikdBYiNAEr9tuNCSDRp53yv54'
 BOT_TOKEN_TURISMO = '8590651604:AAFXhSpGmtjNy89FBQGQ3xvXVB0t5cakZ8g'
 
