@@ -206,53 +206,26 @@ data.solicitudes.forEach(s => {
     estado.style.backgroundColor = disponible ? '#FFD24C' : '#999';
   }
 
-<script>
-  async function aceptarSolicitud(id) {
-    const confirmar = confirm("¿Aceptar esta solicitud?");
-    if (!confirmar) return;
+async function aceptarSolicitud(id) {
+  const confirmar = confirm("¿Aceptar esta solicitud?");
+  if (!confirmar) return;
 
-    try {
-      const resp = await fetch(`/api/solicitudes/${id}/aceptar`, {
-        method: "POST"
-      });
+  try {
+    const resp = await fetch(`/api/solicitudes/${id}/aceptar`, {
+      method: "POST"
+    });
+    const data = await resp.json();
 
-      // Si el backend responde 404, 500, etc. lo vemos claro
-      if (!resp.ok) {
-        const texto = await resp.text();
-        console.error('Respuesta no OK al aceptar:', resp.status, texto);
-        alert(`⚠️ Error al aceptar (HTTP ${resp.status}). Mira la consola para más detalles.`);
-        return;
-      }
-
-      let data;
-      try {
-        data = await resp.json();
-      } catch (e) {
-        console.error('No se pudo parsear JSON:', e);
-        alert("⚠️ El servidor no devolvió JSON válido al aceptar.");
-        return;
-      }
-
-      if (data.ok) {
-        alert("✅ Solicitud aceptada. ¡Buen viaje!");
-
-        disponible = false;
-        const estado = document.querySelector('.estado');
-        if (estado) {
-          estado.textContent = 'Ocupado';
-          estado.style.backgroundColor = '#999';
-        }
-
-        cargarSolicitudes();
-      } else {
-        alert("⚠️ No se pudo aceptar la solicitud: " + (data.error || ""));
-        cargarSolicitudes();
-      }
-    } catch (err) {
-      console.error('Error de red al aceptar:', err);
-      alert("⚠️ Error de conexión al aceptar la solicitud.");
+    if (data.ok) {
+      alert("✅ Solicitud aceptada. ¡Buen viaje!");
+      // ...
+    } else {
+      alert("⚠️ No se pudo aceptar la solicitud: " + (data.error || ""));
     }
+  } catch (err) {
+    console.error(err);
+    alert("⚠️ Error de conexión al aceptar la solicitud.");
   }
-</script>
+}
 </body>
 </html>
