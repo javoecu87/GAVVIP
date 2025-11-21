@@ -166,37 +166,83 @@
           return;
         }
 
-data.solicitudes.forEach(s => {
-  const div = document.createElement('div');
-  div.className = 'solicitud';
+        data.solicitudes.forEach(s => {
+          const div = document.createElement('div');
+          div.className = 'solicitud';
 
-  const tipo = s.tipo_servicio || 'TAXI';
-  const origen = s.origen || 'No especificado';
-  const destino = s.destino || 'No especificado';
-  const distancia = s.distancia_km ? (s.distancia_km + ' km') : 'N/D';
-  let precioTexto = 'N/D';
-  if (s.precio != null) {
-      const num = Number(s.precio);
-      precioTexto = isNaN(num) ? s.precio : num.toFixed(2) + ' USD';
-  }
+          const tipo = s.tipo_servicio || 'TAXI';
+          const origen = s.origen || 'No especificado';
+          const destino = s.destino || 'No especificado';
+          const distancia = s.distancia_km ? (s.distancia_km + ' km') : 'N/D';
+          let precioTexto = 'N/D';
+          if (s.precio != null) {
+              const num = Number(s.precio);
+              precioTexto = isNaN(num) ? s.precio : num.toFixed(2) + ' USD';
+          }
 
-  div.innerHTML = `
-    <strong>${tipo}</strong><br>
-    Origen: ${origen}<br>
-    Destino: ${destino}<br>
-    Distancia: ${distancia}<br>
-    Valor estimado: ${precioTexto}<br>
-    <button style="margin-top:8px;" onclick="aceptarSolicitud(${s.id})">
-      ACEPTAR
-    </button>
-  `;
+          div.innerHTML = `
+            <strong>${tipo}</strong><br>
+            Origen: ${origen}<br>
+            Destino: ${destino}<br>
+            Distancia: ${distancia}<br>
+            Valor estimado: ${precioTexto}<br>
+            <button style="margin-top:8px;" onclick="aceptarSolicitud(${s.id})">
+              ACEPTAR
+            </button>
+          `;
 
-  panel.appendChild(div);
-});
+          panel.appendChild(div);
+        });
       })
       .catch(err => {
         console.error('Error cargando solicitudes', err);
       });
+  }
+
+  async function aceptarSolicitud(id) {
+    const confirmar = confirm("¿Aceptar esta solicitud?");
+    if (!confirmar) return;
+
+    try {
+      const resp = await fetch(`/api/solicitudes/${id}/aceptar`, {
+        method: "POST"
+      });
+
+      if (!resp.ok) {
+        const texto = await resp.text();
+        console.error('Respuesta no OK al aceptar:', resp.status, texto);
+        alert(`⚠️ Error al aceptar (HTTP ${resp.status}).`);
+        return;
+      }
+
+      let data;
+      try {
+        data = await resp.json();
+      } catch (e) {
+        console.error('No se pudo parsear JSON:', e);
+        alert("⚠️ El servidor no devolvió JSON válido al aceptar.");
+        return;
+      }
+
+      if (data.ok) {
+        alert("✅ Solicitud aceptada. ¡Buen viaje!");
+
+        disponible = false;
+        const estado = document.querySelector('.estado');
+        if (estado) {
+          estado.textContent = 'Ocupado';
+          estado.style.backgroundColor = '#999';
+        }
+
+        cargarSolicitudes();
+      } else {
+        alert("⚠️ No se pudo aceptar la solicitud: " + (data.error || ""));
+        cargarSolicitudes();
+      }
+    } catch (err) {
+      console.error('Error de red al aceptar:', err);
+      alert("⚠️ Error de conexión al aceptar la solicitud.");
+    }
   }
 
   function toggleEstado() {
@@ -205,27 +251,6 @@ data.solicitudes.forEach(s => {
     estado.textContent = disponible ? 'Disponible' : 'Ocupado';
     estado.style.backgroundColor = disponible ? '#FFD24C' : '#999';
   }
-
-async function aceptarSolicitud(id) {
-  const confirmar = confirm("¿Aceptar esta solicitud?");
-  if (!confirmar) return;
-
-  try {
-    const resp = await fetch(`/api/solicitudes/${id}/aceptar`, {
-      method: "POST"
-    });
-    const data = await resp.json();
-
-    if (data.ok) {
-      alert("✅ Solicitud aceptada. ¡Buen viaje!");
-      // ...
-    } else {
-      alert("⚠️ No se pudo aceptar la solicitud: " + (data.error || ""));
-    }
-  } catch (err) {
-    console.error(err);
-    alert("⚠️ Error de conexión al aceptar la solicitud.");
-  }
-}
+</script>
 </body>
 </html>
