@@ -3,3 +3,4 @@ gunicorn
 python-telegram-bot==20.3
 waitress==2.1.2
 requests
+gspread==6.1.4
