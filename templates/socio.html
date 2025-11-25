@@ -81,10 +81,24 @@
     <div class="solicitud">No hay solicitudes aún.</div>
   </div>
 
+  <!-- Panel de VIAJE EN CURSO (oculto por defecto) -->
+  <div class="panel-solicitudes" id="viajeEnCurso" style="display:none;">
+    <h3>Viaje en curso</h3>
+    <div class="solicitud">
+      <div><strong>Servicio:</strong> <span id="vcTipo">--</span></div>
+      <div><strong>Origen:</strong> <span id="vcOrigen">--</span></div>
+      <div><strong>Destino:</strong> <span id="vcDestino">--</span></div>
+      <div><strong>Distancia:</strong> <span id="vcDistancia">--</span></div>
+      <div><strong>Valor estimado:</strong> <span id="vcPrecio">--</span></div>
+    </div>
+  </div>
+
+
 <script>
   let map, marker;
   let disponible = true;
   let solicitudesInterval = null;
+  let viajeActual = null; // aquí guardaremos el viaje aceptado
 
   function iniciarMapa() {
     // Mostrar mapa y panel
@@ -199,6 +213,41 @@
       });
   }
 
+
+  function mostrarViajeEnCurso(solicitud) {
+    viajeActual = solicitud;
+
+    const panelSolicitudes = document.getElementById('panelSolicitudes');
+    const panelViaje = document.getElementById('viajeEnCurso');
+
+    if (panelSolicitudes) panelSolicitudes.style.display = 'none';
+    if (panelViaje) panelViaje.style.display = 'block';
+
+    const tipoSpan = document.getElementById('vcTipo');
+    const origenSpan = document.getElementById('vcOrigen');
+    const destinoSpan = document.getElementById('vcDestino');
+    const distSpan = document.getElementById('vcDistancia');
+    const precioSpan = document.getElementById('vcPrecio');
+
+    const tipo = solicitud.tipo_servicio || 'TAXI';
+    const origen = solicitud.origen || 'No especificado';
+    const destino = solicitud.destino || 'No especificado';
+    const distancia = solicitud.distancia_km ? (solicitud.distancia_km + ' km') : 'N/D';
+
+    let precioTexto = 'N/D';
+    if (solicitud.precio != null) {
+      const num = Number(solicitud.precio);
+      precioTexto = isNaN(num) ? solicitud.precio : num.toFixed(2) + ' USD';
+    }
+
+    if (tipoSpan) tipoSpan.textContent = tipo;
+    if (origenSpan) origenSpan.textContent = origen;
+    if (destinoSpan) destinoSpan.textContent = destino;
+    if (distSpan) distSpan.textContent = distancia;
+    if (precioSpan) precioSpan.textContent = precioTexto;
+  }
+
+
   async function aceptarSolicitud(id) {
     const confirmar = confirm("¿Aceptar esta solicitud?");
     if (!confirmar) return;
@@ -227,6 +276,10 @@
       if (data.ok) {
         alert("✅ Solicitud aceptada. ¡Buen viaje!");
 
+        // 1) Guardamos el viaje aceptado
+        mostrarViajeEnCurso(data.solicitud);
+
+        // 2) Marcamos socio como OCUPADO
         disponible = false;
         const estado = document.querySelector('.estado');
         if (estado) {
@@ -234,6 +287,8 @@
           estado.style.backgroundColor = '#999';
         }
 
+        // 3) Como disponible = false, cargarSolicitudes() ya no hará nada
+        // pero la dejamos por si quieres refrescar algo rápido.
         cargarSolicitudes();
       } else {
         alert("⚠️ No se pudo aceptar la solicitud: " + (data.error || ""));
