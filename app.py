@@ -1,7 +1,10 @@
 from flask import Flask, render_template, request, send_from_directory, jsonify
+
 import telegram
 import asyncio
 import logging
+import gspread
+
 
 app = Flask(__name__)
 
@@ -50,6 +53,32 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)s %(message)s',
     handlers=[logging.StreamHandler()]
 )
+
+
+# ================== CONFIGURACIÓN GOOGLE SHEETS ==================
+
+# Usa tu archivo de credenciales del servicio:
+gc = gspread.service_account(filename='credenciales.json')
+
+# Hoja donde se guardan TODOS los pedidos generados por los usuarios
+sh_pedidos = gc.open('pedidos')
+ws_pedidos = sh_pedidos.sheet1     # o .worksheet('PEDIDOS') si le pusiste nombre
+
+# Hoja donde se guardan los pedidos ya aceptados / terminados
+sh_pedidos_completados = gc.open('pedidos completados')
+ws_pedidos_completados = sh_pedidos_completados.sheet1   # o .worksheet('PEDIDOS COMPLETADOS')
+
+
+
+def to_float_or_none(valor):
+    try:
+        if not valor:
+            return None
+        return float(str(valor).replace(',', '.'))
+    except Exception:
+        return None
+
+
 
 # Función asincrónica para enviar el mensaje a Telegram
 async def enviar_mensaje_async(mensaje, token):
@@ -346,6 +375,26 @@ def api_crear_solicitud():
     NEXT_ID += 1
     SOLICITUDES.append(solicitud)
 
+
+    # Guardar también en la hoja "pedidos"
+    try:
+        # Puedes ajustar el orden/columnas como tú quieras
+        fila_pedidos = [
+            solicitud["id"],           # ID
+            solicitud["tipo_servicio"],
+            solicitud["origen"],
+            solicitud["destino"],
+            solicitud["distancia_km"],
+            solicitud["precio"],
+            solicitud["timestamp"],
+            solicitud["estado"],
+        ]
+        ws_pedidos.append_row(fila_pedidos)
+    except Exception as e:
+        app.logger.error(f"Error guardando pedido en hoja 'pedidos': {e}")
+
+
+
     # Opcional: avisar por Telegram mientras no hay lógica de socio.html
     try:
         mensaje = (
@@ -365,13 +414,107 @@ def api_crear_solicitud():
 @app.route('/api/solicitudes', methods=['GET'])
 def api_listar_solicitudes():
     """
-    Devuelve todas las solicitudes almacenadas.
-    En el futuro socio.html consultará aquí.
+    Devuelve solo las solicitudes PENDIENTES.
+    socio.html consulta aquí.
     """
+    pendientes = [s for s in SOLICITUDES if s.get("estado") == "pendiente"]
     return jsonify({
         "ok": True,
-        "solicitudes": SOLICITUDES
+        "solicitudes": pendientes
     }), 200
+
+
+
+@app.route('/api/solicitudes/<int:solicitud_id>/aceptar', methods=['POST'])
+def api_aceptar_solicitud(solicitud_id):
+    """
+    Acepta una solicitud:
+    - La busca en SOLICITUDES (memoria)
+    - Cambia su estado a 'aceptada'
+    - La registra en la hoja 'pedidos completados'
+    - Devuelve la info para que socio.html muestre 'Viaje en curso'
+    """
+    try:
+        # 1) Buscar la solicitud en la lista SOLICITUDES
+        solicitud_encontrada = None
+        for s in SOLICITUDES:
+            if s["id"] == solicitud_id:
+                solicitud_encontrada = s
+                break
+
+        if not solicitud_encontrada:
+            return jsonify({
+                "ok": False,
+                "error": f"Solicitud con ID {solicitud_id} no encontrada"
+            }), 404
+
+        # 2) Marcar como aceptada en memoria
+        solicitud_encontrada["estado"] = "aceptada"
+
+        # 3) Registrar esta solicitud en la hoja 'pedidos completados'
+        try:
+            fila_completada = [
+                solicitud_encontrada["id"],
+                solicitud_encontrada.get("tipo_servicio"),
+                solicitud_encontrada.get("origen"),
+                solicitud_encontrada.get("destino"),
+                solicitud_encontrada.get("distancia_km"),
+                solicitud_encontrada.get("precio"),
+                solicitud_encontrada.get("timestamp"),
+                solicitud_encontrada.get("estado"),  # 'aceptada'
+            ]
+            ws_pedidos_completados.append_row(fila_completada)
+        except Exception as e:
+            app.logger.error(f"Error guardando en 'pedidos completados': {e}")
+
+        # 4) Construir respuesta para socio.html
+        respuesta = {
+            "id": solicitud_encontrada["id"],
+            "tipo_servicio": solicitud_encontrada.get("tipo_servicio") or "TAXI",
+            "origen": solicitud_encontrada.get("origen") or "No especificado",
+            "destino": solicitud_encontrada.get("destino") or "No especificado",
+            "distancia_km": to_float_or_none(solicitud_encontrada.get("distancia_km")),
+            "precio": to_float_or_none(solicitud_encontrada.get("precio")),
+        }
+
+        return jsonify({
+            "ok": True,
+            "solicitud": respuesta
+        }), 200
+
+    except Exception as e:
+        app.logger.error(f"Error interno al aceptar solicitud: {e}")
+        return jsonify({
+            "ok": False,
+            "error": "Error interno al aceptar la solicitud"
+        }), 500
+
+
+
+@app.route('/api/solicitudes/<int:solicitud_id>/aceptar', methods=['POST'])
+def api_aceptar_solicitud(solicitud_id):
+    """
+    Marca una solicitud como 'aceptada'.
+    En el futuro aquí podremos guardar el socio que la tomó.
+    """
+    for s in SOLICITUDES:
+        if s.get("id") == solicitud_id:
+            if s.get("estado") != "pendiente":
+                return jsonify({
+                    "ok": False,
+                    "error": "La solicitud ya fue aceptada o no está disponible."
+                }), 400
+
+            s["estado"] = "aceptada"
+            app.logger.info(f"Solicitud {solicitud_id} aceptada por un socio.")
+
+            return jsonify({"ok": True, "solicitud": s}), 200
+
+    return jsonify({
+        "ok": False,
+        "error": "Solicitud no encontrada."
+    }), 404
+
 
 
 if __name__ == '__main__':
