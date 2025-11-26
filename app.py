@@ -15,36 +15,11 @@ BOT_TOKEN_TURISMO = '8590651604:AAFXhSpGmtjNy89FBQGQ3xvXVB0t5cakZ8g'
 
 CHAT_ID = '5828174289'  # Reemplaza con el chat ID correcto
 
+# IDs de los chats de los grupos
+CHAT_ID_TAXI = '-1002164567405'  # Grupo TAXI GAVVIP
+CHAT_ID_TURISMO = '-1002164567405'  # Grupo TURISMO GAVVIP (usar el correcto cuando lo tengas)
 
-# -----------------------------
-# Bandeja de solicitudes TAXI
-# -----------------------------
-SOLICITUDES = []     # Aquí guardamos las solicitudes en memoria (versión 1.0)
-NEXT_ID = 1          # Contador simple de IDs
-
-
-def crear_solicitud(data):
-    """
-    Crea una solicitud con la estructura estándar:
-    id, tipo_servicio, origen, destino, distancia_km, precio, estado, socio_asignado, timestamp
-    """
-    global NEXT_ID
-
-    solicitud = {
-        "id": NEXT_ID,
-        "tipo_servicio": data.get("tipo_servicio"),
-        "origen": data.get("origen"),
-        "destino": data.get("destino"),
-        "distancia_km": data.get("distancia_km"),
-        "precio": data.get("precio"),
-        "estado": "pendiente",
-        "socio_asignado": None,
-        "timestamp": data.get("timestamp"),
-    }
-
-    SOLICITUDES.append(solicitud)
-    NEXT_ID += 1
-    return solicitud
+BOT_TOKEN_REGISTRO_SOCIO = '8160209072:AAFnlNrBaML99akWHZMYdYZL7Y60udRquKA'  # Bot para formulario de socio
 
 
 # Configuración de logging
@@ -57,14 +32,14 @@ logging.basicConfig(
 
 # ================== GOOGLE SHEETS ==================
 # import gspread
-
+#
 # GC_CREDS_PATH = "/etc/gavvip-credenciales.json"
 # gc = gspread.service_account(filename=GC_CREDS_PATH)
-
+#
 # Hoja donde se guardan TODOS los pedidos generados por los usuarios
 # sh_pedidos = gc.open('pedidos')
 # ws_pedidos = sh_pedidos.sheet1     # o .worksheet('PEDIDOS') si le pusiste nombre
-
+#
 # Hoja donde se guardan los pedidos ya aceptados / terminados
 # sh_pedidos_completados = gc.open('pedidos completados')
 # ws_pedidos_completados = sh_pedidos_completados.sheet1   # o .worksheet('PEDIDOS COMPLETADOS')
@@ -72,36 +47,24 @@ logging.basicConfig(
 
 
 def to_float_or_none(valor):
+    """
+    Convierte valor a float si es posible, si no, devuelve None.
+    """
     try:
-        if not valor:
+        if valor is None:
             return None
-        return float(str(valor).replace(',', '.'))
-    except Exception:
+        if isinstance(valor, (int, float)):
+            return float(valor)
+        if isinstance(valor, str):
+            v = valor.replace(',', '.')
+            return float(v)
+    except ValueError:
         return None
 
 
-
-# Función asincrónica para enviar el mensaje a Telegram
-async def enviar_mensaje_async(mensaje, token):
-    bot = telegram.Bot(token=token)
-    try:
-        await bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode='Markdown')
-        app.logger.debug("Mensaje enviado a Telegram con éxito")
-    except Exception as e:
-        app.logger.error(f"Error al enviar mensaje a Telegram: {e}")
-
-# Función para ejecutar el envío de manera asincrónica en cada solicitud
-def enviar_mensaje(mensaje, token):
-    asyncio.run(enviar_mensaje_async(mensaje, token))
-
-# ✅ Nueva función para servir archivos en static/images/
-@app.route('/static/images/<path:filename>')
-def serve_images(filename):
-    return send_from_directory('static/images', filename)
-
-@app.route('/socio')
-def socio():
-    return render_template('socio.html')
+# Variable global simulando base de datos en memoria
+SOLICITUDES = []
+NEXT_ID_SOLICITUD = 1  # Se irá incrementando
 
 
 @app.route('/registro_socio')
@@ -118,378 +81,317 @@ def verificar_socio():
 # Rutas de la ventana principal y sus botones
 @app.route('/')
 def ventana_emergente():
-    return render_template('emergente.html')
+    return render_template('ventana_emergente.html')
 
-@app.route('/principal')
-def principal():
-    return render_template('principal.html')
 
-@app.route('/taxi-service')
-def taxi_service():
+@app.route('/index')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/taxi')
+def taxi():
     return render_template('taxi.html')
 
 
+@app.route('/alta_gama')
+def alta_gama():
+    return render_template('alta_gama.html')
 
-@app.route('/turismo-subventana')
-def turismo_subventana():
-    return render_template('turismo_subventana.html')
-
-@app.route('/turismo-ecuador')
-def turismo_ecuador():
-    return render_template('turismo-ecuador.html')
 
 @app.route('/turismo')
 def turismo():
     return render_template('turismo.html')
 
 
-@app.route('/ecuador-420')
-def ecuador_420():
-    return render_template('ecuador-420.html')
-
-@app.route('/fletes-mudanzas')
-def fletes_mudanzas():
-    return render_template('fletes_mudanzas.html')
-
-@app.route('/alta-gama')
-def alta_gama():
-    vehiculos = ['SUV', 'Van', 'Sedan']
-    return render_template('alta_gama.html', vehiculos=vehiculos)
-
-@app.route('/alta-gama/formulario')
-def formulario_alta_gama():
-    # Tomamos el vehículo desde la URL ?vehiculo=SUV
-    vehiculo = request.args.get('vehiculo', 'No especificado')
-    return render_template('formulario_alta_gama.html', vehiculo=vehiculo)
+@app.route('/fletes')
+def fletes():
+    return render_template('fletes.html')
 
 
-@app.route('/apoyo-hoteles')
-def apoyo_hoteles():
-    return render_template('apoyo_hoteles.html')
+@app.route('/socio')
+def socio():
+    return render_template('socio.html')
 
-# Procesar formulario de Fletes y Mudanzas
-@app.route('/solicitar-fletes-mudanzas', methods=['POST'])
-def solicitar_fletes_mudanzas():
+
+@app.route('/registro_socio.html')
+def mostrar_registro_socio():
+    return render_template('registro_socio.html')
+
+
+# Rutas de video de fondo y formularios
+@app.route('/taxi-service')
+def taxi_service():
+    return render_template('taxi.html')
+
+
+@app.route('/turismo-subventana')
+def turismo_subventana():
+    return render_template('turismo_subventana.html')
+
+
+@app.route('/turismo-ecuador')
+def turismo_ecuador():
+    return render_template('turismo-ecuador.html')
+
+
+@app.route('/videos/<path:filename>')
+def serve_video(filename):
+    return send_from_directory('videos', filename)
+
+
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    return send_from_directory('static', filename)
+
+
+@app.route('/turismoecuador')
+def turismoecuador():
+    return render_template('turismo.html')
+
+
+@app.route('/tipo_unidad')
+def tipo_unidad():
+    return render_template('tipo_unidad.html')
+
+
+# ===================== FUNCIONES ASÍNCRONAS PARA TELEGRAM =====================
+
+async def enviar_mensaje_telegram(bot_token, chat_id, mensaje):
+    """
+    Envía un mensaje a un chat de Telegram usando un bot.
+    """
+    bot = telegram.Bot(token=bot_token)
+    await bot.send_message(chat_id=chat_id, text=mensaje)
+
+
+# ===================== RUTAS PRINCIPALES: TAXI, VIP, TURISMO, FLETES =====================
+
+@app.route('/enviar_taxi', methods=['POST'])
+def enviar_taxi():
+    global SOLICITUDES, NEXT_ID_SOLICITUD
+
+    logging.debug("Solicitud /enviar_taxi recibida")
+
     try:
-        nombre = request.form.get('nombre')
-        telefono = request.form.get('telefono')
-        origen = request.form.get('origen')
-        destino = request.form.get('destino')
-        detalles = request.form.get('detalles')
+        nombre = request.form.get('nombre', 'No especificado')
+        telefono = request.form.get('telefono', 'No especificado')
+        direccion = request.form.get('direccion', 'No especificado')
+        referencia = request.form.get('referencia', 'No especificada')
+        forma_pago = request.form.get('forma_pago', 'No especificada')
+        tipo_vehiculo = request.form.get('tipo_vehiculo', 'No especificado')
+        tipo_servicio = request.form.get('tipo_servicio', 'TAXI')
 
+        # 1) Crear un registro de la solicitud en memoria
+        solicitud = {
+            "id": NEXT_ID_SOLICITUD,
+            "tipo_servicio": tipo_servicio,
+            "nombre": nombre,
+            "telefono": telefono,
+            "direccion": direccion,
+            "referencia": referencia,
+            "forma_pago": forma_pago,
+            "tipo_vehiculo": tipo_vehiculo,
+            "estado": "pendiente",  # pendiente, aceptada, en_curso, finalizada, cancelada
+        }
+
+        SOLICITUDES.append(solicitud)
+        logging.info(f"Nueva solicitud TAXI creada con ID={NEXT_ID_SOLICITUD}")
+        NEXT_ID_SOLICITUD += 1
+
+        # 2) Enviar mensaje al grupo de socios TAXI (Telegram)
         mensaje = (
-            "*Solicitud de Fletes y Mudanzas*\n\n"
-            f"👤 Nombre: {nombre}\n"
-            f"📞 Teléfono: {telefono}\n"
-            f"📍 Origen: {origen}\n"
-            f"🎯 Destino: {destino}\n"
-            f"📋 Detalles: {detalles}"
+            f"🚕 *NUEVA SOLICITUD TAXI*\n"
+            f"ID: {solicitud['id']}\n"
+            f"Nombre: {nombre}\n"
+            f"Teléfono: {telefono}\n"
+            f"Dirección: {direccion}\n"
+            f"Referencia: {referencia}\n"
+            f"Forma de pago: {forma_pago}\n"
+            f"Tipo de vehículo: {tipo_vehiculo}\n"
+            f"Estado: {solicitud['estado']}"
         )
 
-        # Enviar mensaje a Telegram
-        enviar_mensaje(mensaje, BOT_TOKEN_VIP)
+        try:
+            asyncio.run(
+                enviar_mensaje_telegram(BOT_TOKEN_TAXI, CHAT_ID_TAXI, mensaje)
+            )
+        except Exception as e:
+            logging.error(f"Error enviando mensaje a Telegram TAXI: {e}")
 
-        return render_template('success.html', mensaje="¡Gracias! Tu solicitud de Fletes y Mudanzas ha sido enviada.")
+        # 3) (OPCIONAL FUTURO) Guardar en Google Sheets 'pedidos'
+        # try:
+        #     fila_pedidos = [
+        #         solicitud["id"],
+        #         solicitud["tipo_servicio"],
+        #         solicitud["nombre"],
+        #         solicitud["telefono"],
+        #         solicitud["direccion"],
+        #         solicitud["referencia"],
+        #         solicitud["forma_pago"],
+        #         solicitud["tipo_vehiculo"],
+        #         solicitud["estado"],
+        #     ]
+        #     ws_pedidos.append_row(fila_pedidos)
+        # except Exception as e:
+        #     app.logger.error(f"Error guardando pedido en hoja 'pedidos': {e}")
+
+        # 4) Respuesta al usuario (navegador)
+        return render_template('confirmacion.html', mensaje="Solicitud TAXI enviada correctamente ✅")
+
     except Exception as e:
-        app.logger.error(f"Error en /solicitar-fletes-mudanzas: {e}")
-        return "Error al procesar la solicitud de Fletes y Mudanzas.", 500
+        logging.error(f"Error en /enviar_taxi: {e}")
+        return render_template('error.html', mensaje="Ocurrió un error al procesar la solicitud de TAXI.")
 
-@app.route('/solicitar-turismo', methods=['POST'])
-def solicitar_turismo():
+
+@app.route('/enviar_vip', methods=['POST'])
+def enviar_vip():
+    logging.debug("Solicitud /enviar_vip recibida")
+
     try:
-        nombre = request.form.get('nombre')
-        telefono = request.form.get('telefono')
-        origen = request.form.get('origen')
-        destino = request.form.get('destino')
-        fecha = request.form.get('fecha')
+        nombre = request.form.get('nombre', 'No especificado')
+        telefono = request.form.get('telefono', 'No especificado')
+        direccion = request.form.get('direccion', 'No especificada')
+        referencia = request.form.get('referencia', 'No especificada')
+        forma_pago = request.form.get('forma_pago', 'No especificada')
+        tipo_vehiculo = request.form.get('tipo_vehiculo', 'No especificado')
 
         mensaje = (
-            "*Solicitud de Turismo Local y Nacional*\n\n"
+            f"🚗🚗🚗 | 🚕 Taxi VIP (SUVs & Vans) 🚕\n\n"
             f"👤 Nombre: {nombre}\n"
-            f"📞 Teléfono: {telefono}\n"
-            f"📍 Origen: {origen}\n"
-            f"🎯 Destino: {destino}\n"
-            f"📅 Fecha: {fecha}"
+            f"📱 Teléfono: {telefono}\n"
+            f"📍 Dirección de recogida: {direccion}\n"
+            f"🧭 Referencias: {referencia}\n"
+            f"💳 Forma de pago: {forma_pago}\n"
+            f"🚗 Tipo de vehículo: {tipo_vehiculo}"
         )
 
-        # Enviar mensaje usando el nuevo bot de Turismo
-        enviar_mensaje(mensaje, BOT_TOKEN_TURISMO)
-
-        return render_template(
-            'success.html',
-            mensaje="¡Gracias! Tu solicitud de Turismo ha sido enviada."
+        asyncio.run(
+            enviar_mensaje_telegram(BOT_TOKEN_VIP, CHAT_ID_TAXI, mensaje)
         )
+
+        return render_template('confirmacion.html', mensaje="Solicitud TAXI VIP enviada correctamente ✅")
     except Exception as e:
-        app.logger.error(f"Error en /solicitar-turismo: {e}")
-        return "Error al procesar la solicitud de Turismo.", 500
+        logging.error(f"Error en /enviar_vip: {e}")
+        return render_template('error.html', mensaje="Ocurrió un error al procesar la solicitud de TAXI VIP.")
 
 
-@app.route('/solicitar-taxi', methods=['POST'])
-def solicitar_taxi():
+@app.route('/enviar_turismo', methods=['POST'])
+def enviar_turismo():
+    logging.debug("Solicitud /enviar_turismo recibida")
+
     try:
-        nombre = request.form.get('nombre')
-        telefono = request.form.get('telefono')
-        origen = request.form.get('origen')
-        destino = request.form.get('destino')
+        nombre = request.form.get('nombre', 'No especificado')
+        telefono = request.form.get('telefono', 'No especificado')
+        destino = request.form.get('destino', 'No especificado')
+        fecha = request.form.get('fecha', 'No especificada')
+        numero_personas = request.form.get('numero_personas', 'No especificado')
+        descripcion = request.form.get('descripcion', 'No especificada')
 
         mensaje = (
-            "*Solicitud de Taxi*\n\n"
+            f"🏝️ NUEVA SOLICITUD DE TURISMO\n\n"
             f"👤 Nombre: {nombre}\n"
-            f"📞 Teléfono: {telefono}\n"
-            f"📍 Origen: {origen}\n"
-            f"🎯 Destino: {destino}"
-        )
-
-        enviar_mensaje(mensaje, BOT_TOKEN_TAXI,)
-        return render_template('success.html', mensaje="¡Gracias! Tu solicitud de taxi ha sido enviada.")
-    except Exception as e:
-        app.logger.error(f"Error en /solicitar-taxi: {e}")
-        return "Error al procesar la solicitud de taxi.", 500
-
-@app.route('/conductor')
-def conductor():
-    return render_template('conductor.html')
-
-
-@app.route('/solicitar-turismo-ecuador', methods=['POST'])
-def solicitar_turismo_ecuador():
-    try:
-        nombre = request.form.get('nombre')
-        telefono = request.form.get('telefono')
-        origen = request.form.get('origen')
-        destino = request.form.get('destino')
-        fecha = request.form.get('fecha')
-
-        mensaje = (
-            "*Solicitud de Turismo Ecuador*\n\n"
-            f"👤 Nombre: {nombre}\n"
-            f"📞 Teléfono: {telefono}\n"
-            f"📍 Origen: {origen}\n"
-            f"🎯 Destino: {destino}\n"
-            f"📅 Fecha: {fecha}"
-        )
-
-        enviar_mensaje(mensaje, BOT_TOKEN_TAXI,)
-        return render_template('success.html', mensaje="¡Gracias! Tu solicitud de Turismo Ecuador ha sido enviada.")
-    except Exception as e:
-        app.logger.error(f"Error en /solicitar-turismo-ecuador: {e}")
-        return "Error al procesar la solicitud de Turismo Ecuador.", 500
-
-@app.route('/solicitar-ecuador-420', methods=['POST'])
-def solicitar_ecuador_420():
-    try:
-        nombre = request.form.get('nombre')
-        telefono = request.form.get('telefono')
-        ciudad = request.form.get('ciudad')
-        fecha = request.form.get('fecha')
-        detalles = request.form.get('detalles')
-
-        mensaje = (
-            "*Solicitud Ecuador 420*\n\n"
-            f"👤 Nombre: {nombre}\n"
-            f"📞 Teléfono: {telefono}\n"
-            f"📍 Ciudad / Provincia: {ciudad}\n"
-            f"📅 Fecha tentativa: {fecha}\n"
-            f"📋 Detalles: {detalles}"
-        )
-
-        # Mismo bot que Turismo
-        enviar_mensaje(mensaje, BOT_TOKEN_TURISMO)
-
-        return render_template(
-            'success.html',
-            mensaje="¡Gracias! Tu solicitud Ecuador 420 ha sido enviada."
-        )
-    except Exception as e:
-        app.logger.error(f"Error en /solicitar-ecuador-420: {e}")
-        return "Error al procesar la solicitud Ecuador 420.", 500
-
-
-@app.route('/procesar_solicitud_alta_gama', methods=['POST'])
-def procesar_solicitud_alta_gama():
-    try:
-        nombre = request.form.get('nombre')
-        telefono = request.form.get('telefono')
-        vehiculo = request.form.get('tipo_vehiculo')
-        fecha = request.form.get('fecha')
-        hora = request.form.get('hora')
-        detalles = request.form.get('detalles')
-
-        mensaje = (
-            "*Solicitud de Alta Gama*\n\n"
-            f"👤 Nombre: {nombre}\n"
-            f"📞 Teléfono: {telefono}\n"
-            f"🚗 Vehículo: {vehiculo}\n"
+            f"📱 Teléfono: {telefono}\n"
+            f"📍 Destino: {destino}\n"
             f"📅 Fecha: {fecha}\n"
-            f"⏰ Hora: {hora}\n"
-            f"📋 Detalles: {detalles}"
+            f"👥 Número de personas: {numero_personas}\n"
+            f"📝 Descripción: {descripcion}"
         )
 
-        # Usamos el bot VIP para este servicio
-        enviar_mensaje(mensaje, BOT_TOKEN_VIP)
-
-        return render_template(
-            'success.html',
-            mensaje="¡Gracias! Tu solicitud de Alta Gama ha sido enviada."
+        asyncio.run(
+            enviar_mensaje_telegram(BOT_TOKEN_TURISMO, CHAT_ID_TURISMO, mensaje)
         )
+
+        return render_template('confirmacion.html', mensaje="Solicitud de TURISMO enviada correctamente ✅")
     except Exception as e:
-        app.logger.error(f"Error en /procesar_solicitud_alta_gama: {e}")
-        return "Error al procesar la solicitud de Alta Gama.", 500
+        logging.error(f"Error en /enviar_turismo: {e}")
+        return render_template('error.html', mensaje="Ocurrió un error al procesar la solicitud de TURISMO.")
 
 
-# ===================== API PARA SOLICITUDES DEL BOTÓN TAXI =====================
+@app.route('/enviar_fletes', methods=['POST'])
+def enviar_fletes():
+    logging.debug("Solicitud /enviar_fletes recibida")
 
-@app.route('/api/solicitudes', methods=['POST'])
-def api_crear_solicitud():
-    """
-    Recibe una solicitud desde taxi.html en formato JSON
-    y la guarda en memoria.
-    """
-    from datetime import datetime
-    global NEXT_ID, SOLICITUDES
-
-    data = request.get_json(silent=True) or {}
-
-    tipo_servicio = data.get('tipo_servicio')
-    origen = data.get('origen')
-    destino = data.get('destino')
-    distancia_km = data.get('distancia_km')
-    precio = data.get('precio')
-    timestamp = data.get('timestamp') or datetime.utcnow().isoformat()
-
-    if not tipo_servicio or not destino:
-        return jsonify({
-            "ok": False,
-            "error": "Faltan datos obligatorios (tipo_servicio o destino)."
-        }), 400
-
-    solicitud = {
-        "id": NEXT_ID,
-        "tipo_servicio": tipo_servicio,
-        "origen": origen,
-        "destino": destino,
-        "distancia_km": distancia_km,
-        "precio": precio,
-        "timestamp": timestamp,
-        "estado": "pendiente"
-    }
-    NEXT_ID += 1
-    SOLICITUDES.append(solicitud)
-
-
-    # Guardar también en la hoja "pedidos"
-   # try:
-   #     Puedes ajustar el orden/columnas como tú quieras
-   #     fila_pedidos = [
-   #         solicitud["id"],           # ID
-   #         solicitud["tipo_servicio"],
-   #         solicitud["origen"],
-   #         solicitud["destino"],
-   #         solicitud["distancia_km"],
-   #         solicitud["precio"],
-   #         solicitud["timestamp"],
-   #         solicitud["estado"],
-   #     ]
-   #     ws_pedidos.append_row(fila_pedidos)
-   #  except Exception as e:
-   #     app.logger.error(f"Error guardando pedido en hoja 'pedidos': {e}")
-
-
-
-    # Opcional: avisar por Telegram mientras no hay lógica de socio.html
     try:
+        nombre = request.form.get('nombre', 'No especificado')
+        telefono = request.form.get('telefono', 'No especificado')
+        direccion_recogida = request.form.get('direccion_recogida', 'No especificada')
+        direccion_entrega = request.form.get('direccion_entrega', 'No especificada')
+        tipo_carga = request.form.get('tipo_carga', 'No especificada')
+        peso_aproximado = request.form.get('peso_aproximado', 'No especificado')
+
         mensaje = (
-            "*Nueva solicitud desde botón TAXI*\n\n"
-            f"🚖 Servicio: {tipo_servicio}\n"
-            f"📍 Origen: {origen or 'No especificado'}\n"
-            f"🎯 Destino: {destino}\n"
+            f"🚚 NUEVA SOLICITUD DE FLETES\n\n"
+            f"👤 Nombre: {nombre}\n"
+            f"📱 Teléfono: {telefono}\n"
+            f"📍 Dirección de recogida: {direccion_recogida}\n"
+            f"📍 Dirección de entrega: {direccion_entrega}\n"
+            f"📦 Tipo de carga: {tipo_carga}\n"
+            f"⚖️ Peso aproximado: {peso_aproximado}"
         )
-        enviar_mensaje(mensaje, BOT_TOKEN_TAXI)
+
+        asyncio.run(
+            enviar_mensaje_telegram(BOT_TOKEN_TAXI, CHAT_ID_TAXI, mensaje)
+        )
+
+        return render_template('confirmacion.html', mensaje="Solicitud de FLETES enviada correctamente ✅")
     except Exception as e:
-        app.logger.error(f"Error enviando aviso de solicitud a Telegram: {e}")
-
-    return jsonify({"ok": True, "solicitud": solicitud}), 200
-
+        logging.error(f"Error en /enviar_fletes: {e}")
+        return render_template('error.html', mensaje="Ocurrió un error al procesar la solicitud de FLETES.")
 
 
-@app.route('/api/solicitudes', methods=['GET'])
-def api_listar_solicitudes():
+# ===================== REGISTRO DE SOCIOS CONDUCTORES =====================
+
+@app.route('/enviar_registro_socio', methods=['POST'])
+def enviar_registro_socio():
+    logging.debug("Solicitud /enviar_registro_socio recibida")
+
+    try:
+        nombres = request.form.get('nombres', 'No especificado')
+        apellidos = request.form.get('apellidos', 'No especificado')
+        tipo_vehiculo = request.form.get('tipo_vehiculo', 'No especificado')
+        placas = request.form.get('placas', 'No especificadas')
+        licencia = request.form.get('licencia', 'No especificada')
+        telefono = request.form.get('telefono', 'No especificado')
+        correo = request.form.get('correo', 'No especificado')
+        comentario = request.form.get('comentario', 'Sin comentarios adicionales')
+
+        mensaje = (
+            f"🚖 NUEVA SOLICITUD DE SOCIO CONDUCTOR 🚖\n\n"
+            f"👤 Nombres: {nombres}\n"
+            f"👤 Apellidos: {apellidos}\n"
+            f"🚗 Tipo de vehículo: {tipo_vehiculo}\n"
+            f"🔢 Placas: {placas}\n"
+            f"🪪 Licencia: {licencia}\n"
+            f"📱 Teléfono: {telefono}\n"
+            f"📧 Correo: {correo}\n"
+            f"📝 Comentario: {comentario}\n\n"
+            f"🔍 Verificar la información y aprobar o rechazar al socio."
+        )
+
+        asyncio.run(
+            enviar_mensaje_telegram(BOT_TOKEN_REGISTRO_SOCIO, CHAT_ID_TAXI, mensaje)
+        )
+
+        return render_template('confirmacion.html', mensaje="Registro de socio enviado para verificación ✅")
+    except Exception as e:
+        logging.error(f"Error en /enviar_registro_socio: {e}")
+        return render_template('error.html', mensaje="Ocurrió un error al procesar el registro de socio.")
+
+
+# ===================== API PARA SOCIOS (LECTURA Y ACEPTACIÓN DE SOLICITUDES) =====================
+
+@app.route('/api/solicitudes/pendientes', methods=['GET'])
+def api_solicitudes_pendientes():
     """
-    Devuelve solo las solicitudes PENDIENTES.
-    socio.html consulta aquí.
+    Devuelve todas las solicitudes en estado 'pendiente'.
+    Esto será consumido por socio.html para mostrar la lista.
     """
     pendientes = [s for s in SOLICITUDES if s.get("estado") == "pendiente"]
     return jsonify({
         "ok": True,
         "solicitudes": pendientes
     }), 200
-
-
-
-@app.route('/api/solicitudes/<int:solicitud_id>/aceptar', methods=['POST'])
-def api_aceptar_solicitud(solicitud_id):
-    """
-    Acepta una solicitud:
-    - La busca en SOLICITUDES (memoria)
-    - Cambia su estado a 'aceptada'
-    - La registra en la hoja 'pedidos completados'
-    - Devuelve la info para que socio.html muestre 'Viaje en curso'
-    """
-    try:
-        # 1) Buscar la solicitud en la lista SOLICITUDES
-        solicitud_encontrada = None
-        for s in SOLICITUDES:
-            if s["id"] == solicitud_id:
-                solicitud_encontrada = s
-                break
-
-        if not solicitud_encontrada:
-            return jsonify({
-                "ok": False,
-                "error": f"Solicitud con ID {solicitud_id} no encontrada"
-            }), 404
-
-        # 2) Marcar como aceptada en memoria
-        solicitud_encontrada["estado"] = "aceptada"
-
-        # 3) Registrar esta solicitud en la hoja 'pedidos completados'
-        try:
-        #    fila_completada = [
-        #        solicitud_encontrada["id"],
-        #        solicitud_encontrada.get("tipo_servicio"),
-        #        solicitud_encontrada.get("origen"),
-        #        solicitud_encontrada.get("destino"),
-        #        solicitud_encontrada.get("distancia_km"),
-        #        solicitud_encontrada.get("precio"),
-        #        solicitud_encontrada.get("timestamp"),
-        #        solicitud_encontrada.get("estado"),  # 'aceptada'
-        #    ]
-        #    ws_pedidos_completados.append_row(fila_completada)
-        # except Exception as e:
-        #    app.logger.error(f"Error guardando en 'pedidos completados': {e}")
-
-        # 4) Construir respuesta para socio.html
-        respuesta = {
-            "id": solicitud_encontrada["id"],
-            "tipo_servicio": solicitud_encontrada.get("tipo_servicio") or "TAXI",
-            "origen": solicitud_encontrada.get("origen") or "No especificado",
-            "destino": solicitud_encontrada.get("destino") or "No especificado",
-            "distancia_km": to_float_or_none(solicitud_encontrada.get("distancia_km")),
-            "precio": to_float_or_none(solicitud_encontrada.get("precio")),
-        }
-
-        return jsonify({
-            "ok": True,
-            "solicitud": respuesta
-        }), 200
-
-    except Exception as e:
-        app.logger.error(f"Error interno al aceptar solicitud: {e}")
-        return jsonify({
-            "ok": False,
-            "error": "Error interno al aceptar la solicitud"
-        }), 500
-
 
 
 @app.route('/api/solicitudes/<int:solicitud_id>/aceptar', methods=['POST'])
