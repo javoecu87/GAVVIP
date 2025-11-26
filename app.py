@@ -56,10 +56,10 @@ logging.basicConfig(
 
 
 # ================== GOOGLE SHEETS ==================
-import gspread
+# import gspread
 
-GC_CREDS_PATH = "/etc/gavvip-credenciales.json"
-gc = gspread.service_account(filename=GC_CREDS_PATH)
+# GC_CREDS_PATH = "/etc/gavvip-credenciales.json"
+# gc = gspread.service_account(filename=GC_CREDS_PATH)
 
 # Hoja donde se guardan TODOS los pedidos generados por los usuarios
 sh_pedidos = gc.open('pedidos')
