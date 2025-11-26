@@ -55,10 +55,10 @@ logging.basicConfig(
 )
 
 
-# ================== CONFIGURACIÓN GOOGLE SHEETS ==================
+# ================== GOOGLE SHEETS ==================
+import gspread
 
-# Usa tu archivo de credenciales del servicio:
-gc = gspread.service_account(filename='credenciales.json')
+gc = gspread.service_account(filename='/etc/creds/credenciales.json')
 
 # Hoja donde se guardan TODOS los pedidos generados por los usuarios
 sh_pedidos = gc.open('pedidos')
