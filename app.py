@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, send_from_directory, jsonify
 import telegram
 import asyncio
 import logging
-import gspread
+# import gspread
 
 
 app = Flask(__name__)
@@ -62,12 +62,12 @@ logging.basicConfig(
 # gc = gspread.service_account(filename=GC_CREDS_PATH)
 
 # Hoja donde se guardan TODOS los pedidos generados por los usuarios
-sh_pedidos = gc.open('pedidos')
-ws_pedidos = sh_pedidos.sheet1     # o .worksheet('PEDIDOS') si le pusiste nombre
+# sh_pedidos = gc.open('pedidos')
+# ws_pedidos = sh_pedidos.sheet1     # o .worksheet('PEDIDOS') si le pusiste nombre
 
 # Hoja donde se guardan los pedidos ya aceptados / terminados
-sh_pedidos_completados = gc.open('pedidos completados')
-ws_pedidos_completados = sh_pedidos_completados.sheet1   # o .worksheet('PEDIDOS COMPLETADOS')
+# sh_pedidos_completados = gc.open('pedidos completados')
+# ws_pedidos_completados = sh_pedidos_completados.sheet1   # o .worksheet('PEDIDOS COMPLETADOS')
 
 
 
@@ -378,21 +378,21 @@ def api_crear_solicitud():
 
 
     # Guardar también en la hoja "pedidos"
-    try:
-        # Puedes ajustar el orden/columnas como tú quieras
-        fila_pedidos = [
-            solicitud["id"],           # ID
-            solicitud["tipo_servicio"],
-            solicitud["origen"],
-            solicitud["destino"],
-            solicitud["distancia_km"],
-            solicitud["precio"],
-            solicitud["timestamp"],
-            solicitud["estado"],
-        ]
-        ws_pedidos.append_row(fila_pedidos)
-    except Exception as e:
-        app.logger.error(f"Error guardando pedido en hoja 'pedidos': {e}")
+   # try:
+   #     Puedes ajustar el orden/columnas como tú quieras
+   #     fila_pedidos = [
+   #         solicitud["id"],           # ID
+   #         solicitud["tipo_servicio"],
+   #         solicitud["origen"],
+   #         solicitud["destino"],
+   #         solicitud["distancia_km"],
+   #         solicitud["precio"],
+   #         solicitud["timestamp"],
+   #         solicitud["estado"],
+   #     ]
+   #     ws_pedidos.append_row(fila_pedidos)
+   #  except Exception as e:
+   #     app.logger.error(f"Error guardando pedido en hoja 'pedidos': {e}")
 
 
 
@@ -454,19 +454,19 @@ def api_aceptar_solicitud(solicitud_id):
 
         # 3) Registrar esta solicitud en la hoja 'pedidos completados'
         try:
-            fila_completada = [
-                solicitud_encontrada["id"],
-                solicitud_encontrada.get("tipo_servicio"),
-                solicitud_encontrada.get("origen"),
-                solicitud_encontrada.get("destino"),
-                solicitud_encontrada.get("distancia_km"),
-                solicitud_encontrada.get("precio"),
-                solicitud_encontrada.get("timestamp"),
-                solicitud_encontrada.get("estado"),  # 'aceptada'
-            ]
-            ws_pedidos_completados.append_row(fila_completada)
-        except Exception as e:
-            app.logger.error(f"Error guardando en 'pedidos completados': {e}")
+        #    fila_completada = [
+        #        solicitud_encontrada["id"],
+        #        solicitud_encontrada.get("tipo_servicio"),
+        #        solicitud_encontrada.get("origen"),
+        #        solicitud_encontrada.get("destino"),
+        #        solicitud_encontrada.get("distancia_km"),
+        #        solicitud_encontrada.get("precio"),
+        #        solicitud_encontrada.get("timestamp"),
+        #        solicitud_encontrada.get("estado"),  # 'aceptada'
+        #    ]
+        #    ws_pedidos_completados.append_row(fila_completada)
+        # except Exception as e:
+        #    app.logger.error(f"Error guardando en 'pedidos completados': {e}")
 
         # 4) Construir respuesta para socio.html
         respuesta = {
